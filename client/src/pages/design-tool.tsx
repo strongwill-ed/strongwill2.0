@@ -172,10 +172,15 @@ export default function DesignTool() {
 
   const updateOrderQuantity = (size: string, color: string, quantity: number) => {
     const key = `${size}-${color}`;
-    setOrderItems(prev => ({
-      ...prev,
-      [key]: quantity
-    }));
+    console.log('updateOrderQuantity called:', { size, color, quantity, key });
+    setOrderItems(prev => {
+      const newItems = {
+        ...prev,
+        [key]: quantity
+      };
+      console.log('Order items updated:', newItems);
+      return newItems;
+    });
   };
 
   const getTotalItems = () => {
@@ -412,15 +417,20 @@ export default function DesignTool() {
                             size="sm" 
                             variant="outline"
                             onClick={() => {
-                              const defaultSize = product.sizes?.[0];
-                              const defaultColor = product.colors?.[0];
+                              console.log('Product data:', product);
+                              const defaultSize = product?.sizes?.[0];
+                              const defaultColor = product?.colors?.[0];
+                              console.log('Default size:', defaultSize, 'Default color:', defaultColor);
                               if (defaultSize && defaultColor) {
+                                console.log('Setting quantity for:', defaultSize, defaultColor);
                                 updateOrderQuantity(defaultSize, defaultColor, 1);
+                              } else {
+                                console.log('Missing size or color data');
                               }
                             }}
                             className="text-xs h-7"
                           >
-                            Quick Add
+                            Quick Add ({product?.sizes?.[0]} {product?.colors?.[0]})
                           </Button>
                         </div>
                         <div className="p-3 bg-blue-50 border border-blue-200 rounded-md">
