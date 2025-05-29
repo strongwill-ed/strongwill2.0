@@ -34,9 +34,11 @@ export default function Header() {
           {/* Logo */}
           <div className="flex-shrink-0">
             <Link href="/">
-              <span className="font-logo italic text-2xl font-bold text-black cursor-pointer hover:text-gray-700 transition-colors">
-                Strongwillsports
-              </span>
+              <img 
+                src="/attached_assets/STRONGWILLSPORTS-LOGO-WHITE.png" 
+                alt="Strongwillsports"
+                className="h-8 w-auto cursor-pointer hover:opacity-80 transition-opacity bg-black px-3 py-1 rounded"
+              />
             </Link>
           </div>
 
