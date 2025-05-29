@@ -192,39 +192,50 @@ export default function DesignTool() {
       return;
     }
 
-    const totalItems = getTotalItems();
-    if (totalItems === 0) {
-      toast({
-        title: "Error",
-        description: "Please select at least one item",
-        variant: "destructive",
-      });
-      return;
+    // Only check quantities for regular cart orders, not group orders
+    if (!addToGroupOrder) {
+      const totalItems = getTotalItems();
+      if (totalItems === 0) {
+        toast({
+          title: "Error",
+          description: "Please select at least one item",
+          variant: "destructive",
+        });
+        return;
+      }
     }
 
-    // Add each size/color combination to cart
-    Object.entries(orderItems).forEach(([key, quantity]) => {
-      if (quantity > 0) {
-        const [size, color] = key.split('-');
-        const cartItem = {
-          userId: 1, // TODO: Get from auth context
-          productId: selectedProduct,
-          quantity,
-          size,
-          color,
-          customizations: JSON.stringify({
-            elements: designElements,
-            designName,
-          }),
-        };
-        addToCart(cartItem);
-      }
-    });
+    if (addToGroupOrder) {
+      // Handle group order
+      addToGroupOrderHandler();
+    } else {
+      // Handle regular cart order
+      const totalItems = getTotalItems();
+      
+      // Add each size/color combination to cart
+      Object.entries(orderItems).forEach(([key, quantity]) => {
+        if (quantity > 0) {
+          const [size, color] = key.split('-');
+          const cartItem = {
+            userId: 1, // TODO: Get from auth context
+            productId: selectedProduct,
+            quantity,
+            size,
+            color,
+            customizations: JSON.stringify({
+              elements: designElements,
+              designName,
+            }),
+          };
+          addToCart(cartItem);
+        }
+      });
 
-    toast({
-      title: "Success",
-      description: `${totalItems} item(s) added to cart!`,
-    });
+      toast({
+        title: "Success",
+        description: `${getTotalItems()} item(s) added to cart!`,
+      });
+    }
   };
 
   const addToGroupOrderHandler = async () => {
