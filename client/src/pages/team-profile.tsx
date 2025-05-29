@@ -173,10 +173,10 @@ export default function TeamProfile() {
                   {canSponsor && (
                     <Button
                       onClick={() => setShowSponsorForm(true)}
-                      className="btn-primary"
+                      className="bg-green-600 hover:bg-green-700 text-white"
                     >
                       <DollarSign className="h-4 w-4 mr-2" />
-                      Offer Sponsorship
+                      Offer Partnership
                     </Button>
                   )}
                   {canDelete && (
@@ -240,7 +240,7 @@ export default function TeamProfile() {
                 <div className="bg-gray-50 p-4 rounded-lg">
                   <h3 className="font-semibold mb-2">Funding Goal</h3>
                   <div className="text-2xl font-bold text-green-600">
-                    ${profile.fundingGoal ? parseFloat(profile.fundingGoal).toLocaleString() : 'Not specified'}
+                    ${profile.fundingGoal ? parseFloat(profile.fundingGoal.toString()).toLocaleString() : 'Not specified'}
                   </div>
                   <p className="text-sm text-gray-600 mt-1">
                     Seeking sponsorship to support team activities and growth

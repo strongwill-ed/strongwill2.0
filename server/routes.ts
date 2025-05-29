@@ -867,10 +867,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/seeker-profiles/user", async (req, res) => {
     try {
-      if (!req.isAuthenticated()) {
+      const userId = req.headers['x-user-id'];
+      if (!userId) {
         return res.status(401).json({ message: "Authentication required" });
       }
-      const profile = await storage.getSeekerProfileByUserId(req.user.id);
+      const profile = await storage.getSeekerProfileByUserId(parseInt(userId as string));
       res.json(profile || null);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch seeker profile" });
@@ -978,10 +979,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/sponsor-profiles/user", async (req, res) => {
     try {
-      if (!req.isAuthenticated()) {
+      const userId = req.headers['x-user-id'];
+      if (!userId) {
         return res.status(401).json({ message: "Authentication required" });
       }
-      const profile = await storage.getSponsorProfileByUserId(req.user.id);
+      const profile = await storage.getSponsorProfileByUserId(parseInt(userId as string));
       res.json(profile || null);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch sponsor profile" });
@@ -1120,9 +1122,70 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!agreement) {
         return res.status(404).json({ message: "Sponsorship agreement not found" });
       }
+      
+      // If agreement is accepted, create sponsorship credit
+      if (status === 'accepted') {
+        await storage.createSponsorshipCredit({
+          agreementId: agreement.id,
+          seekerId: agreement.seekerId,
+          originalAmount: agreement.amount,
+          remainingAmount: agreement.amount,
+          expiryDate: new Date(Date.now() + (agreement.duration * 30 * 24 * 60 * 60 * 1000)) // duration in months
+        });
+      }
+      
       res.json(agreement);
     } catch (error) {
       res.status(500).json({ message: "Failed to update agreement status" });
+    }
+  });
+
+  // Order approval and split payment workflow
+  app.post("/api/sponsorship-agreements/:id/submit-order", async (req, res) => {
+    try {
+      const agreementId = parseInt(req.params.id);
+      const { orderId, requestedAmount } = req.body;
+      
+      const agreement = await storage.getSponsorshipAgreement(agreementId);
+      if (!agreement || agreement.status !== 'accepted') {
+        return res.status(400).json({ message: "Invalid sponsorship agreement" });
+      }
+      
+      // Update agreement with order details
+      await storage.updateSponsorshipAgreement(agreementId, {
+        paymentStatus: 'pending_sponsor_approval',
+        description: `${agreement.description} - Order #${orderId} submitted for approval`
+      });
+      
+      res.json({ message: "Order submitted to sponsor for approval" });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to submit order for approval" });
+    }
+  });
+
+  app.patch("/api/sponsorship-agreements/:id/approve-order", async (req, res) => {
+    try {
+      const agreementId = parseInt(req.params.id);
+      const { approved } = req.body;
+      
+      const agreement = await storage.getSponsorshipAgreement(agreementId);
+      if (!agreement) {
+        return res.status(404).json({ message: "Sponsorship agreement not found" });
+      }
+      
+      if (approved) {
+        await storage.updateSponsorshipAgreement(agreementId, {
+          paymentStatus: 'approved_awaiting_sponsor_payment'
+        });
+      } else {
+        await storage.updateSponsorshipAgreement(agreementId, {
+          paymentStatus: 'rejected'
+        });
+      }
+      
+      res.json({ message: approved ? "Order approved" : "Order rejected" });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to approve order" });
     }
   });
 
