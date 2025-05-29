@@ -7,7 +7,8 @@ import {
   insertGroupOrderSchema, insertGroupOrderItemSchema,
   insertSeekerProfileSchema, insertSponsorProfileSchema,
   insertSponsorshipAgreementSchema, insertSponsorshipCreditSchema,
-  insertSponsorshipMessageSchema,
+  insertSponsorshipMessageSchema, insertPageSchema, insertBlogPostSchema,
+  insertQuoteRequestSchema, insertAdminSettingSchema,
   type InsertGroupOrder
 } from "@shared/schema";
 import { z } from "zod";
@@ -810,6 +811,262 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(200).json({ message: "Message marked as read" });
     } catch (error) {
       res.status(500).json({ message: "Failed to mark message as read" });
+    }
+  });
+
+  // CMS & Admin Panel Routes
+
+  // Pages Management
+  app.get("/api/admin/pages", async (req, res) => {
+    try {
+      const pages = await storage.getPages();
+      res.json(pages);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch pages" });
+    }
+  });
+
+  app.get("/api/pages", async (req, res) => {
+    try {
+      const pages = await storage.getPublishedPages();
+      res.json(pages);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch published pages" });
+    }
+  });
+
+  app.get("/api/pages/:slug", async (req, res) => {
+    try {
+      const page = await storage.getPageBySlug(req.params.slug);
+      if (!page) {
+        return res.status(404).json({ message: "Page not found" });
+      }
+      res.json(page);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch page" });
+    }
+  });
+
+  app.post("/api/admin/pages", async (req, res) => {
+    try {
+      const validatedData = insertPageSchema.parse(req.body);
+      const page = await storage.createPage(validatedData);
+      res.status(201).json(page);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid page data", errors: error.errors });
+      }
+      res.status(500).json({ message: "Failed to create page" });
+    }
+  });
+
+  app.patch("/api/admin/pages/:id", async (req, res) => {
+    try {
+      const updates = insertPageSchema.partial().parse(req.body);
+      const page = await storage.updatePage(parseInt(req.params.id), updates);
+      if (!page) {
+        return res.status(404).json({ message: "Page not found" });
+      }
+      res.json(page);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid page data", errors: error.errors });
+      }
+      res.status(500).json({ message: "Failed to update page" });
+    }
+  });
+
+  app.delete("/api/admin/pages/:id", async (req, res) => {
+    try {
+      const success = await storage.deletePage(parseInt(req.params.id));
+      if (!success) {
+        return res.status(404).json({ message: "Page not found" });
+      }
+      res.status(200).json({ message: "Page deleted successfully" });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to delete page" });
+    }
+  });
+
+  // Blog Posts Management
+  app.get("/api/admin/blog-posts", async (req, res) => {
+    try {
+      const posts = await storage.getBlogPosts();
+      res.json(posts);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch blog posts" });
+    }
+  });
+
+  app.get("/api/blog-posts", async (req, res) => {
+    try {
+      const posts = await storage.getPublishedBlogPosts();
+      res.json(posts);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch published blog posts" });
+    }
+  });
+
+  app.get("/api/blog-posts/:slug", async (req, res) => {
+    try {
+      const post = await storage.getBlogPostBySlug(req.params.slug);
+      if (!post) {
+        return res.status(404).json({ message: "Blog post not found" });
+      }
+      res.json(post);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch blog post" });
+    }
+  });
+
+  app.post("/api/admin/blog-posts", async (req, res) => {
+    try {
+      const validatedData = insertBlogPostSchema.parse(req.body);
+      const post = await storage.createBlogPost(validatedData);
+      res.status(201).json(post);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid blog post data", errors: error.errors });
+      }
+      res.status(500).json({ message: "Failed to create blog post" });
+    }
+  });
+
+  app.patch("/api/admin/blog-posts/:id", async (req, res) => {
+    try {
+      const updates = insertBlogPostSchema.partial().parse(req.body);
+      const post = await storage.updateBlogPost(parseInt(req.params.id), updates);
+      if (!post) {
+        return res.status(404).json({ message: "Blog post not found" });
+      }
+      res.json(post);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid blog post data", errors: error.errors });
+      }
+      res.status(500).json({ message: "Failed to update blog post" });
+    }
+  });
+
+  app.delete("/api/admin/blog-posts/:id", async (req, res) => {
+    try {
+      const success = await storage.deleteBlogPost(parseInt(req.params.id));
+      if (!success) {
+        return res.status(404).json({ message: "Blog post not found" });
+      }
+      res.status(200).json({ message: "Blog post deleted successfully" });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to delete blog post" });
+    }
+  });
+
+  // Quote Requests Management
+  app.get("/api/admin/quote-requests", async (req, res) => {
+    try {
+      const quotes = await storage.getQuoteRequests();
+      res.json(quotes);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch quote requests" });
+    }
+  });
+
+  app.post("/api/quote-requests", async (req, res) => {
+    try {
+      const validatedData = insertQuoteRequestSchema.parse(req.body);
+      const quote = await storage.createQuoteRequest(validatedData);
+      res.status(201).json(quote);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid quote request data", errors: error.errors });
+      }
+      res.status(500).json({ message: "Failed to create quote request" });
+    }
+  });
+
+  app.patch("/api/admin/quote-requests/:id", async (req, res) => {
+    try {
+      const updates = insertQuoteRequestSchema.partial().parse(req.body);
+      const quote = await storage.updateQuoteRequest(parseInt(req.params.id), updates);
+      if (!quote) {
+        return res.status(404).json({ message: "Quote request not found" });
+      }
+      res.json(quote);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid quote request data", errors: error.errors });
+      }
+      res.status(500).json({ message: "Failed to update quote request" });
+    }
+  });
+
+  // Admin Settings
+  app.get("/api/admin/settings", async (req, res) => {
+    try {
+      const settings = await storage.getAdminSettings();
+      res.json(settings);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch admin settings" });
+    }
+  });
+
+  app.patch("/api/admin/settings/:key", async (req, res) => {
+    try {
+      const { value } = req.body;
+      if (!value) {
+        return res.status(400).json({ message: "Value is required" });
+      }
+      
+      const setting = await storage.updateAdminSetting(req.params.key, value);
+      if (!setting) {
+        // Create new setting if it doesn't exist
+        const newSetting = await storage.createAdminSetting({
+          key: req.params.key,
+          value
+        });
+        return res.status(201).json(newSetting);
+      }
+      
+      res.json(setting);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to update admin setting" });
+    }
+  });
+
+  // Enhanced Admin Stats
+  app.get("/api/admin/dashboard-stats", async (req, res) => {
+    try {
+      const stats = await storage.getAdminStats();
+      res.json(stats);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch admin dashboard stats" });
+    }
+  });
+
+  // User Management
+  app.get("/api/admin/users", async (req, res) => {
+    try {
+      const users = await storage.getAllUsers();
+      res.json(users);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch users" });
+    }
+  });
+
+  app.patch("/api/admin/users/:id/role", async (req, res) => {
+    try {
+      const { role } = req.body;
+      if (!role) {
+        return res.status(400).json({ message: "Role is required" });
+      }
+      
+      const user = await storage.updateUserRole(parseInt(req.params.id), role);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      res.json(user);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to update user role" });
     }
   });
 

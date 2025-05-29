@@ -188,12 +188,15 @@ export default function Admin() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-8">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="products">Products</TabsTrigger>
             <TabsTrigger value="orders">Orders</TabsTrigger>
             <TabsTrigger value="group-orders">Group Orders</TabsTrigger>
-            <TabsTrigger value="analytics">Analytics</TabsTrigger>
+            <TabsTrigger value="pages">Pages</TabsTrigger>
+            <TabsTrigger value="blog">Blog</TabsTrigger>
+            <TabsTrigger value="quotes">Quotes</TabsTrigger>
+            <TabsTrigger value="users">Users</TabsTrigger>
           </TabsList>
 
           {/* Overview Tab */}
@@ -749,6 +752,78 @@ export default function Admin() {
                 </CardContent>
               </Card>
             </div>
+          </TabsContent>
+
+          {/* Pages Management Tab */}
+          <TabsContent value="pages" className="space-y-6">
+            <div className="flex justify-between items-center">
+              <h2 className="text-2xl font-bold text-black">Pages Management</h2>
+              <Button className="btn-primary">
+                <Plus className="mr-2 h-4 w-4" />
+                Create Page
+              </Button>
+            </div>
+            
+            <Card>
+              <CardHeader>
+                <CardTitle>All Pages</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600">Content management system for pages will be implemented here.</p>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Blog Management Tab */}
+          <TabsContent value="blog" className="space-y-6">
+            <div className="flex justify-between items-center">
+              <h2 className="text-2xl font-bold text-black">Blog Management</h2>
+              <Button className="btn-primary">
+                <Plus className="mr-2 h-4 w-4" />
+                Create Post
+              </Button>
+            </div>
+            
+            <Card>
+              <CardHeader>
+                <CardTitle>All Blog Posts</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600">Blog post management system will be implemented here.</p>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Quote Requests Tab */}
+          <TabsContent value="quotes" className="space-y-6">
+            <div className="flex justify-between items-center">
+              <h2 className="text-2xl font-bold text-black">Quote Requests</h2>
+            </div>
+            
+            <Card>
+              <CardHeader>
+                <CardTitle>Customer Quote Requests</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600">Quote request management system will be implemented here.</p>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* User Management Tab */}
+          <TabsContent value="users" className="space-y-6">
+            <div className="flex justify-between items-center">
+              <h2 className="text-2xl font-bold text-black">User Management</h2>
+            </div>
+            
+            <Card>
+              <CardHeader>
+                <CardTitle>All Users</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600">User management system will be implemented here.</p>
+              </CardContent>
+            </Card>
           </TabsContent>
         </Tabs>
       </div>
