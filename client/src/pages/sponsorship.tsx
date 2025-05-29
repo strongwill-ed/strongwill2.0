@@ -6,10 +6,12 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Link, useLocation } from "wouter";
-import { Users, Building2, Handshake, MessageSquare, DollarSign, Calendar, Filter } from "lucide-react";
+import { Users, Building2, Handshake, MessageSquare, DollarSign, Calendar, Filter, FileText, Edit } from "lucide-react";
+import { useAuth } from "@/components/auth/auth-provider";
 import type { SeekerProfile, SponsorProfile, SponsorshipAgreement } from "@shared/schema";
 
 export default function SponsorshipPage() {
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState("overview");
   const [countryFilter, setCountryFilter] = useState("all");
   const [sportFilter, setSportFilter] = useState("all");
@@ -216,6 +218,50 @@ export default function SponsorshipPage() {
                 </CardContent>
               </Card>
             </div>
+
+            {/* Quick Actions for Logged In Users */}
+            {user && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Your Sponsorship Activity</CardTitle>
+                  <CardDescription>
+                    Manage your sponsorship offers, requests, and agreements
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex flex-wrap gap-4">
+                    <Button 
+                      variant="outline" 
+                      onClick={() => setActiveTab("agreements")}
+                      className="flex items-center"
+                    >
+                      <FileText className="h-4 w-4 mr-2" />
+                      View My Agreements ({agreements.filter((a: any) => 
+                        a.seeker?.userId === user.id || a.sponsor?.userId === user.id
+                      ).length})
+                    </Button>
+                    
+                    {seekerProfiles.some((p: any) => p.userId === user.id) && (
+                      <Link href="/create-seeker-profile">
+                        <Button variant="outline">
+                          <Edit className="h-4 w-4 mr-2" />
+                          Edit Team Profile
+                        </Button>
+                      </Link>
+                    )}
+                    
+                    {sponsorProfiles.some((p: any) => p.userId === user.id) && (
+                      <Link href="/create-sponsor-profile">
+                        <Button variant="outline">
+                          <Edit className="h-4 w-4 mr-2" />
+                          Edit Sponsor Profile
+                        </Button>
+                      </Link>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
             {/* Call to Action */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
