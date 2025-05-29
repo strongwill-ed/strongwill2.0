@@ -353,29 +353,6 @@ export class DatabaseStorage implements IStorage {
           isActive: true,
         }
       ]);
-          isActive: true,
-        },
-        {
-          name: "Team Baseball Cap",
-          description: "Structured cap with embroidered team logo",
-          basePrice: "29.99",
-          imageUrl: "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=400",
-          categoryId: accessoriesCategory.id,
-          sizes: ["One Size"],
-          colors: ["Black", "Navy", "Red", "White"],
-          isActive: true,
-        },
-        {
-          name: "Performance Knee Pads",
-          description: "Lightweight protection for volleyball and basketball",
-          basePrice: "34.99",
-          imageUrl: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400",
-          categoryId: accessoriesCategory.id,
-          sizes: ["S", "M", "L", "XL"],
-          colors: ["Black", "White"],
-          isActive: true,
-        }
-      ]);
 
     console.log('Database seeded successfully');
   }
