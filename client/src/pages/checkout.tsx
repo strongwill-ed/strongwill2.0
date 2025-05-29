@@ -190,13 +190,25 @@ export default function Checkout() {
   };
 
   const onSubmit = async (data: CheckoutFormData) => {
-    if (cartItems.length === 0) {
-      toast({
-        title: "Cart is empty",
-        description: "Please add items to your cart before checkout.",
-        variant: "destructive",
-      });
-      return;
+    // For group orders, check if group order has items; for regular orders, check cart
+    if (isGroupOrderCheckout) {
+      if (!groupOrderDetails || !groupOrderDetails.items || groupOrderDetails.items.length === 0) {
+        toast({
+          title: "No items to checkout",
+          description: "This group order has no participants yet.",
+          variant: "destructive",
+        });
+        return;
+      }
+    } else {
+      if (cartItems.length === 0) {
+        toast({
+          title: "Cart is empty",
+          description: "Please add items to your cart before checkout.",
+          variant: "destructive",
+        });
+        return;
+      }
     }
 
     // Check shipping deadline for group orders
