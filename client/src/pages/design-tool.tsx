@@ -248,40 +248,26 @@ export default function DesignTool() {
       return;
     }
 
-    const totalItems = getTotalItems();
-    if (totalItems === 0) {
-      toast({
-        title: "Error",
-        description: "Please select at least one item",
-        variant: "destructive",
-      });
-      return;
-    }
-
     try {
-      // Add each size/color combination to group order
-      for (const [key, quantity] of Object.entries(orderItems)) {
-        if (quantity > 0) {
-          const [size, color] = key.split('-');
-          await apiRequest("POST", `/api/group-orders/${selectedGroupOrder}/join`, {
-            userId: 1, // TODO: Get from auth context
-            quantity,
-            size,
-            color,
-            participantName: "Current User", // TODO: Get from auth context
-            participantEmail: "user@example.com", // TODO: Get from auth context
-            nickname: nickname.trim() || null,
-            customizations: JSON.stringify({
-              elements: designElements,
-              designName,
-            }),
-          });
-        }
-      }
+      // For group orders, just add the design without specific quantities
+      // Members will select their own sizes/colors when joining
+      await apiRequest("POST", `/api/group-orders/${selectedGroupOrder}/join`, {
+        userId: 1, // TODO: Get from auth context
+        quantity: 1, // Default quantity for group order design
+        size: "M", // Default size, members will choose their own
+        color: "Black", // Default color, members will choose their own
+        participantName: "Current User", // TODO: Get from auth context
+        participantEmail: "user@example.com", // TODO: Get from auth context
+        nickname: nickname.trim() || null,
+        customizations: JSON.stringify({
+          elements: designElements,
+          designName,
+        }),
+      });
 
       toast({
         title: "Success",
-        description: `${totalItems} item(s) added to group order!`,
+        description: "Design added to group order! Members can now select their sizes and colors.",
       });
     } catch (error) {
       toast({
