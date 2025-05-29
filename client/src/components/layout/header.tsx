@@ -64,6 +64,12 @@ export default function Header() {
 
           {/* Right side actions */}
           <div className="flex items-center space-x-4">
+            {/* Language and Currency Switchers */}
+            <div className="hidden md:flex items-center space-x-2">
+              <LanguageSwitcher />
+              <CurrencySwitcher />
+            </div>
+
             {/* Cart Button */}
             <Button 
               variant="ghost" 
@@ -200,6 +206,15 @@ export default function Header() {
                       <User className="mr-3 h-5 w-5" />
                       Account
                     </Button>
+
+                    {/* Mobile Language and Currency Switchers */}
+                    <div className="px-3 py-2 space-y-3">
+                      <div className="text-sm font-medium text-gray-700">Language & Currency</div>
+                      <div className="flex flex-col space-y-2">
+                        <LanguageSwitcher />
+                        <CurrencySwitcher />
+                      </div>
+                    </div>
                   </div>
                 </div>
               </SheetContent>

@@ -372,21 +372,6 @@ export default function Checkout() {
                         </FormItem>
                       )}
                     />
-
-                    {/* Currency Selection */}
-                    <div className="space-y-2">
-                      <FormLabel>Preferred Currency</FormLabel>
-                      <Select value={currentCurrency} onValueChange={setCurrency}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select currency" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="AUD">🇦🇺 Australian Dollar (AUD)</SelectItem>
-                          <SelectItem value="EUR">🇪🇺 Euro (EUR)</SelectItem>
-                          <SelectItem value="USD">🇺🇸 US Dollar (USD)</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
                   </CardContent>
                 </Card>
 
