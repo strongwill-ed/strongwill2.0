@@ -32,6 +32,15 @@ const joinGroupOrderSchema = insertGroupOrderItemSchema.omit({ groupOrderId: tru
   nickname: z.string().min(1, "Nickname is required")
 });
 
+const editMemberSchema = z.object({
+  participantName: z.string().min(1, "Name is required"),
+  participantEmail: z.string().email("Valid email is required"),
+  quantity: z.number().min(1, "Quantity must be at least 1"),
+  size: z.string().min(1, "Size is required"),
+  color: z.string().min(1, "Color is required"),
+  nickname: z.string().optional(),
+});
+
 export default function GroupOrders() {
   const { toast } = useToast();
   const { user } = useAuth();
@@ -40,6 +49,8 @@ export default function GroupOrders() {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isJoinDialogOpen, setIsJoinDialogOpen] = useState(false);
   const [isManageDialogOpen, setIsManageDialogOpen] = useState(false);
+  const [isEditMemberDialogOpen, setIsEditMemberDialogOpen] = useState(false);
+  const [editingMember, setEditingMember] = useState<GroupOrderItem | null>(null);
 
   const { data: groupOrders = [], isLoading } = useQuery<GroupOrder[]>({
     queryKey: ["/api/group-orders"],
@@ -72,6 +83,18 @@ export default function GroupOrders() {
       quantity: 1,
       participantName: "",
       participantEmail: "",
+    },
+  });
+
+  const editMemberForm = useForm<z.infer<typeof editMemberSchema>>({
+    resolver: zodResolver(editMemberSchema),
+    defaultValues: {
+      participantName: "",
+      participantEmail: "",
+      quantity: 1,
+      size: "",
+      color: "",
+      nickname: "",
     },
   });
 
@@ -148,6 +171,33 @@ export default function GroupOrders() {
       toast({
         title: "Error",
         description: error?.message || "Failed to remove member from group order",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const editMemberMutation = useMutation({
+    mutationFn: async ({ itemId, data }: { itemId: number; data: z.infer<typeof editMemberSchema> }) => {
+      return apiRequest("PATCH", `/api/group-order-items/${itemId}`, data);
+    },
+    onSuccess: () => {
+      toast({
+        title: "Success",
+        description: "Member details updated successfully",
+      });
+      // Refresh all group orders and the specific group order details
+      queryClient.invalidateQueries({ queryKey: ["/api/group-orders"] });
+      if (selectedGroupOrder) {
+        queryClient.invalidateQueries({ queryKey: [`/api/group-orders/${selectedGroupOrder.id}`] });
+      }
+      setIsEditMemberDialogOpen(false);
+      setEditingMember(null);
+      editMemberForm.reset();
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error?.message || "Failed to update member details",
         variant: "destructive",
       });
     },

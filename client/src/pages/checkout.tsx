@@ -642,19 +642,44 @@ export default function Checkout() {
               <CardContent className="space-y-4">
                 {/* Items */}
                 <div className="space-y-3">
-                  {cartItems.map((item) => (
-                    <div key={item.id} className="flex justify-between text-sm">
-                      <div>
-                        <p className="font-medium">{item.product?.name}</p>
-                        <p className="text-gray-500">
-                          {item.size} • {item.color} • Qty: {item.quantity}
+                  {isGroupOrderCheckout && groupOrderDetails ? (
+                    // Show group order items
+                    <>
+                      <div className="border-b pb-2 mb-3">
+                        <p className="font-medium text-sm text-gray-700">Group Order: {groupOrderDetails.name}</p>
+                      </div>
+                      {groupOrderDetails.items?.map((item, index) => {
+                        const product = products.find(p => p.id === groupOrderDetails.productId);
+                        const itemPrice = parseFloat(product?.basePrice || "0") * (item.quantity || 1);
+                        return (
+                          <div key={index} className="flex justify-between text-sm">
+                            <div>
+                              <p className="font-medium">{product?.name}</p>
+                              <p className="text-gray-500">
+                                {item.participantName} • {item.size} • {item.color} • Qty: {item.quantity}
+                              </p>
+                            </div>
+                            <p className="font-medium">${itemPrice.toFixed(2)}</p>
+                          </div>
+                        );
+                      })}
+                    </>
+                  ) : (
+                    // Show regular cart items
+                    cartItems.map((item) => (
+                      <div key={item.id} className="flex justify-between text-sm">
+                        <div>
+                          <p className="font-medium">{item.product?.name}</p>
+                          <p className="text-gray-500">
+                            {item.size} • {item.color} • Qty: {item.quantity}
+                          </p>
+                        </div>
+                        <p className="font-medium">
+                          ${(parseFloat(item.product?.basePrice || "0") * (item.quantity || 1)).toFixed(2)}
                         </p>
                       </div>
-                      <p className="font-medium">
-                        ${(parseFloat(item.product?.basePrice || "0") * (item.quantity || 1)).toFixed(2)}
-                      </p>
-                    </div>
-                  ))}
+                    ))
+                  )}
                 </div>
 
                 <Separator />
