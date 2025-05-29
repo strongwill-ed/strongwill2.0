@@ -19,7 +19,7 @@ import { insertProductSchema, insertProductCategorySchema } from "@shared/schema
 import type { Product, ProductCategory, Order, GroupOrder, Refund } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
 import { z } from "zod";
-import { Plus, Package, ShoppingBag, Users, DollarSign, TrendingUp, Eye, Edit } from "lucide-react";
+import { Plus, Package, ShoppingBag, Users, DollarSign, TrendingUp, Eye, Edit, Trash2, Settings } from "lucide-react";
 import { format } from "date-fns";
 
 const createProductSchema = insertProductSchema.extend({
@@ -60,6 +60,8 @@ export default function Admin() {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [isEditProductOpen, setIsEditProductOpen] = useState(false);
+  const [editingGroupOrder, setEditingGroupOrder] = useState<GroupOrder | null>(null);
+  const [isEditGroupOrderOpen, setIsEditGroupOrderOpen] = useState(false);
 
   // Queries
   const { data: stats } = useQuery<any>({
@@ -210,6 +212,50 @@ export default function Admin() {
       toast({
         title: "Error",
         description: "Failed to update order status",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const deleteGroupOrderMutation = useMutation({
+    mutationFn: async (groupOrderId: number) => {
+      return apiRequest("DELETE", `/api/group-orders/${groupOrderId}`);
+    },
+    onSuccess: () => {
+      toast({
+        title: "Success",
+        description: "Group order deleted successfully!",
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/group-orders"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/stats"] });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to delete group order",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const updateGroupOrderMutation = useMutation({
+    mutationFn: async ({ id, data }: { id: number; data: any }) => {
+      return apiRequest("PUT", `/api/group-orders/${id}`, data);
+    },
+    onSuccess: () => {
+      toast({
+        title: "Success",
+        description: "Group order updated successfully!",
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/group-orders"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/stats"] });
+      setIsEditGroupOrderOpen(false);
+      setEditingGroupOrder(null);
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to update group order",
         variant: "destructive",
       });
     },
@@ -958,6 +1004,33 @@ export default function Admin() {
                         <div className="text-sm text-gray-600">
                           Deadline: {format(new Date(groupOrder.deadline), "MMM dd, yyyy")}
                         </div>
+                        
+                        {/* Admin Controls */}
+                        <div className="flex space-x-2 mt-4">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              setEditingGroupOrder(groupOrder);
+                              setIsEditGroupOrderOpen(true);
+                            }}
+                          >
+                            <Edit className="h-4 w-4 mr-1" />
+                            Edit
+                          </Button>
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            onClick={() => {
+                              if (confirm("Are you sure you want to delete this group order? This action cannot be undone.")) {
+                                deleteGroupOrderMutation.mutate(groupOrder.id);
+                              }
+                            }}
+                          >
+                            <Trash2 className="h-4 w-4 mr-1" />
+                            Delete
+                          </Button>
+                        </div>
                       </div>
                     </CardContent>
                   </Card>
@@ -965,6 +1038,109 @@ export default function Admin() {
               })}
             </div>
           </TabsContent>
+
+          {/* Edit Group Order Dialog */}
+          <Dialog open={isEditGroupOrderOpen} onOpenChange={setIsEditGroupOrderOpen}>
+            <DialogContent className="sm:max-w-md">
+              <DialogHeader>
+                <DialogTitle>Edit Group Order</DialogTitle>
+              </DialogHeader>
+              {editingGroupOrder && (
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="edit-name">Name</Label>
+                    <Input
+                      id="edit-name"
+                      defaultValue={editingGroupOrder.name}
+                      onChange={(e) => {
+                        setEditingGroupOrder({
+                          ...editingGroupOrder,
+                          name: e.target.value
+                        });
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="edit-deadline">Deadline</Label>
+                    <Input
+                      id="edit-deadline"
+                      type="datetime-local"
+                      defaultValue={new Date(editingGroupOrder.deadline).toISOString().slice(0, 16)}
+                      onChange={(e) => {
+                        setEditingGroupOrder({
+                          ...editingGroupOrder,
+                          deadline: new Date(e.target.value)
+                        });
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="edit-minimum">Minimum Quantity</Label>
+                    <Input
+                      id="edit-minimum"
+                      type="number"
+                      defaultValue={editingGroupOrder.minimumQuantity}
+                      onChange={(e) => {
+                        setEditingGroupOrder({
+                          ...editingGroupOrder,
+                          minimumQuantity: parseInt(e.target.value)
+                        });
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="edit-status">Status</Label>
+                    <Select
+                      defaultValue={editingGroupOrder.status || "active"}
+                      onValueChange={(value) => {
+                        setEditingGroupOrder({
+                          ...editingGroupOrder,
+                          status: value
+                        });
+                      }}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="active">Active</SelectItem>
+                        <SelectItem value="completed">Completed</SelectItem>
+                        <SelectItem value="cancelled">Cancelled</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="flex space-x-2">
+                    <Button
+                      onClick={() => {
+                        updateGroupOrderMutation.mutate({
+                          id: editingGroupOrder.id,
+                          data: {
+                            name: editingGroupOrder.name,
+                            deadline: editingGroupOrder.deadline,
+                            minimumQuantity: editingGroupOrder.minimumQuantity,
+                            status: editingGroupOrder.status
+                          }
+                        });
+                      }}
+                      disabled={updateGroupOrderMutation.isPending}
+                      className="flex-1"
+                    >
+                      {updateGroupOrderMutation.isPending ? "Saving..." : "Save Changes"}
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        setIsEditGroupOrderOpen(false);
+                        setEditingGroupOrder(null);
+                      }}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </DialogContent>
+          </Dialog>
 
           {/* Analytics Tab */}
           <TabsContent value="analytics" className="space-y-6">
