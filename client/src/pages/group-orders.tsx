@@ -132,14 +132,19 @@ export default function GroupOrders() {
       
       return result;
     },
-    onSuccess: () => {
+    onSuccess: (groupOrder: any) => {
       toast({
         title: "Success",
-        description: "Group order created successfully!",
+        description: "Group order created successfully! Redirecting to design tool...",
       });
       queryClient.invalidateQueries({ queryKey: ["/api/group-orders"] });
       setIsCreateDialogOpen(false);
       createGroupOrderForm.reset();
+      
+      // Redirect to design tool with group order context
+      setTimeout(() => {
+        window.location.href = `/design-tool?addToGroupOrder=true&groupOrderId=${groupOrder.id}&groupOrderName=${encodeURIComponent(groupOrder.name)}`;
+      }, 1000);
     },
     onError: (error: Error) => {
       if (error.message.startsWith("ACCOUNT_EXISTS:")) {

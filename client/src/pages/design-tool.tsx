@@ -40,6 +40,7 @@ export default function DesignTool() {
   const groupOrderId = urlParams.get("groupOrderId");
   const groupOrderName = urlParams.get("groupOrderName");
   const returnTo = urlParams.get("returnTo");
+  const addToGroupOrderParam = urlParams.get("addToGroupOrder") === "true";
   const isGroupOrderMode = !!groupOrderId;
   
   const [selectedProduct, setSelectedProduct] = useState<number | null>(
@@ -51,8 +52,10 @@ export default function DesignTool() {
   
   // Cart configuration state
   const [orderItems, setOrderItems] = useState<{[key: string]: number}>({});
-  const [addToGroupOrder, setAddToGroupOrder] = useState(false);
-  const [selectedGroupOrder, setSelectedGroupOrder] = useState<number | null>(null);
+  const [addToGroupOrder, setAddToGroupOrder] = useState(addToGroupOrderParam);
+  const [selectedGroupOrder, setSelectedGroupOrder] = useState<number | null>(
+    groupOrderId ? parseInt(groupOrderId) : null
+  );
   const [nickname, setNickname] = useState("");
   
   // Text tool state
