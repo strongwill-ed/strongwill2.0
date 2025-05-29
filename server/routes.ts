@@ -12,6 +12,7 @@ import {
   insertNewsletterSubscriptionSchema, type InsertGroupOrder
 } from "@shared/schema";
 import { z } from "zod";
+import { emailService } from "./email";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Authentication endpoints
@@ -853,6 +854,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Order not found" });
       }
 
+      // Send order confirmation email
+      try {
+        // Get order items for email
+        const orderItems = await storage.getOrderItems(orderId);
+        const user = await storage.getUser(updatedOrder.userId);
+        
+        if (user && user.email) {
+          const items = await Promise.all(
+            orderItems.map(async (item) => {
+              const product = await storage.getProduct(item.productId);
+              return {
+                name: product?.name || 'Product',
+                quantity: item.quantity,
+                price: item.price
+              };
+            })
+          );
+
+          await emailService.sendOrderConfirmation({
+            customerEmail: user.email,
+            customerName: user.username,
+            orderId: updatedOrder.id,
+            totalAmount: updatedOrder.totalAmount,
+            items
+          });
+        }
+      } catch (emailError) {
+        console.error('Failed to send order confirmation email:', emailError);
+        // Don't fail the order confirmation if email fails
+      }
+
       res.json({ 
         message: "Payment confirmed successfully",
         order: updatedOrder 
@@ -1392,6 +1424,122 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(200).json({ message: "Message marked as read" });
     } catch (error) {
       res.status(500).json({ message: "Failed to mark message as read" });
+    }
+  });
+
+  // Newsletter Routes
+  app.post("/api/newsletter/subscribe", async (req, res) => {
+    try {
+      const subscriptionData = insertNewsletterSubscriptionSchema.parse(req.body);
+      const subscription = await storage.createNewsletterSubscription(subscriptionData);
+      
+      // Send welcome email
+      try {
+        await emailService.sendNewsletterConfirmation(subscriptionData.email);
+      } catch (emailError) {
+        console.error('Failed to send newsletter confirmation email:', emailError);
+        // Don't fail the subscription if email fails
+      }
+      
+      res.status(201).json({ message: "Successfully subscribed to newsletter", subscription });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ message: "Invalid subscription data", errors: error.errors });
+      } else {
+        res.status(500).json({ message: "Failed to subscribe to newsletter" });
+      }
+    }
+  });
+
+  // Email Management Routes
+  app.get("/api/admin/email-templates", async (req, res) => {
+    try {
+      const templates = await storage.getAdminSettings();
+      const emailTemplates = templates.filter(setting => setting.key.startsWith('email_template_'));
+      res.json(emailTemplates);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch email templates" });
+    }
+  });
+
+  app.post("/api/admin/email-templates/:type", async (req, res) => {
+    try {
+      const { type } = req.params;
+      const { subject, html, text } = req.body;
+      
+      const template = { subject, html, text };
+      await emailService.saveEmailTemplate(type, template);
+      
+      res.json({ message: "Email template saved successfully" });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to save email template" });
+    }
+  });
+
+  // Bulk Product Management Routes
+  app.get("/api/admin/products/bulk", async (req, res) => {
+    try {
+      const products = await storage.getProducts();
+      const categories = await storage.getProductCategories();
+      
+      res.json({ products, categories });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch products for bulk management" });
+    }
+  });
+
+  app.patch("/api/admin/products/bulk", async (req, res) => {
+    try {
+      const { updates } = req.body; // Array of { id, updates }
+      
+      const results = await Promise.all(
+        updates.map(async ({ id, ...productUpdates }: any) => {
+          try {
+            return await storage.updateProduct(id, productUpdates);
+          } catch (error) {
+            console.error(`Failed to update product ${id}:`, error);
+            return null;
+          }
+        })
+      );
+      
+      const successful = results.filter(result => result !== null).length;
+      
+      res.json({ 
+        message: `Successfully updated ${successful} out of ${updates.length} products`,
+        successful,
+        total: updates.length
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to perform bulk product update" });
+    }
+  });
+
+  app.post("/api/admin/products/bulk-import", async (req, res) => {
+    try {
+      const { products } = req.body; // Array of product data
+      
+      const results = await Promise.all(
+        products.map(async (productData: any) => {
+          try {
+            const validatedProduct = insertProductSchema.parse(productData);
+            return await storage.createProduct(validatedProduct);
+          } catch (error) {
+            console.error('Failed to import product:', error);
+            return null;
+          }
+        })
+      );
+      
+      const successful = results.filter(result => result !== null).length;
+      
+      res.json({ 
+        message: `Successfully imported ${successful} out of ${products.length} products`,
+        successful,
+        total: products.length
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to import products" });
     }
   });
 
