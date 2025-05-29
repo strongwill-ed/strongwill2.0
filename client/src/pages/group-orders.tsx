@@ -534,6 +534,27 @@ export default function GroupOrders() {
                   )}
                 />
 
+                <FormField
+                  control={joinGroupOrderForm.control}
+                  name="nickname"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Nickname (Optional)</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          placeholder="Enter team nickname (e.g., Captain, Striker)"
+                          maxLength={50}
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        This will help identify you in the team order
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
                 <Button 
                   type="submit" 
                   className="w-full btn-primary"
