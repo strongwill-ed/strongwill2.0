@@ -35,6 +35,8 @@ export default function Admin() {
   const [isCreateProductOpen, setIsCreateProductOpen] = useState(false);
   const [isCreateCategoryOpen, setIsCreateCategoryOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [isEditProductOpen, setIsEditProductOpen] = useState(false);
 
   // Queries
   const { data: stats } = useQuery<any>({
@@ -82,6 +84,20 @@ export default function Admin() {
       name: "",
       description: "",
       imageUrl: "",
+    },
+  });
+
+  const editProductForm = useForm<z.infer<typeof createProductSchema>>({
+    resolver: zodResolver(createProductSchema),
+    defaultValues: {
+      name: "",
+      description: "",
+      categoryId: undefined,
+      basePrice: "0.00",
+      imageUrl: "",
+      sizes: [],
+      colors: [],
+      isActive: true,
     },
   });
 
@@ -192,10 +208,11 @@ export default function Admin() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-8">
+          <TabsList className="grid w-full grid-cols-9">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="products">Products</TabsTrigger>
             <TabsTrigger value="orders">Orders</TabsTrigger>
+            <TabsTrigger value="refunds">Refunds</TabsTrigger>
             <TabsTrigger value="group-orders">Group Orders</TabsTrigger>
             <TabsTrigger value="pages">Pages</TabsTrigger>
             <TabsTrigger value="blog">Blog</TabsTrigger>
@@ -572,7 +589,14 @@ export default function Admin() {
                             </Badge>
                           </TableCell>
                           <TableCell>
-                            <Button variant="ghost" size="sm">
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              onClick={() => {
+                                setEditingProduct(product);
+                                setIsEditProductOpen(true);
+                              }}
+                            >
                               <Edit className="h-4 w-4" />
                             </Button>
                           </TableCell>
