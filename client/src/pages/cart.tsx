@@ -17,8 +17,8 @@ export default function Cart() {
 
   // Fetch available sponsorship credits for authenticated users
   const { data: sponsorshipCredits = [] } = useQuery<SponsorshipCredit[]>({
-    queryKey: ["/api/sponsorship-credits", user?.id],
-    enabled: !!user?.id,
+    queryKey: ["/api/user/sponsorship-credits"],
+    enabled: !!user,
   });
 
   const handleQuantityChange = (id: number, newQuantity: number) => {
