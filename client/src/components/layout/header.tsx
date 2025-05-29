@@ -43,10 +43,10 @@ export default function Header() {
           </div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-6">
+          <nav className="hidden md:flex items-center space-x-8">
             {navigation.map((item) => (
               <Link key={item.name} href={item.href}>
-                <span className={`px-3 py-2 text-sm font-medium transition-colors cursor-pointer ${
+                <span className={`px-4 py-2 text-sm font-medium transition-colors cursor-pointer text-center block ${
                   isActiveLink(item.href)
                     ? "text-black border-b-2 border-black"
                     : "text-gray-600 hover:text-black"

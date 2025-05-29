@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Input } from "@/components/ui/input";
 import ProductCard from "@/components/product/product-card";
 import AddToCartModal from "@/components/product/add-to-cart-modal";
+import SEOHead from "@/components/seo/seo-head";
 import type { Product, ProductCategory } from "@shared/schema";
 import { Search, Filter } from "lucide-react";
 
