@@ -129,21 +129,21 @@ export function NewsletterSubscription({ variant = "default", className = "" }: 
       <div className="max-w-4xl mx-auto">
         <div className="grid md:grid-cols-2 gap-6 items-center">
           <div className="space-y-3">
-            <h2 className="text-3xl font-bold">
+            <h2 className="text-2xl font-bold">
               <span className="font-black">STRONGWILL</span>{" "}
               <span className="font-normal">SPORTS</span> Newsletter
             </h2>
-            <p className="text-gray-300 text-base">
-              Get exclusive access to new product launches, training guides, and special offers for serious athletes.
+            <p className="text-gray-300 text-sm">
+              Get exclusive access to new product launches, training guides, and special offers.
             </p>
-            <div className="bg-white/10 rounded-lg p-3 mb-3">
-              <p className="text-white font-semibold mb-1">🎁 Limited Time Offer</p>
-              <p className="text-gray-300 text-sm">
+            <div className="bg-white/10 rounded-lg p-2">
+              <p className="text-white font-semibold text-sm mb-1">🎁 Limited Time Offer</p>
+              <p className="text-gray-300 text-xs">
                 Sign up now and receive <span className="text-white font-bold">one free custom item</span> with your first order!
-                <span className="text-xs block mt-1 text-gray-400">*Terms and conditions apply</span>
+                <span className="text-xs block text-gray-400">*Terms and conditions apply</span>
               </p>
             </div>
-            <ul className="space-y-1 text-sm text-gray-400">
+            <ul className="space-y-0.5 text-xs text-gray-400">
               <li>• Early access to new custom apparel</li>
               <li>• Training tips from professional athletes</li>
               <li>• Exclusive discounts and promotions</li>
