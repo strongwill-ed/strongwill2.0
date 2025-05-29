@@ -11,7 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useCart } from "@/hooks/use-cart";
 import DesignCanvas from "@/components/design/design-canvas";
 import { getApparelTemplate } from "@/components/design/apparel-templates";
-import type { Product, Design, InsertDesign } from "@shared/schema";
+import type { Product, Design, InsertDesign, GroupOrder } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
 import { Save, ShoppingCart, Download, Undo, Redo, Type, Image, Palette } from "lucide-react";
 
@@ -69,7 +69,7 @@ export default function DesignTool() {
     enabled: !!selectedProduct,
   });
 
-  const { data: groupOrders = [] } = useQuery({
+  const { data: groupOrders = [] } = useQuery<GroupOrder[]>({
     queryKey: ["/api/group-orders"],
   });
 
