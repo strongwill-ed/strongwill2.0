@@ -15,15 +15,16 @@ import gymTrainingImage from "@assets/Gymwear-Training.jpg";
 function DynamicText() {
   const words = [
     "Athletic",
-    "Team", 
+    "Team",
+    "Graduation",
     "Club",
     "Training",
     "Squad",
     "Performance",
     "Competition",
+    "Class",
     "Custom",
     "Class",
-    "Graduation",
     "Celebration",
     "Winners",
     "League"
