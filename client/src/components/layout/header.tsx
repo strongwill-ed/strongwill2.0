@@ -84,15 +84,34 @@ export default function Header() {
                   <User className="h-5 w-5" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuContent align="end" className="w-56">
                 {user ? (
                   <>
                     <div className="px-2 py-1.5 text-sm font-medium text-gray-900">
                       {user.username}
                     </div>
                     <div className="px-2 py-1.5 text-xs text-gray-500">
-                      {user.email}
+                      {user.email} • {user.role}
                     </div>
+                    <div className="border-t my-1"></div>
+                    <Link href="/profile">
+                      <DropdownMenuItem>
+                        <User className="h-4 w-4 mr-2" />
+                        View Profile
+                      </DropdownMenuItem>
+                    </Link>
+                    <Link href="/orders">
+                      <DropdownMenuItem>
+                        <Settings className="h-4 w-4 mr-2" />
+                        Order History
+                      </DropdownMenuItem>
+                    </Link>
+                    <Link href="/settings">
+                      <DropdownMenuItem>
+                        <Settings className="h-4 w-4 mr-2" />
+                        Account Settings
+                      </DropdownMenuItem>
+                    </Link>
                     <div className="border-t my-1"></div>
                     <DropdownMenuItem onClick={logout}>
                       <LogOut className="h-4 w-4 mr-2" />
@@ -100,10 +119,20 @@ export default function Header() {
                     </DropdownMenuItem>
                   </>
                 ) : (
-                  <DropdownMenuItem>
-                    <User className="h-4 w-4 mr-2" />
-                    Login Required
-                  </DropdownMenuItem>
+                  <>
+                    <Link href="/login">
+                      <DropdownMenuItem>
+                        <User className="h-4 w-4 mr-2" />
+                        Login
+                      </DropdownMenuItem>
+                    </Link>
+                    <Link href="/register">
+                      <DropdownMenuItem>
+                        <User className="h-4 w-4 mr-2" />
+                        Sign Up
+                      </DropdownMenuItem>
+                    </Link>
+                  </>
                 )}
               </DropdownMenuContent>
             </DropdownMenu>
