@@ -198,7 +198,7 @@ export class DatabaseStorage implements IStorage {
         // STARTER PACK - Entry-level pricing
         {
           name: "Basic Training Singlet",
-          description: "Affordable entry-level wrestling singlet perfect for beginners",
+          description: "Engineered with moisture-wicking fabric technology and flatlock seams for unrestricted movement. The perfect foundation for developing athletes seeking reliable performance without compromise.",
           basePrice: "34.99",
           imageUrl: "https://images.unsplash.com/photo-1544966503-7cc5ac882d5f?w=400",
           categoryId: starterCategory.id,
@@ -208,7 +208,7 @@ export class DatabaseStorage implements IStorage {
         },
         {
           name: "Essential Training Tee",
-          description: "Basic moisture-wicking shirt for practice sessions",
+          description: "Built with advanced Dri-FIT technology featuring ultra-lightweight polyester that moves sweat away from your skin for faster evaporation. Strategic mesh ventilation zones enhance breathability during high-intensity training.",
           basePrice: "19.99",
           imageUrl: "https://images.unsplash.com/photo-1583743814966-8936f37f6e3a?w=400",
           categoryId: starterCategory.id,
@@ -220,7 +220,7 @@ export class DatabaseStorage implements IStorage {
         // WRESTLING SINGLETS - Core category
         {
           name: "Competition Pro Singlet",
-          description: "Tournament-grade wrestling singlet with advanced moisture management",
+          description: "Precision-engineered with CloudTec compression technology and four-way stretch fabric. Features anti-microbial treatment, reinforced stress points, and tournament-approved construction for elite performance under pressure.",
           basePrice: "89.99",
           imageUrl: "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=400",
           categoryId: singletCategory.id,
@@ -230,7 +230,7 @@ export class DatabaseStorage implements IStorage {
         },
         {
           name: "Classic Wrestling Singlet",
-          description: "Premium quality singlet for competition and training", 
+          description: "Crafted with Arc'teryx-inspired precision using high-performance compression fabric and seamless construction. Features moisture-management technology and ergonomic design for optimal mobility and endurance in competition.", 
           basePrice: "64.99",
           imageUrl: "https://images.unsplash.com/photo-1595078475328-1ab05d0a6a0e?w=400",
           categoryId: singletCategory.id,
@@ -240,7 +240,7 @@ export class DatabaseStorage implements IStorage {
         },
         {
           name: "Youth Competition Singlet", 
-          description: "Performance singlet designed specifically for young wrestlers",
+          description: "Engineered for developing champions with ASICS GEL technology integration and youth-specific ergonomics. Features adaptive fit technology that grows with young athletes while maintaining professional-grade performance standards.",
           basePrice: "49.99",
           imageUrl: "https://images.unsplash.com/photo-1544966503-7cc5ac882d5f?w=400",
           categoryId: singletCategory.id,
@@ -252,7 +252,7 @@ export class DatabaseStorage implements IStorage {
         // TEAM UNIFORMS - Higher AOV bundles
         {
           name: "Basketball Team Package",
-          description: "Complete uniform set: reversible jersey + shorts + warm-up shirt",
+          description: "Elite performance system featuring Nike Dri-FIT ADV technology in reversible jersey construction. Includes compression shorts with targeted ventilation zones and premium warm-up shirt with thermal regulation properties.",
           basePrice: "94.99",
           imageUrl: "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=400",
           categoryId: uniformCategory.id,
@@ -284,7 +284,7 @@ export class DatabaseStorage implements IStorage {
         // TRAINING ESSENTIALS - Mid-tier
         {
           name: "Performance Training Shirt",
-          description: "Advanced moisture-wicking fabric with anti-odor technology",
+          description: "Engineered with On Running's CloudTec cushioning principles and ultra-breathable mesh construction. Features Polygiene StayFresh technology for permanent odor control and adaptive thermal regulation for peak performance.",
           basePrice: "39.99",
           imageUrl: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400",
           categoryId: trainwearCategory.id,
@@ -326,7 +326,7 @@ export class DatabaseStorage implements IStorage {
         // ELITE COLLECTION - Premium pricing
         {
           name: "Elite Competition Singlet",
-          description: "Championship-level singlet with cutting-edge fabric technology",
+          description: "Pinnacle of athletic engineering featuring Arc'teryx-grade materials with Thermoregulation Pro technology. Constructed with titanium-infused compression fibers and biomechanical precision mapping for unparalleled competitive advantage.",
           basePrice: "124.99",
           imageUrl: "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=400",
           categoryId: premiumCategory.id,
@@ -336,7 +336,7 @@ export class DatabaseStorage implements IStorage {
         },
         {
           name: "Pro Team Warm-Up Set",
-          description: "Premium matching jacket and pants for professional teams",
+          description: "Championship-grade thermal regulation system with Nike Tech Fleece construction and adaptive climate control. Features wind-resistant outer shell with moisture-wicking interior and articulated design for unrestricted movement during pre-competition preparation.",
           basePrice: "149.99",
           imageUrl: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=400",
           categoryId: premiumCategory.id,
