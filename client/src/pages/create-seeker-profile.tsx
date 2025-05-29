@@ -75,6 +75,7 @@ export default function CreateSeekerProfile() {
       description: "",
       fundingGoal: "",
       website: "",
+      logoUrl: "",
       socialMedia: null,
       isAnonymous: false,
       isActive: true,
@@ -299,6 +300,38 @@ export default function CreateSeekerProfile() {
                         <FormControl>
                           <Input placeholder="https://yourteam.com" {...field} />
                         </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="logoUrl"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Team Logo URL (Optional)</FormLabel>
+                        <FormControl>
+                          <Input placeholder="https://yourteam.com/logo.png" {...field} />
+                        </FormControl>
+                        <p className="text-sm text-gray-500 mt-1">
+                          Upload your team logo to showcase your identity to potential sponsors. Use a high-quality PNG or SVG with transparent background.
+                        </p>
+                        {field.value && (
+                          <div className="mt-2">
+                            <label className="text-sm font-medium text-gray-500">Logo Preview:</label>
+                            <div className="mt-1 p-4 border rounded-lg bg-gray-50">
+                              <img 
+                                src={field.value} 
+                                alt="Team Logo" 
+                                className="h-16 w-auto object-contain"
+                                onError={(e) => {
+                                  e.currentTarget.style.display = 'none';
+                                }}
+                              />
+                            </div>
+                          </div>
+                        )}
                         <FormMessage />
                       </FormItem>
                     )}
