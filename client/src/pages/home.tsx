@@ -23,7 +23,7 @@ export default function Home() {
               Design Your <span className="font-logo italic">Perfect</span> Athletic Apparel
             </h1>
             <p className="text-lg md:text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
-              Premium custom sports apparel with our advanced 2D design tool. Perfect for teams, clubs, and individual athletes.
+              Premium custom sports apparel with our advanced design tool. Perfect for teams, clubs, and individual athletes.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button 
@@ -110,7 +110,7 @@ export default function Home() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
               <h2 className="text-3xl md:text-4xl font-bold text-black mb-6">
-                Advanced 2D Design Tool
+                Advanced Design Tool
               </h2>
               <p className="text-lg text-gray-600 mb-8">
                 Create professional designs with our intuitive design interface. Add text, graphics, and customize colors with precision.
