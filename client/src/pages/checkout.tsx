@@ -620,7 +620,7 @@ export default function Checkout() {
                         </p>
                       </div>
                       <p className="font-medium">
-                        ${(parseFloat(item.product?.basePrice || "0") * item.quantity).toFixed(2)}
+                        ${(parseFloat(item.product?.basePrice || "0") * (item.quantity || 1)).toFixed(2)}
                       </p>
                     </div>
                   ))}

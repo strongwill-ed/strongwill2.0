@@ -104,7 +104,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     return cartItems.reduce((total, item) => {
       // Assuming base price of $45 for demo - in real app, fetch from products
       const price = 45; // This should come from product data
-      return total + (price * item.quantity);
+      return total + (price * (item.quantity || 1));
     }, 0);
   }, [cartItems]);
 

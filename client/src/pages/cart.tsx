@@ -93,14 +93,14 @@ export default function Cart() {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
+                          onClick={() => handleQuantityChange(item.id, (item.quantity || 1) - 1)}
                           className="h-8 w-8 p-0"
                         >
                           <Minus className="h-4 w-4" />
                         </Button>
                         <Input
                           type="number"
-                          value={item.quantity}
+                          value={item.quantity || 1}
                           onChange={(e) => handleQuantityChange(item.id, parseInt(e.target.value) || 1)}
                           className="w-16 text-center border-0 bg-transparent"
                           min="1"
@@ -108,7 +108,7 @@ export default function Cart() {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
+                          onClick={() => handleQuantityChange(item.id, (item.quantity || 1) + 1)}
                           className="h-8 w-8 p-0"
                         >
                           <Plus className="h-4 w-4" />

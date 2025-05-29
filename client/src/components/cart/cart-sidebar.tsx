@@ -10,7 +10,7 @@ export default function CartSidebar() {
   const { isCartOpen, toggleCart, cartItems, updateQuantity, removeFromCart, getCartTotal } = useCart();
   const [, setLocation] = useLocation();
 
-  const productIds = [...new Set(cartItems.map(item => item.productId))];
+  const productIds = [...new Set(cartItems.map(item => item.productId).filter(Boolean))];
   
   const { data: products = [] } = useQuery<Product[]>({
     queryKey: ["/api/products"],
@@ -55,8 +55,8 @@ export default function CartSidebar() {
               <div className="flex-1 overflow-y-auto py-6">
                 <div className="space-y-6">
                   {cartItems.map((item) => {
-                    const product = getProduct(item.productId);
-                    const itemTotal = product ? parseFloat(product.basePrice) * item.quantity : 0;
+                    const product = getProduct(item.productId || 0);
+                    const itemTotal = product ? parseFloat(product.basePrice) * (item.quantity || 1) : 0;
 
                     return (
                       <div key={item.id} className="flex items-center space-x-4">
@@ -92,20 +92,20 @@ export default function CartSidebar() {
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => updateQuantity(item.id, Math.max(0, item.quantity - 1))}
+                            onClick={() => updateQuantity(item.id, Math.max(0, (item.quantity || 1) - 1))}
                             className="h-8 w-8 p-0"
                           >
                             <Minus className="h-3 w-3" />
                           </Button>
                           
                           <span className="text-sm font-medium w-8 text-center">
-                            {item.quantity}
+                            {item.quantity || 1}
                           </span>
                           
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                            onClick={() => updateQuantity(item.id, (item.quantity || 1) + 1)}
                             className="h-8 w-8 p-0"
                           >
                             <Plus className="h-3 w-3" />
