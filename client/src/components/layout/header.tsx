@@ -6,6 +6,8 @@ import { useCart } from "@/hooks/use-cart";
 import { useAuth } from "@/components/auth/auth-provider";
 import { Link, useLocation } from "wouter";
 import { Menu, ShoppingCart, User, LogOut, Settings } from "lucide-react";
+import { LanguageSwitcher } from "@/components/ui/language-switcher";
+import { CurrencySwitcher } from "@/components/ui/currency-switcher";
 
 export default function Header() {
   const [location] = useLocation();
