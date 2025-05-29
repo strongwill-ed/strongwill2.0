@@ -169,6 +169,23 @@ export default function SponsorProfile() {
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="md:col-span-2">
+                  {profile.logoUrl && (
+                    <div className="mb-6">
+                      <h3 className="font-semibold mb-2">Company Logo</h3>
+                      <div className="p-4 border rounded-lg bg-gray-50 text-center">
+                        <img 
+                          src={profile.logoUrl} 
+                          alt={`${profile.companyName} Logo`}
+                          className="h-20 w-auto mx-auto object-contain"
+                          onError={(e) => {
+                            e.currentTarget.style.display = 'none';
+                          }}
+                        />
+                        <p className="text-xs text-gray-500 mt-2">This logo will appear on your team's apparel</p>
+                      </div>
+                    </div>
+                  )}
+                  
                   <h3 className="font-semibold mb-2">About</h3>
                   <p className="text-gray-600 mb-4">
                     {profile.description || "No description provided."}
@@ -214,17 +231,50 @@ export default function SponsorProfile() {
                   )}
                 </div>
 
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <h3 className="font-semibold mb-2">Sponsorship Budget</h3>
-                  <div className="text-2xl font-bold text-green-600">
-                    ${profile.sponsorshipBudget ? parseFloat(profile.sponsorshipBudget).toLocaleString() : 'Contact for details'}
+                <div className="space-y-4">
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <h3 className="font-semibold mb-2">Sponsorship Budget</h3>
+                    <div className="text-2xl font-bold text-green-600">
+                      ${profile.sponsorshipBudget ? parseFloat(profile.sponsorshipBudget).toLocaleString() : 'Contact for details'}
+                    </div>
+                    <p className="text-sm text-gray-600 mt-1">
+                      Available for team sponsorships
+                    </p>
                   </div>
-                  <p className="text-sm text-gray-600 mt-1">
-                    Available for team sponsorships
-                  </p>
+
+                  <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                    <h3 className="font-semibold mb-3 text-blue-900">Contact Information</h3>
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <Users className="h-4 w-4 text-blue-600" />
+                        <span className="text-sm font-medium">{profile.contactName}</span>
+                      </div>
+                      {profile.contactPhone && (
+                        <div className="flex items-center gap-2">
+                          <Phone className="h-4 w-4 text-blue-600" />
+                          <a href={`tel:${profile.contactPhone}`} className="text-sm text-blue-600 hover:underline">
+                            {profile.contactPhone}
+                          </a>
+                        </div>
+                      )}
+                      {profile.website && (
+                        <div className="flex items-center gap-2">
+                          <Globe className="h-4 w-4 text-blue-600" />
+                          <a
+                            href={profile.website}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-sm text-blue-600 hover:underline"
+                          >
+                            Visit Website
+                          </a>
+                        </div>
+                      )}
+                    </div>
+                  </div>
                   
                   {profile.targetAudience && (
-                    <div className="mt-4">
+                    <div className="bg-gray-50 p-4 rounded-lg">
                       <h4 className="font-medium mb-1">Target Audience</h4>
                       <p className="text-sm text-gray-600">{profile.targetAudience}</p>
                     </div>
