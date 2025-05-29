@@ -32,6 +32,7 @@ import Header from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import CartSidebar from "@/components/cart/cart-sidebar";
 import { CartProvider } from "@/hooks/use-cart";
+import { NewsletterPopup } from "@/components/newsletter-popup";
 
 function Router() {
   return (
@@ -77,6 +78,7 @@ function App() {
                 </main>
                 <Footer />
                 <CartSidebar />
+                <NewsletterPopup />
                 <Toaster />
               </div>
             </CartProvider>

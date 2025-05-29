@@ -1148,6 +1148,15 @@ export class DatabaseStorage implements IStorage {
     
     return recommendations.map(r => r.product);
   }
+
+  async createNewsletterSubscription(subscriptionData: InsertNewsletterSubscription): Promise<NewsletterSubscription> {
+    await this.ensureInitialized();
+    const [subscription] = await this.db
+      .insert(newsletterSubscriptions)
+      .values(subscriptionData)
+      .returning();
+    return subscription;
+  }
 }
 
 export const storage = new DatabaseStorage();
