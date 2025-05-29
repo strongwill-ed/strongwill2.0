@@ -18,28 +18,18 @@ function DynamicText() {
   const words = t('home.dynamicWords') as string[];
   
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
-  const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setIsVisible(false);
-      
-      setTimeout(() => {
-        setCurrentWordIndex((prev) => (prev + 1) % words.length);
-        setIsVisible(true);
-      }, 300);
+      setCurrentWordIndex((prev) => (prev + 1) % words.length);
     }, 2500);
 
     return () => clearInterval(interval);
   }, [words.length]);
 
   return (
-    <span 
-      className={`transition-all duration-300 ${
-        isVisible ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform -translate-y-2'
-      }`}
-    >
-      {words[currentWordIndex]}
+    <span className="inline-block">
+      {words[currentWordIndex] || 'Athletic'}
     </span>
   );
 }
