@@ -15,44 +15,53 @@ export default function Home() {
 
   return (
     <div className="bg-white">
-      {/* Hero Section */}
-      <section className="relative bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-          <div className="text-center">
-            <h1 className="text-4xl md:text-6xl font-bold text-black mb-6 leading-tight">
-              Design Your <span className="font-logo italic">Perfect</span> Athletic Apparel
-            </h1>
-            <p className="text-lg md:text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
-              Premium custom sports apparel with our advanced design tool. Perfect for teams, clubs, and individual athletes.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button 
-                size="lg" 
-                className="btn-primary"
-                onClick={() => setLocation("/design-tool")}
-              >
-                Start Designing
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-              <Button 
-                variant="outline" 
-                size="lg" 
-                className="btn-secondary"
-                onClick={() => setLocation("/products")}
-              >
-                View Products
-              </Button>
-            </div>
+      {/* Hero Section - Full Page Background */}
+      <section className="relative h-screen flex items-center justify-center overflow-hidden">
+        {/* Background Image */}
+        <div className="absolute inset-0 z-0">
+          <img 
+            src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&h=1200"
+            alt="Athletes in custom gear"
+            className="w-full h-full object-cover"
+          />
+          {/* Dark overlay for text readability */}
+          <div className="absolute inset-0 bg-black/40"></div>
+        </div>
+        
+        {/* Hero Content */}
+        <div className="relative z-10 text-center text-white px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto">
+          <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold mb-6 leading-tight tracking-tight">
+            Design Your <span className="italic font-black">Perfect</span> Athletic Apparel
+          </h1>
+          <p className="text-xl md:text-2xl mb-12 max-w-3xl mx-auto font-light leading-relaxed">
+            Premium custom sports apparel with our advanced design tool. 
+            Perfect for teams, clubs, and individual athletes who demand excellence.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-6 justify-center">
+            <Button 
+              size="lg" 
+              className="bg-white text-black hover:bg-gray-100 font-semibold px-8 py-4 text-lg"
+              onClick={() => setLocation("/design-tool")}
+            >
+              Start Designing
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Button>
+            <Button 
+              variant="outline" 
+              size="lg" 
+              className="border-white text-white hover:bg-white hover:text-black font-semibold px-8 py-4 text-lg"
+              onClick={() => setLocation("/products")}
+            >
+              View Products
+            </Button>
           </div>
         </div>
         
-        {/* Hero Image */}
-        <div className="mt-12">
-          <img 
-            src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&h=600" 
-            alt="Athlete in custom sports apparel" 
-            className="w-full h-96 object-cover grayscale hover:grayscale-0 transition-all duration-500"
-          />
+        {/* Scroll indicator */}
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white animate-bounce">
+          <div className="w-6 h-10 border-2 border-white rounded-full flex justify-center">
+            <div className="w-1 h-3 bg-white rounded-full mt-2 animate-pulse"></div>
+          </div>
         </div>
       </section>
 
