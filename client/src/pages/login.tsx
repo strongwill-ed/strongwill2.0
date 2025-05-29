@@ -49,7 +49,13 @@ export default function Login() {
           title: "Welcome back!",
           description: "You have successfully logged in.",
         });
-        setLocation(redirectTo);
+        
+        // Redirect admin users to admin dashboard, others to specified redirect or sponsorship
+        if (user.role === "admin") {
+          setLocation("/admin");
+        } else {
+          setLocation(redirectTo);
+        }
       } else {
         throw new Error(user.message || "Login failed");
       }

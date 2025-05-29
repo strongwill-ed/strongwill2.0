@@ -31,6 +31,452 @@ const createProductSchema = insertProductSchema.extend({
 
 const createCategorySchema = insertProductCategorySchema;
 
+// Bulk Product Manager Component
+function BulkProductManager() {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<ProductCategory[]>([]);
+  const [selectedProducts, setSelectedProducts] = useState<Set<number>>(new Set());
+  const [filterCategory, setFilterCategory] = useState<string>("all");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+  const [isUpdating, setIsUpdating] = useState(false);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    loadBulkData();
+  }, []);
+
+  const loadBulkData = async () => {
+    try {
+      const response = await apiRequest("GET", "/api/admin/products/bulk");
+      const data = await response.json();
+      setProducts(data.products);
+      setCategories(data.categories);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to load products for bulk management",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const filteredProducts = products.filter(product => {
+    const matchesCategory = filterCategory === "all" || product.categoryId.toString() === filterCategory;
+    const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         product.description?.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
+
+  const handleSelectProduct = (productId: number, checked: boolean) => {
+    const newSelected = new Set(selectedProducts);
+    if (checked) {
+      newSelected.add(productId);
+    } else {
+      newSelected.delete(productId);
+    }
+    setSelectedProducts(newSelected);
+  };
+
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      setSelectedProducts(new Set(filteredProducts.map(p => p.id)));
+    } else {
+      setSelectedProducts(new Set());
+    }
+  };
+
+  const bulkActivate = async () => {
+    if (selectedProducts.size === 0) return;
+    setIsUpdating(true);
+    try {
+      const response = await apiRequest("PATCH", "/api/admin/products/bulk-activate", {
+        productIds: Array.from(selectedProducts)
+      });
+      const result = await response.json();
+      toast({
+        title: "Success",
+        description: result.message,
+      });
+      loadBulkData();
+      setSelectedProducts(new Set());
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update products",
+        variant: "destructive",
+      });
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  const bulkDeactivate = async () => {
+    if (selectedProducts.size === 0) return;
+    setIsUpdating(true);
+    try {
+      const response = await apiRequest("PATCH", "/api/admin/products/bulk-deactivate", {
+        productIds: Array.from(selectedProducts)
+      });
+      const result = await response.json();
+      toast({
+        title: "Success",
+        description: result.message,
+      });
+      loadBulkData();
+      setSelectedProducts(new Set());
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update products",
+        variant: "destructive",
+      });
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  const exportProducts = () => {
+    const dataStr = JSON.stringify(filteredProducts, null, 2);
+    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+    const exportFileDefaultName = 'strongwill-products.json';
+    
+    const linkElement = document.createElement('a');
+    linkElement.setAttribute('href', dataUri);
+    linkElement.setAttribute('download', exportFileDefaultName);
+    linkElement.click();
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center p-8">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <h2 className="text-2xl font-bold">Bulk Product Manager</h2>
+        <p className="text-gray-600">Manage multiple products at once</p>
+      </div>
+
+      {/* Controls */}
+      <div className="flex flex-wrap gap-4 items-center">
+        <Input
+          placeholder="Search products..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-64"
+        />
+        <Select value={filterCategory} onValueChange={setFilterCategory}>
+          <SelectTrigger className="w-48">
+            <SelectValue placeholder="Filter by category" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Categories</SelectItem>
+            {categories.map(category => (
+              <SelectItem key={category.id} value={category.id.toString()}>
+                {category.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        <div className="flex gap-2">
+          <Button 
+            onClick={bulkActivate} 
+            disabled={selectedProducts.size === 0 || isUpdating}
+            className="bg-green-600 text-white hover:bg-green-700"
+          >
+            {isUpdating ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+            Activate Selected ({selectedProducts.size})
+          </Button>
+          
+          <Button 
+            onClick={bulkDeactivate} 
+            disabled={selectedProducts.size === 0 || isUpdating}
+            variant="destructive"
+          >
+            {isUpdating ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+            Deactivate Selected ({selectedProducts.size})
+          </Button>
+          
+          <Button variant="outline" onClick={exportProducts}>
+            <Download className="h-4 w-4 mr-2" />
+            Export ({filteredProducts.length})
+          </Button>
+        </div>
+      </div>
+
+      {/* Select All */}
+      <div className="flex items-center space-x-2">
+        <input
+          type="checkbox"
+          checked={selectedProducts.size === filteredProducts.length && filteredProducts.length > 0}
+          onChange={(e) => handleSelectAll(e.target.checked)}
+          className="rounded"
+        />
+        <label className="text-sm font-medium">
+          Select All ({filteredProducts.length} products)
+        </label>
+      </div>
+
+      {/* Products Table */}
+      <div className="border rounded-lg">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-12">Select</TableHead>
+              <TableHead>Product</TableHead>
+              <TableHead>Category</TableHead>
+              <TableHead>Price</TableHead>
+              <TableHead>Status</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {filteredProducts.map(product => {
+              const category = categories.find(c => c.id === product.categoryId);
+              return (
+                <TableRow key={product.id}>
+                  <TableCell>
+                    <input
+                      type="checkbox"
+                      checked={selectedProducts.has(product.id)}
+                      onChange={(e) => handleSelectProduct(product.id, e.target.checked)}
+                      className="rounded"
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <div>
+                      <p className="font-medium">{product.name}</p>
+                      <p className="text-sm text-gray-500">{product.description}</p>
+                    </div>
+                  </TableCell>
+                  <TableCell>{category?.name}</TableCell>
+                  <TableCell>${product.basePrice}</TableCell>
+                  <TableCell>
+                    <Badge variant={product.isActive ? "default" : "secondary"}>
+                      {product.isActive ? "Active" : "Inactive"}
+                    </Badge>
+                    {product.isOnSale && <Badge variant="destructive" className="ml-2">On Sale</Badge>}
+                  </TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+      </div>
+    </div>
+  );
+}
+
+// Email Template Manager Component
+function EmailTemplateManager() {
+  const [templates, setTemplates] = useState<Record<string, any>>({});
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState<string | null>(null);
+  const { toast } = useToast();
+
+  const templateTypes = [
+    { key: 'order_confirmation', name: 'Order Confirmation', description: 'Sent when an order is confirmed' },
+    { key: 'newsletter_confirmation', name: 'Newsletter Welcome', description: 'Sent when someone subscribes to newsletter' },
+    { key: 'group_order_created', name: 'Group Order Created', description: 'Sent to organizer when group order is created' },
+    { key: 'group_order_invitation', name: 'Group Order Invitation', description: 'Sent to invite members to join group order' },
+    { key: 'sponsorship_inquiry', name: 'Sponsorship Inquiry', description: 'Sent to sponsors when they receive an inquiry' },
+    { key: 'sponsorship_agreement', name: 'Sponsorship Agreement', description: 'Sent when sponsorship agreement is created' },
+  ];
+
+  useEffect(() => {
+    loadTemplates();
+  }, []);
+
+  const loadTemplates = async () => {
+    try {
+      const response = await apiRequest("GET", "/api/admin/email-templates");
+      const data = await response.json();
+      
+      const templatesMap: Record<string, any> = {};
+      data.forEach((template: any) => {
+        const key = template.key.replace('email_template_', '');
+        try {
+          templatesMap[key] = JSON.parse(template.value);
+        } catch {
+          templatesMap[key] = getDefaultTemplate(key);
+        }
+      });
+      
+      setTemplates(templatesMap);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to load email templates",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const getDefaultTemplate = (type: string) => {
+    const defaults: Record<string, any> = {
+      order_confirmation: {
+        subject: 'Order Confirmation - Strongwill Sports',
+        html: `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h1 style="color: #000;">Order Confirmation</h1>
+          <p>Dear {{customerName}},</p>
+          <p>Thank you for your order! Your order #{{orderId}} has been confirmed.</p>
+          <p><strong>Total: ${{totalAmount}}</strong></p>
+          <p>Best regards,<br>Strongwill Sports Team</p>
+        </div>`,
+        text: 'Order Confirmation - Dear {{customerName}}, Thank you for your order #{{orderId}}. Total: ${{totalAmount}}. Best regards, Strongwill Sports Team'
+      },
+      newsletter_confirmation: {
+        subject: 'Welcome to Strongwill Sports Newsletter! ⚡',
+        html: `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h1 style="color: #000;">Welcome to Strongwill Sports! ⚡</h1>
+          <p>Thank you for subscribing to our newsletter!</p>
+          <p><strong>🚀 Free shipping on your first order!</strong></p>
+          <p>Best regards,<br>Strongwill Sports Team</p>
+        </div>`,
+        text: 'Welcome to Strongwill Sports! Thank you for subscribing to our newsletter! Free shipping on your first order!'
+      }
+    };
+    
+    return defaults[type] || { subject: '', html: '', text: '' };
+  };
+
+  const saveTemplate = async (type: string, template: any) => {
+    setIsSaving(type);
+    try {
+      const response = await apiRequest("POST", `/api/admin/email-templates/${type}`, template);
+      
+      if (response.ok) {
+        setTemplates(prev => ({ ...prev, [type]: template }));
+        toast({
+          title: "Success",
+          description: "Email template saved successfully",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to save email template",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSaving(null);
+    }
+  };
+
+  const updateTemplate = (type: string, field: string, value: string) => {
+    setTemplates(prev => ({
+      ...prev,
+      [type]: {
+        ...prev[type],
+        [field]: value
+      }
+    }));
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center p-8">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <div>
+          <h2 className="text-2xl font-bold">Email Template Manager</h2>
+          <p className="text-gray-600">Customize email templates sent to customers</p>
+        </div>
+      </div>
+
+      <Tabs defaultValue={templateTypes[0].key} className="w-full">
+        <TabsList className="grid w-full grid-cols-3 lg:grid-cols-6">
+          {templateTypes.map(template => (
+            <TabsTrigger key={template.key} value={template.key} className="text-xs">
+              {template.name}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+
+        {templateTypes.map(templateType => {
+          const template = templates[templateType.key] || getDefaultTemplate(templateType.key);
+          
+          return (
+            <TabsContent key={templateType.key} value={templateType.key}>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Mail className="h-5 w-5" />
+                    {templateType.name}
+                  </CardTitle>
+                  <p className="text-sm text-gray-600">{templateType.description}</p>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <Label>Subject Line</Label>
+                    <Input
+                      value={template.subject}
+                      onChange={(e) => updateTemplate(templateType.key, 'subject', e.target.value)}
+                      placeholder="Email subject..."
+                    />
+                  </div>
+
+                  <div>
+                    <Label>HTML Content</Label>
+                    <Textarea
+                      value={template.html}
+                      onChange={(e) => updateTemplate(templateType.key, 'html', e.target.value)}
+                      placeholder="HTML email content..."
+                      rows={8}
+                      className="font-mono text-sm"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">
+                      Use variables like: {{customerName}}, {{orderId}}, {{totalAmount}}
+                    </p>
+                  </div>
+
+                  <div>
+                    <Label>Plain Text Content</Label>
+                    <Textarea
+                      value={template.text}
+                      onChange={(e) => updateTemplate(templateType.key, 'text', e.target.value)}
+                      placeholder="Plain text email content..."
+                      rows={4}
+                    />
+                  </div>
+
+                  <Button 
+                    onClick={() => saveTemplate(templateType.key, template)}
+                    disabled={isSaving === templateType.key}
+                    className="bg-black text-white hover:bg-gray-800"
+                  >
+                    {isSaving === templateType.key ? (
+                      <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                    ) : (
+                      <Save className="h-4 w-4 mr-2" />
+                    )}
+                    Save Template
+                  </Button>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          );
+        })}
+      </Tabs>
+    </div>
+  );
+}
+
 export default function Admin() {
   const { user } = useAuth();
   const { toast } = useToast();
@@ -1344,6 +1790,143 @@ export default function Admin() {
             </Card>
           </TabsContent>
         </Tabs>
+
+        {/* Order Details Dialog */}
+        <Dialog open={!!selectedOrder} onOpenChange={() => setSelectedOrder(null)}>
+          <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Order Details - #SW-{selectedOrder?.id}</DialogTitle>
+            </DialogHeader>
+            
+            {selectedOrder && (
+              <div className="space-y-6">
+                {/* Order Summary */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <h3 className="font-semibold mb-2">Order Information</h3>
+                    <div className="space-y-1 text-sm">
+                      <p><span className="font-medium">Order ID:</span> #SW-{selectedOrder.id}</p>
+                      <p><span className="font-medium">Customer Email:</span> {selectedOrder.customerEmail || 'N/A'}</p>
+                      <p><span className="font-medium">User ID:</span> {selectedOrder.userId || 'Guest'}</p>
+                      <p><span className="font-medium">Total Amount:</span> ${selectedOrder.totalAmount}</p>
+                      <p><span className="font-medium">Status:</span> 
+                        <Badge className={`ml-2 ${getStatusColor(selectedOrder.status)}`}>
+                          {selectedOrder.status}
+                        </Badge>
+                      </p>
+                      <p><span className="font-medium">Created:</span> {selectedOrder.createdAt ? format(new Date(selectedOrder.createdAt), "MMM dd, yyyy HH:mm") : 'N/A'}</p>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <h3 className="font-semibold mb-2">Delivery Information</h3>
+                    <div className="space-y-1 text-sm">
+                      <p><span className="font-medium">Shipping Address:</span></p>
+                      <div className="pl-4 text-gray-600">
+                        {selectedOrder.shippingAddress ? (
+                          <div>
+                            <p>{selectedOrder.shippingAddress.name}</p>
+                            <p>{selectedOrder.shippingAddress.address}</p>
+                            <p>{selectedOrder.shippingAddress.city}, {selectedOrder.shippingAddress.state} {selectedOrder.shippingAddress.zipCode}</p>
+                            <p>{selectedOrder.shippingAddress.country}</p>
+                          </div>
+                        ) : (
+                          <p>No shipping address provided</p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Order Items */}
+                <div>
+                  <h3 className="font-semibold mb-3">Order Items</h3>
+                  {selectedOrder.items && selectedOrder.items.length > 0 ? (
+                    <div className="border rounded-lg">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Product</TableHead>
+                            <TableHead>Size</TableHead>
+                            <TableHead>Color</TableHead>
+                            <TableHead>Quantity</TableHead>
+                            <TableHead>Unit Price</TableHead>
+                            <TableHead>Total</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {selectedOrder.items.map((item: any, index: number) => (
+                            <TableRow key={index}>
+                              <TableCell>
+                                <div>
+                                  <p className="font-medium">{item.productName || `Product ${item.productId}`}</p>
+                                  {item.customizations && (
+                                    <p className="text-sm text-gray-600">Custom: {item.customizations}</p>
+                                  )}
+                                </div>
+                              </TableCell>
+                              <TableCell>{item.size || 'N/A'}</TableCell>
+                              <TableCell>{item.color || 'N/A'}</TableCell>
+                              <TableCell>{item.quantity}</TableCell>
+                              <TableCell>${item.unitPrice}</TableCell>
+                              <TableCell>${(parseFloat(item.unitPrice) * item.quantity).toFixed(2)}</TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  ) : (
+                    <p className="text-gray-600 p-4 border rounded-lg">No items found for this order</p>
+                  )}
+                </div>
+
+                {/* Actions */}
+                <div className="flex gap-4 pt-4 border-t">
+                  <Select
+                    value={selectedOrder.status}
+                    onValueChange={(value) => {
+                      // Update order status
+                      const updateStatus = async () => {
+                        try {
+                          await apiRequest("PUT", `/api/orders/${selectedOrder.id}/status`, { status: value });
+                          queryClient.invalidateQueries({ queryKey: ["/api/orders"] });
+                          queryClient.invalidateQueries({ queryKey: ["/api/admin/stats"] });
+                          setSelectedOrder({ ...selectedOrder, status: value });
+                          toast({
+                            title: "Success",
+                            description: "Order status updated successfully",
+                          });
+                        } catch (error) {
+                          toast({
+                            title: "Error",
+                            description: "Failed to update order status",
+                            variant: "destructive",
+                          });
+                        }
+                      };
+                      updateStatus();
+                    }}
+                  >
+                    <SelectTrigger className="w-48">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="pending">Pending</SelectItem>
+                      <SelectItem value="processing">Processing</SelectItem>
+                      <SelectItem value="shipped">Shipped</SelectItem>
+                      <SelectItem value="delivered">Delivered</SelectItem>
+                      <SelectItem value="cancelled">Cancelled</SelectItem>
+                    </SelectContent>
+                  </Select>
+
+                  <Button variant="outline" onClick={() => setSelectedOrder(null)}>
+                    Close
+                  </Button>
+                </div>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );

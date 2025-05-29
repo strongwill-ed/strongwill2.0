@@ -1543,6 +1543,60 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.patch("/api/admin/products/bulk-activate", async (req, res) => {
+    try {
+      const { productIds } = req.body; // Array of product IDs
+      
+      const results = await Promise.all(
+        productIds.map(async (id: number) => {
+          try {
+            return await storage.updateProduct(id, { isActive: true });
+          } catch (error) {
+            console.error(`Failed to activate product ${id}:`, error);
+            return null;
+          }
+        })
+      );
+      
+      const successful = results.filter(result => result !== null).length;
+      
+      res.json({ 
+        message: `Successfully activated ${successful} out of ${productIds.length} products`,
+        successful,
+        total: productIds.length
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to activate products" });
+    }
+  });
+
+  app.patch("/api/admin/products/bulk-deactivate", async (req, res) => {
+    try {
+      const { productIds } = req.body; // Array of product IDs
+      
+      const results = await Promise.all(
+        productIds.map(async (id: number) => {
+          try {
+            return await storage.updateProduct(id, { isActive: false });
+          } catch (error) {
+            console.error(`Failed to deactivate product ${id}:`, error);
+            return null;
+          }
+        })
+      );
+      
+      const successful = results.filter(result => result !== null).length;
+      
+      res.json({ 
+        message: `Successfully deactivated ${successful} out of ${productIds.length} products`,
+        successful,
+        total: productIds.length
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to deactivate products" });
+    }
+  });
+
   // CMS & Admin Panel Routes
 
   // Pages Management
