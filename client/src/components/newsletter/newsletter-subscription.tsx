@@ -155,7 +155,7 @@ export function NewsletterSubscription({ variant = "default", className = "" }: 
             <form onSubmit={handleSubmit} className="space-y-3">
               {/* Limited Time Offer Box */}
               <div className="bg-white text-black p-2 rounded text-xs font-semibold text-center">
-                LIMITED TIME: 15% OFF FIRST ORDER + FREE SHIPPING
+                EXCLUSIVE: FREE SHIPPING ON FIRST ORDER
               </div>
               
               <div className="relative">
