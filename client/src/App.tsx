@@ -23,7 +23,7 @@ import Orders from "@/pages/orders";
 import Login from "@/pages/login";
 import Register from "@/pages/register";
 import Header from "@/components/layout/header";
-import Footer from "@/components/layout/footer";
+import { Footer } from "@/components/layout/footer";
 import CartSidebar from "@/components/cart/cart-sidebar";
 import { CartProvider } from "@/hooks/use-cart";
 
