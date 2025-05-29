@@ -149,7 +149,7 @@ export function NewsletterSubscription({ variant = "default", className = "" }: 
             <form onSubmit={handleSubmit} className="space-y-3">
               {/* Limited Time Offer */}
               <div className="bg-white/10 rounded-lg p-2">
-                <p className="text-white font-semibold text-sm mb-1">🚚 Limited Time Offer</p>
+                <p className="text-white font-semibold text-sm mb-1">⚡ Limited Time Offer</p>
                 <p className="text-gray-300 text-xs">
                   Sign up now and receive <span className="text-white font-bold">free shipping</span> on your first order!
                   <span className="text-xs block text-gray-400">*Terms and conditions apply</span>
