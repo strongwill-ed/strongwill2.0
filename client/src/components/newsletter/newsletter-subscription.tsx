@@ -63,6 +63,9 @@ export function NewsletterSubscription({ variant = "default", className = "" }: 
           <p className="text-sm text-gray-300">
             Get the latest gear, training tips, and exclusive offers delivered to your inbox.
           </p>
+          <p className="text-xs text-yellow-300 font-semibold">
+            🎁 Free custom item with first order! *T&C apply
+          </p>
         </div>
         <form onSubmit={handleSubmit} className="flex gap-2">
           <Input
@@ -134,6 +137,13 @@ export function NewsletterSubscription({ variant = "default", className = "" }: 
               Get exclusive access to new product launches, training guides, 
               and special offers for serious athletes.
             </p>
+            <div className="bg-white/10 rounded-lg p-4 mb-4">
+              <p className="text-white font-semibold mb-2">🎁 Limited Time Offer</p>
+              <p className="text-gray-300 text-sm">
+                Sign up now and receive <span className="text-white font-bold">one free custom item</span> with your first order!
+                <span className="text-xs block mt-1 text-gray-400">*Terms and conditions apply</span>
+              </p>
+            </div>
             <ul className="space-y-2 text-sm text-gray-400">
               <li>• Early access to new wrestling gear</li>
               <li>• Training tips from professional athletes</li>

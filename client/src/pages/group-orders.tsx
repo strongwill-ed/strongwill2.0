@@ -492,7 +492,7 @@ export default function GroupOrders() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Size</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
+                      <Select onValueChange={field.onChange} value={field.value || ""}>
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="Select size" />
@@ -517,7 +517,7 @@ export default function GroupOrders() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Color</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
+                      <Select onValueChange={field.onChange} value={field.value || ""}>
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="Select color" />
