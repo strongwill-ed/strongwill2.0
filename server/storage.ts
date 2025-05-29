@@ -149,8 +149,14 @@ export class DatabaseStorage implements IStorage {
         existingProducts.some(p => !p.imageUrl || p.imageUrl.includes('placeholder'));
       
       if (existingCategories.length === 0 || needsUpdate) {
-        // Clear existing data before reseeding
+        // Clear existing data before reseeding (handle foreign key constraints)
         if (existingProducts.length > 0) {
+          // First delete dependent records
+          await db.delete(groupOrderItems);
+          await db.delete(groupOrders);
+          await db.delete(orderItems);
+          await db.delete(cartItems);
+          await db.delete(designs);
           await db.delete(products);
         }
         if (existingCategories.length > 0) {
@@ -165,54 +171,86 @@ export class DatabaseStorage implements IStorage {
   }
 
   private async seedData() {
-    // Seed categories
-    const [singletCategory, uniformCategory, accessoriesCategory, trainwearCategory, headwearCategory, footwearCategory] = await db
+    // Seed categories - organized by purchase intent and price points
+    const [singletCategory, uniformCategory, trainwearCategory, accessoriesCategory, premiumCategory, starterCategory] = await db
       .insert(productCategories)
       .values([
-        { name: "Singlets", description: "Professional wrestling singlets", imageUrl: null },
-        { name: "Team Uniforms", description: "Complete team uniform sets", imageUrl: null },
-        { name: "Accessories", description: "Sports accessories and equipment", imageUrl: null },
-        { name: "Training Wear", description: "Training and workout apparel", imageUrl: null },
-        { name: "Headwear", description: "Caps, beanies, and headbands", imageUrl: null },
-        { name: "Footwear", description: "Athletic shoes and socks", imageUrl: null }
+        { name: "Wrestling Singlets", description: "Premium competition and training singlets", imageUrl: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400" },
+        { name: "Team Uniforms", description: "Complete uniform solutions for teams", imageUrl: "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=400" },
+        { name: "Training Essentials", description: "Performance training and practice wear", imageUrl: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400" },
+        { name: "Sports Accessories", description: "Essential accessories and gear", imageUrl: "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=400" },
+        { name: "Elite Collection", description: "Premium competition-grade apparel", imageUrl: "https://images.unsplash.com/photo-1544966503-7cc5ac882d5f?w=400" },
+        { name: "Starter Pack", description: "Affordable entry-level options", imageUrl: "https://images.unsplash.com/photo-1506629905607-89fa8ac8c5ba?w=400" }
       ])
       .returning();
 
-    // Seed products
+    // Seed products - optimized for e-commerce conversion with strategic pricing
     await db
       .insert(products)
       .values([
-        // Singlets
+        // STARTER PACK - Entry-level pricing to convert hesitant customers
         {
-          name: "Classic Wrestling Singlet",
-          description: "High-performance wrestling singlet with moisture-wicking fabric",
-          basePrice: "89.99",
+          name: "Basic Training Singlet",
+          description: "Affordable entry-level wrestling singlet perfect for beginners",
+          basePrice: "34.99",
           imageUrl: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400",
-          categoryId: singletCategory.id,
-          sizes: ["XS", "S", "M", "L", "XL", "XXL"],
-          colors: ["Black", "Navy", "Red", "Royal Blue"],
+          categoryId: starterCategory.id,
+          sizes: ["XS", "S", "M", "L", "XL"],
+          colors: ["Navy", "Black"],
           isActive: true,
         },
         {
-          name: "Competition Wrestling Singlet",
-          description: "Professional competition singlet with UWW approval",
-          basePrice: "109.99",
-          imageUrl: "https://images.unsplash.com/photo-1544966503-7cc5ac882d5f?w=400",
-          categoryId: singletCategory.id,
-          sizes: ["XS", "S", "M", "L", "XL", "XXL"],
-          colors: ["Black", "Navy", "Red", "Royal Blue", "Green"],
+          name: "Essential Training Tee",
+          description: "Basic moisture-wicking shirt for practice sessions",
+          basePrice: "19.99",
+          imageUrl: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400",
+          categoryId: starterCategory.id,
+          sizes: ["S", "M", "L", "XL", "XXL"],
+          colors: ["Black", "Navy", "Gray"],
           isActive: true,
         },
 
-        // Team Uniforms
+        // WRESTLING SINGLETS - Core category with price anchoring
         {
-          name: "Team Basketball Uniform",
-          description: "Complete basketball uniform set with jersey and shorts",
-          basePrice: "129.99",
+          name: "Competition Pro Singlet",
+          description: "Tournament-grade wrestling singlet with advanced moisture management",
+          basePrice: "89.99",
+          imageUrl: "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=400",
+          categoryId: singletCategory.id,
+          sizes: ["XS", "S", "M", "L", "XL", "XXL"],
+          colors: ["Navy", "Black", "Red", "Royal Blue"],
+          isActive: true,
+        },
+        {
+          name: "Classic Wrestling Singlet",
+          description: "Premium quality singlet for competition and training", 
+          basePrice: "64.99",
+          imageUrl: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400",
+          categoryId: singletCategory.id,
+          sizes: ["XS", "S", "M", "L", "XL", "XXL"],
+          colors: ["Navy", "Black", "Red", "White"],
+          isActive: true,
+        },
+        {
+          name: "Youth Competition Singlet", 
+          description: "Performance singlet designed specifically for young wrestlers",
+          basePrice: "49.99",
+          imageUrl: "https://images.unsplash.com/photo-1544966503-7cc5ac882d5f?w=400",
+          categoryId: singletCategory.id,
+          sizes: ["XS", "S", "M", "L"],
+          colors: ["Navy", "Black", "Red"],
+          isActive: true,
+        },
+
+        // TEAM UNIFORMS - Higher AOV bundles
+        {
+          name: "Basketball Team Package",
+          description: "Complete uniform set: reversible jersey + shorts + warm-up shirt",
+          basePrice: "94.99",
           imageUrl: "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=400",
           categoryId: uniformCategory.id,
           sizes: ["S", "M", "L", "XL", "XXL"],
-          colors: ["Black/White", "Navy/Gold", "Red/White"],
+          colors: ["White/Navy", "Red/White", "Black/Gold"],
           isActive: true,
         },
         {
@@ -288,15 +326,27 @@ export class DatabaseStorage implements IStorage {
           isActive: true,
         },
 
-        // Headwear
+        // ELITE COLLECTION - Premium pricing with premium positioning
+        {
+          name: "Elite Competition Singlet",
+          description: "Championship-level singlet with cutting-edge fabric technology",
+          basePrice: "124.99",
+          imageUrl: "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=400",
+          categoryId: premiumCategory.id,
+          sizes: ["XS", "S", "M", "L", "XL", "XXL"],
+          colors: ["Black", "Navy", "Red"],
+          isActive: true,
+        },
+
+        // SPORTS ACCESSORIES - Impulse buys and add-ons
         {
           name: "Team Baseball Cap",
-          description: "Structured baseball cap with embroidered designs",
-          basePrice: "24.99",
+          description: "Structured cap with embroidered team logo",
+          basePrice: "29.99",
           imageUrl: "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=400",
-          categoryId: headwearCategory.id,
+          categoryId: accessoriesCategory.id,
           sizes: ["One Size"],
-          colors: ["Black", "Navy", "Red", "White", "Gray"],
+          colors: ["Black", "Navy", "Red", "White"],
           isActive: true,
         },
         {
