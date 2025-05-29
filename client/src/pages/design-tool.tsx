@@ -65,7 +65,7 @@ export default function DesignTool() {
   });
 
   const { data: selectedProductData } = useQuery<Product>({
-    queryKey: ["/api/products", selectedProduct],
+    queryKey: [`/api/products/${selectedProduct}`],
     enabled: !!selectedProduct,
   });
 
