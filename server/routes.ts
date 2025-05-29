@@ -457,17 +457,51 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Group Orders
   app.get("/api/group-orders", async (req, res) => {
     try {
+      // Check if user is authenticated
+      if (!req.session?.userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+
+      const user = await storage.getUser(req.session.userId);
+      if (!user) {
+        return res.status(401).json({ message: "User not found" });
+      }
+
       const { active } = req.query;
       let groupOrders;
-      
-      if (active === 'true') {
-        groupOrders = await storage.getActiveGroupOrders();
+
+      if (user.role === 'admin') {
+        // Admin can see all group orders with creator information
+        if (active === 'true') {
+          groupOrders = await storage.getActiveGroupOrders();
+        } else {
+          groupOrders = await storage.getGroupOrders();
+        }
+        
+        // Add creator information for admin view
+        const groupOrdersWithCreators = await Promise.all(
+          groupOrders.map(async (groupOrder) => {
+            const creator = await storage.getUser(groupOrder.organizerUserId);
+            return {
+              ...groupOrder,
+              creatorUsername: creator?.username || 'Unknown',
+              creatorEmail: creator?.email || 'Unknown'
+            };
+          })
+        );
+        
+        res.json(groupOrdersWithCreators);
       } else {
-        groupOrders = await storage.getGroupOrders();
+        // Regular users only see their own group orders
+        if (active === 'true') {
+          groupOrders = await storage.getActiveGroupOrdersByUser(user.id);
+        } else {
+          groupOrders = await storage.getGroupOrdersByUser(user.id);
+        }
+        res.json(groupOrders);
       }
-      
-      res.json(groupOrders);
     } catch (error) {
+      console.error('Get group orders error:', error);
       res.status(500).json({ message: "Failed to fetch group orders" });
     }
   });

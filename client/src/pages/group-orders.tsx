@@ -236,6 +236,28 @@ export default function GroupOrders() {
     joinGroupOrderMutation.mutate({ groupOrderId: selectedGroupOrder.id, data });
   };
 
+  const onEditMemberSubmit = async (data: z.infer<typeof editMemberSchema>) => {
+    if (editingMember) {
+      editMemberMutation.mutate({
+        itemId: editingMember.id,
+        data,
+      });
+    }
+  };
+
+  const handleEditMember = (member: GroupOrderItem) => {
+    setEditingMember(member);
+    editMemberForm.reset({
+      participantName: member.participantName || "",
+      participantEmail: member.participantEmail || "",
+      quantity: member.quantity || 1,
+      size: member.size || "",
+      color: member.color || "",
+      nickname: member.nickname || "",
+    });
+    setIsEditMemberDialogOpen(true);
+  };
+
   const copyShareLink = (groupOrderId: number) => {
     const link = `${window.location.origin}/group-orders?join=${groupOrderId}`;
     navigator.clipboard.writeText(link);
@@ -588,6 +610,15 @@ export default function GroupOrders() {
                             </div>
                           </div>
                           <div className="flex gap-2">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleEditMember(item)}
+                              title="Edit member details"
+                              className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                            >
+                              <Edit className="h-4 w-4" />
+                            </Button>
                             <Button
                               variant="ghost"
                               size="sm"
