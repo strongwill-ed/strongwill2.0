@@ -256,17 +256,17 @@ export const translations = {
         "Sport",
         "Team",
         "Abschluss",
-        "Verein",
+        "Club",
         "Training",
-        "Mannschaft",
+        "Squad",
         "Leistung",
-        "Wettkampf",
+        "Spiel",
         "Klasse",
         "Champions",
         "Feier",
         "Gewinner",
         "Liga",
-        "Individuell"
+        "Custom"
       ]
     },
 
