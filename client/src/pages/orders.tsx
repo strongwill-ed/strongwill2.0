@@ -154,6 +154,16 @@ export default function Orders() {
                         Need help? <Link href="/contact" className="text-black hover:underline">Contact Support</Link>
                       </div>
                       <div className="flex space-x-2">
+                        {(order.status === 'pending' || order.status === 'processing') && (
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => setLocation(`/sponsorship-order/${order.id}`)}
+                            className="border-green-600 text-green-600 hover:bg-green-50"
+                          >
+                            Apply Sponsorship
+                          </Button>
+                        )}
                         {order.status === 'completed' && (
                           <Button variant="outline" size="sm">
                             Reorder

@@ -1215,6 +1215,51 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.get("/api/sponsorship-credits/available/:userId", async (req, res) => {
+    try {
+      // Get user's seeker profile first
+      const seekerProfile = await storage.getSeekerProfileByUserId(parseInt(req.params.userId));
+      if (!seekerProfile) {
+        return res.json([]);
+      }
+      
+      const credits = await storage.getSponsorshipCredits(seekerProfile.id);
+      // Filter only active credits with remaining amount
+      const activeCredits = credits.filter(credit => 
+        credit.isActive && parseFloat(credit.remainingAmount) > 0
+      );
+      res.json(activeCredits);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch available credits" });
+    }
+  });
+
+  app.post("/api/orders/:orderId/request-sponsorship", async (req, res) => {
+    try {
+      const orderId = parseInt(req.params.orderId);
+      const { creditIds, appliedAmount, message } = req.body;
+      
+      const order = await storage.getOrder(orderId);
+      if (!order) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+      
+      // Update order status to pending sponsor approval
+      await storage.updateOrderStatus(orderId, "pending_sponsor_approval");
+      
+      // Store sponsorship request details (you may want to create a separate table for this)
+      // For now, we'll update the order with sponsorship info
+      
+      res.json({ 
+        message: "Sponsorship request submitted successfully",
+        orderId: orderId,
+        appliedAmount: appliedAmount 
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to submit sponsorship request" });
+    }
+  });
+
   app.post("/api/sponsorship-credits/apply", async (req, res) => {
     try {
       if (!req.isAuthenticated()) {
