@@ -17,7 +17,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Link, useLocation } from "wouter";
 import { apiPost } from "@/lib/api";
 import { apiRequest } from "@/lib/queryClient";
-import { AlertTriangle, CreditCard } from "lucide-react";
+import { AlertTriangle, CreditCard, Plus } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import type { GroupOrder, GroupOrderItem, Product, SeekerProfile, SponsorshipCredit } from "@shared/schema";
@@ -55,6 +55,31 @@ export default function Checkout() {
   const [showDeadlineWarning, setShowDeadlineWarning] = useState(false);
   const [pendingSubmitData, setPendingSubmitData] = useState<CheckoutFormData | null>(null);
 
+  // Mutation for adding recommended products to cart
+  const addToCartMutation = useMutation({
+    mutationFn: async (product: Product) => {
+      return apiRequest("POST", "/api/cart", {
+        productId: product.id,
+        quantity: 1,
+        size: "M",
+        color: "Black",
+      });
+    },
+    onSuccess: () => {
+      toast({
+        title: "Added to Cart",
+        description: "Product added successfully",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to add product to cart",
+        variant: "destructive",
+      });
+    },
+  });
+
   // Get current user
   const { data: user } = useQuery({
     queryKey: ["/api/auth/me"],
@@ -88,6 +113,13 @@ export default function Checkout() {
   const { data: products = [], isLoading: productsLoading } = useQuery<Product[]>({
     queryKey: ["/api/products"],
     enabled: isGroupOrderCheckout,
+  });
+
+  // Get product recommendations for cart items
+  const cartItemIds = cartItems.map(item => item.id);
+  const { data: recommendedProducts = [] } = useQuery<Product[]>({
+    queryKey: ["/api/cart/recommendations", cartItemIds],
+    enabled: cartItems.length > 0 && !isGroupOrderCheckout,
   });
 
   const form = useForm<CheckoutFormData>({
@@ -820,6 +852,35 @@ export default function Checkout() {
                     ))
                   )}
                 </div>
+
+                {/* Product Recommendations */}
+                {recommendedProducts.length > 0 && !isGroupOrderCheckout && (
+                  <>
+                    <Separator />
+                    <div className="space-y-3">
+                      <h4 className="font-medium text-sm">Frequently Bought Together</h4>
+                      <div className="space-y-2">
+                        {recommendedProducts.slice(0, 3).map((product) => (
+                          <div key={product.id} className="flex items-center justify-between p-2 border border-gray-200 dark:border-gray-700 rounded-lg">
+                            <div className="flex-1">
+                              <p className="font-medium text-sm">{product.name}</p>
+                              <p className="text-xs text-gray-500">${product.basePrice}</p>
+                            </div>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="h-7 w-7 p-0"
+                              onClick={() => addToCartMutation.mutate(product)}
+                              disabled={addToCartMutation.isPending}
+                            >
+                              <Plus className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </>
+                )}
 
                 <Separator />
 

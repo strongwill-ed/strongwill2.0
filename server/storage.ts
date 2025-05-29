@@ -1124,14 +1124,14 @@ export class DatabaseStorage implements IStorage {
     if (cartItemIds.length === 0) return [];
     
     // Get cart items to find their product IDs
-    const cartItems = await db
+    const cartItemsData = await db
       .select()
       .from(cartItems)
       .where(eq(cartItems.id, cartItemIds[0])); // Use first cart item for now
     
-    if (cartItems.length === 0) return [];
+    if (cartItemsData.length === 0) return [];
     
-    const productId = cartItems[0].productId;
+    const productId = cartItemsData[0].productId;
     
     // Get recommended products for this product
     const recommendations = await db
