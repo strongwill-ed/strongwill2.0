@@ -19,7 +19,7 @@ import { insertProductSchema, insertProductCategorySchema } from "@shared/schema
 import type { Product, ProductCategory, Order, GroupOrder, Refund } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
 import { z } from "zod";
-import { Plus, Package, ShoppingBag, Users, DollarSign, TrendingUp, Eye, Edit, Trash2, Settings } from "lucide-react";
+import { Plus, Package, ShoppingBag, Users, DollarSign, TrendingUp, Eye, Edit, Trash2, Settings, Mail, Save, Upload, Download, Loader2, X } from "lucide-react";
 import { format } from "date-fns";
 
 const createProductSchema = insertProductSchema.extend({
@@ -327,12 +327,14 @@ export default function Admin() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-9">
+          <TabsList className="grid w-full grid-cols-6 lg:grid-cols-11">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="products">Products</TabsTrigger>
+            <TabsTrigger value="bulk-products">Bulk Products</TabsTrigger>
             <TabsTrigger value="orders">Orders</TabsTrigger>
             <TabsTrigger value="refunds">Refunds</TabsTrigger>
             <TabsTrigger value="group-orders">Group Orders</TabsTrigger>
+            <TabsTrigger value="emails">Email Templates</TabsTrigger>
             <TabsTrigger value="pages">Pages</TabsTrigger>
             <TabsTrigger value="blog">Blog</TabsTrigger>
             <TabsTrigger value="quotes">Quotes</TabsTrigger>
@@ -1258,6 +1260,16 @@ export default function Admin() {
                 </CardContent>
               </Card>
             </div>
+          </TabsContent>
+
+          {/* Bulk Product Management Tab */}
+          <TabsContent value="bulk-products" className="space-y-6">
+            <BulkProductManager />
+          </TabsContent>
+
+          {/* Email Template Management Tab */}
+          <TabsContent value="emails" className="space-y-6">
+            <EmailTemplateManager />
           </TabsContent>
 
           {/* Pages Management Tab */}

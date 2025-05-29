@@ -44,7 +44,8 @@ function DynamicText() {
     "Winners",      // Achievement-focused
     "Graduation",   // Educational milestones
     "Club",         // Community organizations
-    "Celebration"   // Special events
+    "Celebration",  // Special events
+    "Seniors"       // Senior year/graduation focus
   ];
   
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
