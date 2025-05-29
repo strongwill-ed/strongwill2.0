@@ -158,9 +158,11 @@ export default function SponsorshipPage() {
                       <li>• Build lasting community relationships</li>
                     </ul>
                   </div>
-                  <Button className="w-full mt-4">
-                    Become a Sponsor
-                  </Button>
+                  <Link href="/create-sponsor-profile">
+                    <Button className="w-full mt-4">
+                      Become a Sponsor
+                    </Button>
+                  </Link>
                 </CardContent>
               </Card>
             </div>
@@ -169,10 +171,12 @@ export default function SponsorshipPage() {
           <TabsContent value="seekers" className="space-y-6">
             <div className="flex justify-between items-center">
               <h2 className="text-2xl font-bold">Teams Seeking Sponsorship</h2>
-              <Button>
-                <Users className="h-4 w-4 mr-2" />
-                Create Team Profile
-              </Button>
+              <Link href="/create-seeker-profile">
+                <Button>
+                  <Users className="h-4 w-4 mr-2" />
+                  Create Team Profile
+                </Button>
+              </Link>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -221,7 +225,9 @@ export default function SponsorshipPage() {
                   <p className="text-gray-600 mb-4">
                     Be the first team to create a profile and start seeking sponsorship.
                   </p>
-                  <Button>Create Team Profile</Button>
+                  <Link href="/create-seeker-profile">
+                    <Button>Create Team Profile</Button>
+                  </Link>
                 </CardContent>
               </Card>
             )}
@@ -230,10 +236,12 @@ export default function SponsorshipPage() {
           <TabsContent value="sponsors" className="space-y-6">
             <div className="flex justify-between items-center">
               <h2 className="text-2xl font-bold">Active Sponsors</h2>
-              <Button>
-                <Building2 className="h-4 w-4 mr-2" />
-                Become a Sponsor
-              </Button>
+              <Link href="/create-sponsor-profile">
+                <Button>
+                  <Building2 className="h-4 w-4 mr-2" />
+                  Become a Sponsor
+                </Button>
+              </Link>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
