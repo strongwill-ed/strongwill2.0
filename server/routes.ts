@@ -924,13 +924,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.delete("/api/seeker-profiles/:id", async (req, res) => {
     try {
-      if (!req.isAuthenticated() || req.user.username !== 'admin') {
-        return res.status(403).json({ message: "Admin access required" });
+      if (!req.isAuthenticated()) {
+        return res.status(401).json({ message: "Authentication required" });
       }
-      const success = await storage.deleteSeekerProfile(parseInt(req.params.id));
-      if (!success) {
+      
+      const profileId = parseInt(req.params.id);
+      const profile = await storage.getSeekerProfile(profileId);
+      
+      if (!profile) {
         return res.status(404).json({ message: "Seeker profile not found" });
       }
+      
+      // Allow profile owner or admin to delete
+      const isOwner = profile.userId === req.user.id;
+      const isAdmin = req.user.username === 'admin';
+      
+      if (!isOwner && !isAdmin) {
+        return res.status(403).json({ message: "Permission denied" });
+      }
+      
+      const success = await storage.deleteSeekerProfile(profileId);
+      if (!success) {
+        return res.status(500).json({ message: "Failed to delete profile" });
+      }
+      
       res.json({ message: "Seeker profile deleted successfully" });
     } catch (error) {
       res.status(500).json({ message: "Failed to delete seeker profile" });
@@ -1003,13 +1020,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.delete("/api/sponsor-profiles/:id", async (req, res) => {
     try {
-      if (!req.isAuthenticated() || req.user.username !== 'admin') {
-        return res.status(403).json({ message: "Admin access required" });
+      if (!req.isAuthenticated()) {
+        return res.status(401).json({ message: "Authentication required" });
       }
-      const success = await storage.deleteSponsorProfile(parseInt(req.params.id));
-      if (!success) {
+      
+      const profileId = parseInt(req.params.id);
+      const profile = await storage.getSponsorProfile(profileId);
+      
+      if (!profile) {
         return res.status(404).json({ message: "Sponsor profile not found" });
       }
+      
+      // Allow profile owner or admin to delete
+      const isOwner = profile.userId === req.user.id;
+      const isAdmin = req.user.username === 'admin';
+      
+      if (!isOwner && !isAdmin) {
+        return res.status(403).json({ message: "Permission denied" });
+      }
+      
+      const success = await storage.deleteSponsorProfile(profileId);
+      if (!success) {
+        return res.status(500).json({ message: "Failed to delete profile" });
+      }
+      
       res.json({ message: "Sponsor profile deleted successfully" });
     } catch (error) {
       res.status(500).json({ message: "Failed to delete sponsor profile" });

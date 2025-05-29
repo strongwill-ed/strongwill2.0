@@ -8,7 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/components/auth/auth-provider";
 import { apiRequest } from "@/lib/queryClient";
 import type { SeekerProfile, SponsorProfile } from "@shared/schema";
-import { ArrowLeft, Users, Globe, Phone, Mail, DollarSign } from "lucide-react";
+import { ArrowLeft, Users, Globe, Phone, Mail, DollarSign, Trash2 } from "lucide-react";
 import { useState } from "react";
 
 export default function TeamProfile() {
@@ -47,6 +47,24 @@ export default function TeamProfile() {
       toast({
         title: "Error",
         description: "Failed to send sponsorship offer. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const deleteProfileMutation = useMutation({
+    mutationFn: () => apiRequest("DELETE", `/api/seeker-profiles/${profile?.id}`),
+    onSuccess: () => {
+      toast({
+        title: "Profile Deleted",
+        description: "Your team profile has been deleted successfully.",
+      });
+      setLocation("/sponsorship");
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to delete profile. Please try again.",
         variant: "destructive",
       });
     },
@@ -113,6 +131,8 @@ export default function TeamProfile() {
   };
 
   const isOwnProfile = user?.id === profile.userId;
+  const isAdmin = user?.username === 'admin';
+  const canDelete = isOwnProfile || isAdmin;
   const canSponsor = user && !isOwnProfile && sponsorProfile;
 
   return (
@@ -144,15 +164,31 @@ export default function TeamProfile() {
                     <span className="text-gray-600">{profile.organizationType}</span>
                   </div>
                 </div>
-                {canSponsor && (
-                  <Button
-                    onClick={() => setShowSponsorForm(true)}
-                    className="btn-primary"
-                  >
-                    <DollarSign className="h-4 w-4 mr-2" />
-                    Offer Sponsorship
-                  </Button>
-                )}
+                <div className="flex gap-2">
+                  {canSponsor && (
+                    <Button
+                      onClick={() => setShowSponsorForm(true)}
+                      className="btn-primary"
+                    >
+                      <DollarSign className="h-4 w-4 mr-2" />
+                      Offer Sponsorship
+                    </Button>
+                  )}
+                  {canDelete && (
+                    <Button
+                      variant="destructive"
+                      onClick={() => {
+                        if (confirm("Are you sure you want to delete this profile? This action cannot be undone.")) {
+                          deleteProfileMutation.mutate();
+                        }
+                      }}
+                      disabled={deleteProfileMutation.isPending}
+                    >
+                      <Trash2 className="h-4 w-4 mr-2" />
+                      {deleteProfileMutation.isPending ? "Deleting..." : "Delete Profile"}
+                    </Button>
+                  )}
+                </div>
               </div>
             </CardHeader>
             <CardContent>

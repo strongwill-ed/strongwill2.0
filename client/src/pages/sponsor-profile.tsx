@@ -9,7 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/components/auth/auth-provider";
 import { apiRequest } from "@/lib/queryClient";
 import type { SponsorProfile, SeekerProfile } from "@shared/schema";
-import { ArrowLeft, Building2, Globe, Phone, DollarSign, Users } from "lucide-react";
+import { ArrowLeft, Building2, Globe, Phone, DollarSign, Users, Trash2 } from "lucide-react";
 import { useState } from "react";
 
 export default function SponsorProfile() {
