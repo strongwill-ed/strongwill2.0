@@ -184,10 +184,10 @@ export default function SponsorProfile() {
                   {canRequest && (
                     <Button
                       onClick={() => setShowRequestForm(true)}
-                      className="btn-primary"
+                      className="bg-blue-600 hover:bg-blue-700 text-white"
                     >
                       <DollarSign className="h-4 w-4 mr-2" />
-                      Request Sponsorship
+                      Request Partnership
                     </Button>
                   )}
                   {canDelete && (
@@ -276,7 +276,11 @@ export default function SponsorProfile() {
                   <div className="bg-gray-50 p-4 rounded-lg">
                     <h3 className="font-semibold mb-2">Sponsorship Budget</h3>
                     <div className="text-2xl font-bold text-green-600">
-                      {profile.sponsorshipBudget && profile.sponsorshipBudget !== null ? 
+                      {profile.sponsorshipBudget && 
+                       profile.sponsorshipBudget !== null && 
+                       profile.sponsorshipBudget !== "" && 
+                       profile.sponsorshipBudget !== "0" &&
+                       !isNaN(parseFloat(profile.sponsorshipBudget.toString())) ? 
                         `$${parseFloat(profile.sponsorshipBudget.toString()).toLocaleString()}` : 
                         'Contact for details'}
                     </div>

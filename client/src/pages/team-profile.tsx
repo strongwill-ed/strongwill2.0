@@ -251,7 +251,11 @@ export default function TeamProfile() {
                 <div className="bg-gray-50 p-4 rounded-lg">
                   <h3 className="font-semibold mb-2">Funding Goal</h3>
                   <div className="text-2xl font-bold text-green-600">
-                    {profile.fundingGoal && profile.fundingGoal !== null ? 
+                    {profile.fundingGoal && 
+                     profile.fundingGoal !== null && 
+                     profile.fundingGoal !== "" && 
+                     profile.fundingGoal !== "0" &&
+                     !isNaN(parseFloat(profile.fundingGoal.toString())) ? 
                       `$${parseFloat(profile.fundingGoal.toString()).toLocaleString()}` : 
                       'Not specified'}
                   </div>
