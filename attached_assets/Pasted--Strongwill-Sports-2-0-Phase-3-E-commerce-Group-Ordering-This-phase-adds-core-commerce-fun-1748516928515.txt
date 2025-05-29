@@ -1,0 +1,180 @@
+# 🛒 Strongwill Sports 2.0 — Phase 3: E-commerce & Group Ordering
+
+This phase adds core commerce functionality including product pricing, shopping cart, Stripe checkout integration, group ordering workflows, and backend order management.
+
+---
+
+## ✅ Objectives
+
+- Enable product purchase with cart and secure checkout
+- Handle regional pricing and basic bulk discounting
+- Allow team/group ordering with shared links and organizer dashboard
+- Begin implementation of backend order management logic
+- Lay foundation for shipping, delivery, and sponsorship credit handling
+
+---
+
+## 📦 Project Structure Updates
+
+/frontend
+/components
+/cart
+/checkout
+/groupOrder
+/pages
+/cart
+/checkout
+/group-order
+/backend
+/models
+Order.js
+OrderItem.js
+/routes
+orderRoutes.js
+paymentRoutes.js
+/controllers
+orderController.js
+paymentController.js
+.env.example
+
+yaml
+Copy
+Edit
+
+---
+
+## ⚙️ Updated Environment Variables (`.env`)
+
+```env
+MONGODB_URI=your_mongo_uri
+JWT_SECRET=your_jwt_secret
+STRIPE_PUBLISHABLE_KEY=your_publishable_key
+STRIPE_SECRET_KEY=your_secret_key
+🚀 Key Features
+🛒 Shopping Cart
+Add apparel designs to cart with quantity/size selections
+
+View, update, and remove items
+
+LocalStorage-based cart persistence for guests
+
+Shows item preview, price breakdown, subtotal
+
+💳 Secure Checkout Flow
+Multi-step checkout UI
+
+Shipping & billing info
+
+Payment section via Stripe Elements
+
+Supports guest checkout
+
+Displays applied sponsorship credits (if applicable)
+
+Backend payment intent creation with Stripe API
+
+🌍 Regional Pricing & Bulk Discounts
+Prices vary by currency (e.g., AUD, EUR)
+
+Display prices dynamically based on user region/selection
+
+Quantity-based bulk discounting (e.g., 10% off for 10+ units)
+
+Admin-configured pricing matrix (manual for now)
+
+👥 Group Order Functionality
+Organizer starts group order from saved design
+
+Can configure:
+
+Payment mode: Organizer vs Individuals
+
+Data collection: Organizer input vs Individual input
+
+Deadline for submissions
+
+Generates shareable "team store" link:
+
+Participants select size, input name/number
+
+Pay individually if configured
+
+Organizer dashboard:
+
+Tracks entries, size/nickname, payment status
+
+Stubbed "send reminder" feature
+
+📦 Order Management Backend
+Mongoose models:
+
+Order: linked to user/design, includes items, shipping, total
+
+OrderItem: references individual design, size, quantity
+
+Backend routes to:
+
+Create orders from checkout
+
+Update order status (e.g., "Processing", "Shipped")
+
+Link to designs & user info
+
+Stubbed email confirmation (console logs or basic email service)
+
+🚚 Shipping & Address Handling (Stubbed)
+Flat-rate shipping per region for MVP
+
+Basic address input with regex validation
+
+Placeholder for shipping rate API (EasyPost, Shippo) in future
+
+🔐 Security & Best Practices
+All form inputs validated on client & server
+
+Stripe tokenization prevents raw card storage
+
+HTTPS enforced by Replit
+
+JWT used for user-specific order access
+
+Sanitize inputs to prevent XSS/NoSQL injection
+
+📁 Notable Files
+/backend/models/Order.js
+Stores complete order record, status, user, design links, shipping info
+
+/backend/controllers/orderController.js
+Business logic for creating, retrieving, and managing orders
+
+/backend/routes/orderRoutes.js
+REST API endpoints: POST /orders, GET /orders/:id, PUT /orders/:id/status
+
+/frontend/pages/cart.js
+View and manage cart items
+
+/frontend/pages/checkout.js
+Checkout form with Stripe Elements
+
+/frontend/pages/group-order.js
+Initiate and manage group order details
+
+🧪 Manual Testing Plan
+✅ Add custom design to cart
+
+✅ Proceed to checkout and submit payment (use Stripe test card)
+
+✅ Start a group order and submit via shared link
+
+✅ Track group entries in organizer dashboard
+
+✅ Check order creation and data in MongoDB
+
+⏭ Coming Next: Phase 4
+Sponsorship Platform:
+
+Sponsor/Seeker profile creation
+
+Agreement workflow and credit disbursement
+
+Sponsor logo uploads and usage in designs

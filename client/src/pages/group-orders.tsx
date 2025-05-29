@@ -252,7 +252,8 @@ export default function GroupOrders() {
                               type="number" 
                               min="1" 
                               {...field} 
-                              onChange={(e) => field.onChange(parseInt(e.target.value))}
+                              value={field.value || ''}
+                              onChange={(e) => field.onChange(parseInt(e.target.value) || 1)}
                             />
                           </FormControl>
                           <FormMessage />
@@ -270,6 +271,7 @@ export default function GroupOrders() {
                             <Textarea 
                               placeholder="Additional details about the order..."
                               {...field}
+                              value={field.value || ''}
                             />
                           </FormControl>
                           <FormMessage />

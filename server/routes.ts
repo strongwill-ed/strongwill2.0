@@ -4,7 +4,8 @@ import { storage } from "./storage";
 import { 
   insertProductCategorySchema, insertProductSchema, insertDesignSchema, 
   insertCartItemSchema, insertOrderSchema, insertOrderItemSchema,
-  insertGroupOrderSchema, insertGroupOrderItemSchema 
+  insertGroupOrderSchema, insertGroupOrderItemSchema,
+  type InsertGroupOrder
 } from "@shared/schema";
 import { z } from "zod";
 
@@ -372,7 +373,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(201).json(groupOrder);
     } catch (error) {
       console.error('Group order creation error:', error);
-      res.status(500).json({ message: "Failed to create group order", error: error.message });
+      res.status(500).json({ message: "Failed to create group order", error: (error as Error).message });
     }
   });
 
