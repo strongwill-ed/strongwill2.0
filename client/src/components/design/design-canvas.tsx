@@ -350,23 +350,19 @@ const DesignCanvas = forwardRef<CanvasRef, DesignCanvasProps>(({
     ctx.strokeStyle = '#dee2e6';
     ctx.lineWidth = 2;
 
-    if (template.name.includes('Singlet')) {
+    if (template === 'singlet') {
       drawSingletShape(ctx, x, y, templateWidth, templateHeight);
-    } else if (template.name.includes('T-Shirt')) {
+    } else if (template === 'shirt') {
       drawTShirtShape(ctx, x, y, templateWidth, templateHeight);
-    } else if (template.name.includes('Hoodie')) {
+    } else if (template === 'hoodie') {
       drawHoodieShape(ctx, x, y, templateWidth, templateHeight);
-    } else if (template.name.includes('Tank')) {
-      drawTankTopShape(ctx, x, y, templateWidth, templateHeight);
-    } else if (template.name.includes('Jersey')) {
-      drawJerseyShape(ctx, x, y, templateWidth, templateHeight);
-    } else if (template.name.includes('Shorts')) {
+    } else if (template === 'shorts') {
       drawShortsShape(ctx, x, y, templateWidth, templateHeight);
-    } else if (template.name.includes('Polo')) {
-      drawPoloShape(ctx, x, y, templateWidth, templateHeight);
+    } else if (template === 'jersey') {
+      drawJerseyShape(ctx, x, y, templateWidth, templateHeight);
     } else {
-      // Default to t-shirt
-      drawTShirtShape(ctx, x, y, templateWidth, templateHeight);
+      // Default to singlet for wrestling apparel
+      drawSingletShape(ctx, x, y, templateWidth, templateHeight);
     }
 
     // Add subtle design zones for reference

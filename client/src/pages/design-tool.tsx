@@ -127,6 +127,10 @@ export default function DesignTool() {
     );
   };
 
+  const addElement = (element: DesignElement) => {
+    setDesignElements([...designElements, element]);
+  };
+
   const deleteElement = (id: string) => {
     setDesignElements(elements => elements.filter(el => el.id !== id));
     if (selectedElement === id) {
@@ -496,6 +500,8 @@ export default function DesignTool() {
                   selectedElement={selectedElement}
                   onElementSelect={setSelectedElement}
                   onElementUpdate={updateElement}
+                  onElementAdd={addElement}
+                  onElementDelete={deleteElement}
                 />
               </CardContent>
             </Card>
