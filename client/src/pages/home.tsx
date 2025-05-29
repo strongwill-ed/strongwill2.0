@@ -35,7 +35,7 @@ function DynamicText() {
 
   return (
     <span 
-      className={`transition-all duration-300 ${
+      className={`inline-block min-w-[200px] text-left transition-all duration-300 ${
         isVisible ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform -translate-y-2'
       }`}
     >
