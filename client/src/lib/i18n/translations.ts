@@ -38,6 +38,27 @@ export const translations = {
       finish: "Finish"
     },
 
+    // Homepage
+    home: {
+      heroTitle: "Design Your Perfect",
+      heroSubtitle: "Premium custom sports apparel with our advanced design tool. Perfect for teams, clubs, and individual athletes who demand excellence.",
+      startDesigning: "Start Designing",
+      browseProducts: "Browse Products",
+      features: {
+        customDesign: "Custom Design Tool",
+        customDesignDesc: "Create unique designs with our intuitive design platform",
+        teamOrders: "Team Group Orders",
+        teamOrdersDesc: "Coordinate bulk orders seamlessly with your team",
+        quickTurnaround: "Quick Turnaround",
+        quickTurnaroundDesc: "Fast production and delivery for urgent orders"
+      },
+      categories: {
+        year12Leavers: "Year 12 Leavers",
+        sportsUniforms: "Sports Uniforms", 
+        gymTraining: "Gym & Training"
+      }
+    },
+
     // Products
     products: {
       title: "Products",
@@ -192,6 +213,27 @@ export const translations = {
       back: "Zurück",
       next: "Nächste",
       finish: "Fertig"
+    },
+
+    // Homepage
+    home: {
+      heroTitle: "Gestalten Sie Ihre Perfekte",
+      heroSubtitle: "Premium maßgeschneiderte Sportbekleidung mit unserem fortschrittlichen Design-Tool. Perfekt für Teams, Vereine und Einzelsportler, die Exzellenz fordern.",
+      startDesigning: "Design Beginnen",
+      browseProducts: "Produkte Durchsuchen",
+      features: {
+        customDesign: "Individuelles Design-Tool",
+        customDesignDesc: "Erstellen Sie einzigartige Designs mit unserer intuitiven Design-Plattform",
+        teamOrders: "Team-Gruppenbestellungen",
+        teamOrdersDesc: "Koordinieren Sie Großbestellungen nahtlos mit Ihrem Team",
+        quickTurnaround: "Schnelle Bearbeitung",
+        quickTurnaroundDesc: "Schnelle Produktion und Lieferung für dringende Bestellungen"
+      },
+      categories: {
+        year12Leavers: "Schulabgänger Klasse 12",
+        sportsUniforms: "Sportuniformen",
+        gymTraining: "Fitness & Training"
+      }
     },
 
     // Products

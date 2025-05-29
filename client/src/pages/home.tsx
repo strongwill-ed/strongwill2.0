@@ -6,6 +6,7 @@ import { useLocation } from "wouter";
 import { ArrowRight, Check, Users, Palette, ShoppingBag } from "lucide-react";
 import { NewsletterSubscription } from "@/components/newsletter/newsletter-subscription";
 import { useState, useEffect } from "react";
+import { useTranslation } from "@/lib/i18n/use-translation";
 import heroImage from "@assets/aussie football banner team jersey singlet shorts squad.jpg";
 import year12LeaversImage from "@assets/YEAR-12-FINAL-5.jpg";
 import sportsUniformsImage from "@assets/Sports-Uniforms.jpg";
@@ -59,6 +60,7 @@ function DynamicText() {
 
 export default function Home() {
   const [, setLocation] = useLocation();
+  const { t } = useTranslation();
   
   const { data: categories, isLoading } = useQuery<ProductCategory[]>({
     queryKey: ["/api/categories"],
@@ -82,11 +84,10 @@ export default function Home() {
         {/* Hero Content */}
         <div className="relative z-10 text-center text-white px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto">
           <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold mb-6 leading-tight tracking-tight" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.8)' }}>
-            Design Your <span className="italic font-black">Perfect</span> <DynamicText /> Apparel
+            {t('home.heroTitle')} <span className="italic font-black">Perfect</span> <DynamicText /> Apparel
           </h1>
           <p className="text-xl md:text-2xl mb-12 max-w-3xl mx-auto font-light leading-relaxed">
-            Premium custom sports apparel with our advanced design tool. 
-            Perfect for teams, clubs, and individual athletes who demand excellence.
+            {t('home.heroSubtitle')}
           </p>
           <div className="flex flex-col sm:flex-row gap-6 justify-center">
             <Button 
