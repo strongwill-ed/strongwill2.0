@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { MapPin, Phone, Mail, Clock, MessageSquare, HelpCircle, Truck } from "lucide-react";
+import { MapPin, Phone, Mail, Clock, MessageSquare, HelpCircle, Rocket } from "lucide-react";
 
 export default function Contact() {
   const { toast } = useToast();
@@ -151,7 +151,7 @@ export default function Contact() {
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center">
-                    <Truck className="mr-2 h-5 w-5" />
+                    <Rocket className="mr-2 h-5 w-5" />
                     Shipping & Delivery
                   </CardTitle>
                 </CardHeader>

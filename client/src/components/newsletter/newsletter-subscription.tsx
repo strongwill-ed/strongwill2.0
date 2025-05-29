@@ -133,11 +133,11 @@ export function NewsletterSubscription({ variant = "default", className = "" }: 
               <span className="font-black">STRONGWILL</span>{" "}
               <span className="font-normal">SPORTS</span> Newsletter
             </h2>
-            <p className="text-gray-300 text-sm">
+            <p className="text-gray-300 text-base">
               Get exclusive access to new product launches, training guides, and special offers.
             </p>
 
-            <ul className="space-y-0.5 text-xs text-gray-400">
+            <ul className="space-y-1 text-sm text-gray-400">
               <li>• Early access to new custom apparel</li>
               <li>• Training tips from professional athletes</li>
               <li>• Exclusive discounts and promotions</li>
