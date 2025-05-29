@@ -13,6 +13,8 @@ import GroupOrders from "@/pages/group-orders";
 import Sponsorship from "@/pages/sponsorship";
 import CreateSeekerProfile from "@/pages/create-seeker-profile";
 import CreateSponsorProfile from "@/pages/create-sponsor-profile";
+import TeamProfile from "@/pages/team-profile";
+import SponsorProfile from "@/pages/sponsor-profile";
 import Admin from "@/pages/admin";
 import About from "@/pages/about";
 import Contact from "@/pages/contact";
@@ -38,6 +40,8 @@ function Router() {
       <Route path="/sponsorship" component={Sponsorship} />
       <Route path="/create-seeker-profile" component={CreateSeekerProfile} />
       <Route path="/create-sponsor-profile" component={CreateSponsorProfile} />
+      <Route path="/team-profile/:id" component={TeamProfile} />
+      <Route path="/sponsor-profile/:id" component={SponsorProfile} />
       <Route path="/admin" component={Admin} />
       <Route path="/about" component={About} />
       <Route path="/contact" component={Contact} />

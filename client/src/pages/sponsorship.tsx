@@ -208,7 +208,11 @@ export default function SponsorshipPage() {
                           {profile.organizationType}
                         </span>
                       </div>
-                      <Button variant="outline" className="w-full">
+                      <Button 
+                        variant="outline" 
+                        className="w-full"
+                        onClick={() => setLocation(`/team-profile/${profile.id}`)}
+                      >
                         View Profile
                       </Button>
                     </div>
