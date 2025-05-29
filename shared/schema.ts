@@ -84,6 +84,10 @@ export const groupOrders = pgTable("group_orders", {
   currentQuantity: integer("current_quantity").default(0),
   status: text("status").default("active"), // active, closed, completed
   description: text("description"),
+  paymentMode: text("payment_mode").default("individual"), // "organizer" or "individual"
+  totalEstimate: decimal("total_estimate", { precision: 10, scale: 2 }).default("0.00"),
+  organizerEmail: text("organizer_email"),
+  shareableLink: text("shareable_link"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 

@@ -344,4 +344,224 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+import { users, productCategories, products, designs, cartItems, orders, orderItems, groupOrders, groupOrderItems, type User, type ProductCategory, type Product, type Design, type CartItem, type Order, type OrderItem, type GroupOrder, type GroupOrderItem, type InsertUser, type InsertProductCategory, type InsertProduct, type InsertDesign, type InsertCartItem, type InsertOrder, type InsertOrderItem, type InsertGroupOrder, type InsertGroupOrderItem } from "@shared/schema";
+import { db } from "./db";
+import { eq } from "drizzle-orm";
+
+export class DatabaseStorage implements IStorage {
+  async getUser(id: number): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user || undefined;
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user || undefined;
+  }
+
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.email, email));
+    return user || undefined;
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const [user] = await db
+      .insert(users)
+      .values(insertUser)
+      .returning();
+    return user;
+  }
+
+  async getProductCategories(): Promise<ProductCategory[]> {
+    return await db.select().from(productCategories);
+  }
+
+  async getProductCategory(id: number): Promise<ProductCategory | undefined> {
+    const [category] = await db.select().from(productCategories).where(eq(productCategories.id, id));
+    return category || undefined;
+  }
+
+  async createProductCategory(category: InsertProductCategory): Promise<ProductCategory> {
+    const [newCategory] = await db
+      .insert(productCategories)
+      .values(category)
+      .returning();
+    return newCategory;
+  }
+
+  async getProducts(): Promise<Product[]> {
+    return await db.select().from(products);
+  }
+
+  async getProductsByCategory(categoryId: number): Promise<Product[]> {
+    return await db.select().from(products).where(eq(products.categoryId, categoryId));
+  }
+
+  async getProduct(id: number): Promise<Product | undefined> {
+    const [product] = await db.select().from(products).where(eq(products.id, id));
+    return product || undefined;
+  }
+
+  async createProduct(product: InsertProduct): Promise<Product> {
+    const [newProduct] = await db
+      .insert(products)
+      .values(product)
+      .returning();
+    return newProduct;
+  }
+
+  async updateProduct(id: number, updates: Partial<InsertProduct>): Promise<Product | undefined> {
+    const [updatedProduct] = await db
+      .update(products)
+      .set(updates)
+      .where(eq(products.id, id))
+      .returning();
+    return updatedProduct || undefined;
+  }
+
+  async getDesigns(): Promise<Design[]> {
+    return await db.select().from(designs);
+  }
+
+  async getDesignsByUser(userId: number): Promise<Design[]> {
+    return await db.select().from(designs).where(eq(designs.userId, userId));
+  }
+
+  async getDesign(id: number): Promise<Design | undefined> {
+    const [design] = await db.select().from(designs).where(eq(designs.id, id));
+    return design || undefined;
+  }
+
+  async createDesign(design: InsertDesign): Promise<Design> {
+    const [newDesign] = await db
+      .insert(designs)
+      .values(design)
+      .returning();
+    return newDesign;
+  }
+
+  async updateDesign(id: number, updates: Partial<InsertDesign>): Promise<Design | undefined> {
+    const [updatedDesign] = await db
+      .update(designs)
+      .set(updates)
+      .where(eq(designs.id, id))
+      .returning();
+    return updatedDesign || undefined;
+  }
+
+  async getCartItems(userId: number): Promise<CartItem[]> {
+    return await db.select().from(cartItems).where(eq(cartItems.userId, userId));
+  }
+
+  async addToCart(item: InsertCartItem): Promise<CartItem> {
+    const [newItem] = await db
+      .insert(cartItems)
+      .values(item)
+      .returning();
+    return newItem;
+  }
+
+  async updateCartItem(id: number, updates: Partial<InsertCartItem>): Promise<CartItem | undefined> {
+    const [updatedItem] = await db
+      .update(cartItems)
+      .set(updates)
+      .where(eq(cartItems.id, id))
+      .returning();
+    return updatedItem || undefined;
+  }
+
+  async removeFromCart(id: number): Promise<boolean> {
+    const result = await db.delete(cartItems).where(eq(cartItems.id, id));
+    return result.rowCount > 0;
+  }
+
+  async clearCart(userId: number): Promise<void> {
+    await db.delete(cartItems).where(eq(cartItems.userId, userId));
+  }
+
+  async getOrders(): Promise<Order[]> {
+    return await db.select().from(orders);
+  }
+
+  async getOrdersByUser(userId: number): Promise<Order[]> {
+    return await db.select().from(orders).where(eq(orders.userId, userId));
+  }
+
+  async getOrder(id: number): Promise<Order | undefined> {
+    const [order] = await db.select().from(orders).where(eq(orders.id, id));
+    return order || undefined;
+  }
+
+  async createOrder(order: InsertOrder): Promise<Order> {
+    const [newOrder] = await db
+      .insert(orders)
+      .values(order)
+      .returning();
+    return newOrder;
+  }
+
+  async updateOrderStatus(id: number, status: string): Promise<Order | undefined> {
+    const [updatedOrder] = await db
+      .update(orders)
+      .set({ status })
+      .where(eq(orders.id, id))
+      .returning();
+    return updatedOrder || undefined;
+  }
+
+  async getOrderItems(orderId: number): Promise<OrderItem[]> {
+    return await db.select().from(orderItems).where(eq(orderItems.orderId, orderId));
+  }
+
+  async addOrderItem(item: InsertOrderItem): Promise<OrderItem> {
+    const [newItem] = await db
+      .insert(orderItems)
+      .values(item)
+      .returning();
+    return newItem;
+  }
+
+  async getGroupOrders(): Promise<GroupOrder[]> {
+    return await db.select().from(groupOrders);
+  }
+
+  async getActiveGroupOrders(): Promise<GroupOrder[]> {
+    return await db.select().from(groupOrders).where(eq(groupOrders.status, "active"));
+  }
+
+  async getGroupOrder(id: number): Promise<GroupOrder | undefined> {
+    const [groupOrder] = await db.select().from(groupOrders).where(eq(groupOrders.id, id));
+    return groupOrder || undefined;
+  }
+
+  async createGroupOrder(groupOrder: InsertGroupOrder): Promise<GroupOrder> {
+    const [newGroupOrder] = await db
+      .insert(groupOrders)
+      .values(groupOrder)
+      .returning();
+    return newGroupOrder;
+  }
+
+  async updateGroupOrder(id: number, updates: Partial<InsertGroupOrder>): Promise<GroupOrder | undefined> {
+    const [updatedGroupOrder] = await db
+      .update(groupOrders)
+      .set(updates)
+      .where(eq(groupOrders.id, id))
+      .returning();
+    return updatedGroupOrder || undefined;
+  }
+
+  async getGroupOrderItems(groupOrderId: number): Promise<GroupOrderItem[]> {
+    return await db.select().from(groupOrderItems).where(eq(groupOrderItems.groupOrderId, groupOrderId));
+  }
+
+  async addGroupOrderItem(item: InsertGroupOrderItem): Promise<GroupOrderItem> {
+    const [newItem] = await db
+      .insert(groupOrderItems)
+      .values(item)
+      .returning();
+    return newItem;
+  }
+}
+
+export const storage = new DatabaseStorage();
