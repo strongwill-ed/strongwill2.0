@@ -136,13 +136,7 @@ export function NewsletterSubscription({ variant = "default", className = "" }: 
             <p className="text-gray-300 text-sm">
               Get exclusive access to new product launches, training guides, and special offers.
             </p>
-            <div className="bg-white/10 rounded-lg p-2">
-              <p className="text-white font-semibold text-sm mb-1">🎁 Limited Time Offer</p>
-              <p className="text-gray-300 text-xs">
-                Sign up now and receive <span className="text-white font-bold">one free custom item</span> with your first order!
-                <span className="text-xs block text-gray-400">*Terms and conditions apply</span>
-              </p>
-            </div>
+
             <ul className="space-y-0.5 text-xs text-gray-400">
               <li>• Early access to new custom apparel</li>
               <li>• Training tips from professional athletes</li>
@@ -153,9 +147,13 @@ export function NewsletterSubscription({ variant = "default", className = "" }: 
           
           <div className="space-y-3">
             <form onSubmit={handleSubmit} className="space-y-3">
-              {/* Limited Time Offer Box */}
-              <div className="bg-white text-black p-2 rounded text-xs font-semibold text-center">
-                EXCLUSIVE: FREE SHIPPING ON FIRST ORDER
+              {/* Limited Time Offer */}
+              <div className="bg-white/10 rounded-lg p-2">
+                <p className="text-white font-semibold text-sm mb-1">🎁 Limited Time Offer</p>
+                <p className="text-gray-300 text-xs">
+                  Sign up now and receive <span className="text-white font-bold">one free custom item</span> with your first order!
+                  <span className="text-xs block text-gray-400">*Terms and conditions apply</span>
+                </p>
               </div>
               
               <div className="relative">

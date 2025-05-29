@@ -84,11 +84,6 @@ export function NewsletterPopup() {
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-3 mt-6">
-          {/* Limited Time Offer Box */}
-          <div className="bg-black dark:bg-white text-white dark:text-black p-2 rounded text-xs font-semibold text-center">
-            EXCLUSIVE: FREE SHIPPING ON FIRST ORDER
-          </div>
-          
           <div>
             <Input
               type="email"
