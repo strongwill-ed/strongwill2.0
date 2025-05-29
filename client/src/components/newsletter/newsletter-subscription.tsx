@@ -125,10 +125,10 @@ export function NewsletterSubscription({ variant = "default", className = "" }: 
   }
 
   return (
-    <div className={`bg-gradient-to-r from-black to-gray-900 text-white p-8 rounded-lg ${className}`}>
+    <div className={`bg-gradient-to-r from-black to-gray-900 text-white p-6 rounded-lg ${className}`}>
       <div className="max-w-4xl mx-auto">
-        <div className="grid md:grid-cols-2 gap-8 items-center">
-          <div className="space-y-4">
+        <div className="grid md:grid-cols-2 gap-6 items-center">
+          <div className="space-y-3">
             <h2 className="text-3xl font-bold">
               <span className="font-black">STRONGWILL</span>{" "}
               <span className="font-normal">SPORTS</span> Newsletter
@@ -151,8 +151,8 @@ export function NewsletterSubscription({ variant = "default", className = "" }: 
             </ul>
           </div>
           
-          <div className="space-y-4">
-            <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-3">
+            <form onSubmit={handleSubmit} className="space-y-3">
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
                 <Input
