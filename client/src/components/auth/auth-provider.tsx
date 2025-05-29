@@ -27,7 +27,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const checkAuth = async () => {
       try {
         const response = await apiRequest("GET", "/api/auth/me");
-        setUser(response);
+        if (response && typeof response === 'object') {
+          setUser(response as User);
+        }
       } catch (error) {
         // User not authenticated
         setUser(null);
@@ -44,7 +46,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       username,
       password,
     });
-    setUser(response.user);
+    if (response && typeof response === 'object' && 'user' in response) {
+      setUser(response.user as User);
+    }
   };
 
   const register = async (username: string, email: string, password: string) => {
@@ -53,7 +57,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       email,
       password,
     });
-    setUser(response.user);
+    if (response && typeof response === 'object' && 'user' in response) {
+      setUser(response.user as User);
+    }
   };
 
   const logout = async () => {

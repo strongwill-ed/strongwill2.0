@@ -1,13 +1,16 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useCart } from "@/hooks/use-cart";
+import { useAuth } from "@/components/auth/auth-provider";
 import { Link, useLocation } from "wouter";
-import { Menu, ShoppingCart, User } from "lucide-react";
+import { Menu, ShoppingCart, User, LogOut, Settings } from "lucide-react";
 
 export default function Header() {
   const [location] = useLocation();
   const { cartItems, toggleCart } = useCart();
+  const { user, logout } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const cartItemCount = cartItems.reduce((total, item) => total + (item.quantity || 1), 0);
@@ -74,10 +77,36 @@ export default function Header() {
               )}
             </Button>
 
-            {/* User Button */}
-            <Button variant="ghost" size="sm" className="text-gray-600 hover:text-black">
-              <User className="h-5 w-5" />
-            </Button>
+            {/* User Profile Dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="text-gray-600 hover:text-black">
+                  <User className="h-5 w-5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                {user ? (
+                  <>
+                    <div className="px-2 py-1.5 text-sm font-medium text-gray-900">
+                      {user.username}
+                    </div>
+                    <div className="px-2 py-1.5 text-xs text-gray-500">
+                      {user.email}
+                    </div>
+                    <div className="border-t my-1"></div>
+                    <DropdownMenuItem onClick={logout}>
+                      <LogOut className="h-4 w-4 mr-2" />
+                      Logout
+                    </DropdownMenuItem>
+                  </>
+                ) : (
+                  <DropdownMenuItem>
+                    <User className="h-4 w-4 mr-2" />
+                    Login Required
+                  </DropdownMenuItem>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
 
             {/* Admin Button */}
             <Link href="/admin">
