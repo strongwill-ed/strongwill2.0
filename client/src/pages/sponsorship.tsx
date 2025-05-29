@@ -1,0 +1,357 @@
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Link } from "wouter";
+import { Users, Building2, Handshake, MessageSquare, DollarSign, Calendar } from "lucide-react";
+import type { SeekerProfile, SponsorProfile, SponsorshipAgreement } from "@shared/schema";
+
+export default function SponsorshipPage() {
+  const [activeTab, setActiveTab] = useState("overview");
+
+  const { data: seekerProfiles = [] } = useQuery({
+    queryKey: ["/api/seeker-profiles"],
+  });
+
+  const { data: sponsorProfiles = [] } = useQuery({
+    queryKey: ["/api/sponsor-profiles"],
+  });
+
+  const { data: agreements = [] } = useQuery({
+    queryKey: ["/api/sponsorship-agreements"],
+  });
+
+  const activeAgreements = agreements.filter(
+    (agreement: SponsorshipAgreement) => agreement.status === "active"
+  );
+
+  const totalSponsorshipValue = activeAgreements.reduce(
+    (total: number, agreement: SponsorshipAgreement) => 
+      total + parseFloat(agreement.totalAmount), 0
+  );
+
+  return (
+    <div className="min-h-screen bg-gray-50 py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header */}
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-black text-black mb-4">
+            Sponsorship Platform
+          </h1>
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            Connect teams seeking sponsorship with businesses ready to support athletic excellence.
+            Build partnerships that drive success both on and off the field.
+          </p>
+        </div>
+
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid w-full grid-cols-4">
+            <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="seekers">Teams Seeking</TabsTrigger>
+            <TabsTrigger value="sponsors">Sponsors</TabsTrigger>
+            <TabsTrigger value="agreements">Partnerships</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="overview" className="space-y-8">
+            {/* Statistics */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Active Teams</CardTitle>
+                  <Users className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{seekerProfiles.length}</div>
+                  <p className="text-xs text-muted-foreground">
+                    Seeking sponsorship
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Active Sponsors</CardTitle>
+                  <Building2 className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{sponsorProfiles.length}</div>
+                  <p className="text-xs text-muted-foreground">
+                    Ready to sponsor
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Active Partnerships</CardTitle>
+                  <Handshake className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{activeAgreements.length}</div>
+                  <p className="text-xs text-muted-foreground">
+                    Current agreements
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Total Value</CardTitle>
+                  <DollarSign className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">
+                    ${totalSponsorshipValue.toLocaleString()}
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    In active sponsorships
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Call to Action */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Users className="h-5 w-5 mr-2" />
+                    For Teams & Athletes
+                  </CardTitle>
+                  <CardDescription>
+                    Create your profile and connect with sponsors who align with your values and goals.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <ul className="space-y-2 text-sm text-gray-600">
+                      <li>• Showcase your team's achievements and potential</li>
+                      <li>• Set clear sponsorship goals and requirements</li>
+                      <li>• Connect directly with interested sponsors</li>
+                      <li>• Manage sponsorship credits and agreements</li>
+                    </ul>
+                    <Button className="w-full">
+                      Create Team Profile
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Building2 className="h-5 w-5 mr-2" />
+                    For Businesses
+                  </CardTitle>
+                  <CardDescription>
+                    Discover talented teams and athletes to sponsor while building your brand presence.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <ul className="space-y-2 text-sm text-gray-600">
+                      <li>• Find teams that match your brand values</li>
+                      <li>• Set flexible sponsorship terms and budgets</li>
+                      <li>• Track ROI and engagement metrics</li>
+                      <li>• Build lasting community relationships</li>
+                    </ul>
+                    <Button className="w-full">
+                      Become a Sponsor
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="seekers" className="space-y-6">
+            <div className="flex justify-between items-center">
+              <h2 className="text-2xl font-bold">Teams Seeking Sponsorship</h2>
+              <Button>
+                <Users className="h-4 w-4 mr-2" />
+                Create Team Profile
+              </Button>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {seekerProfiles.map((profile: SeekerProfile) => (
+                <Card key={profile.id} className="hover:shadow-lg transition-shadow">
+                  <CardHeader>
+                    <CardTitle className="flex items-center justify-between">
+                      {profile.teamName}
+                      <Badge variant={profile.isActive ? "default" : "secondary"}>
+                        {profile.isActive ? "Active" : "Inactive"}
+                      </Badge>
+                    </CardTitle>
+                    <CardDescription>
+                      {profile.sport} • {profile.location}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      <p className="text-sm text-gray-600 line-clamp-3">
+                        {profile.description}
+                      </p>
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="font-medium">
+                          Goal: ${parseFloat(profile.sponsorshipGoals).toLocaleString()}
+                        </span>
+                        <span className="text-gray-500">
+                          {profile.teamSize} members
+                        </span>
+                      </div>
+                      <Button variant="outline" className="w-full">
+                        View Profile
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            {seekerProfiles.length === 0 && (
+              <Card>
+                <CardContent className="text-center py-12">
+                  <Users className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">
+                    No teams registered yet
+                  </h3>
+                  <p className="text-gray-600 mb-4">
+                    Be the first team to create a profile and start seeking sponsorship.
+                  </p>
+                  <Button>Create Team Profile</Button>
+                </CardContent>
+              </Card>
+            )}
+          </TabsContent>
+
+          <TabsContent value="sponsors" className="space-y-6">
+            <div className="flex justify-between items-center">
+              <h2 className="text-2xl font-bold">Active Sponsors</h2>
+              <Button>
+                <Building2 className="h-4 w-4 mr-2" />
+                Become a Sponsor
+              </Button>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {sponsorProfiles.map((profile: SponsorProfile) => (
+                <Card key={profile.id} className="hover:shadow-lg transition-shadow">
+                  <CardHeader>
+                    <CardTitle className="flex items-center justify-between">
+                      {profile.companyName}
+                      <Badge variant={profile.isActive ? "default" : "secondary"}>
+                        {profile.isActive ? "Active" : "Inactive"}
+                      </Badge>
+                    </CardTitle>
+                    <CardDescription>
+                      {profile.industry} • {profile.location}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      <p className="text-sm text-gray-600 line-clamp-3">
+                        {profile.description}
+                      </p>
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="font-medium">
+                          Budget: ${parseFloat(profile.sponsorshipBudget).toLocaleString()}
+                        </span>
+                        <span className="text-gray-500">
+                          {profile.preferredSports?.join(", ")}
+                        </span>
+                      </div>
+                      <Button variant="outline" className="w-full">
+                        View Profile
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            {sponsorProfiles.length === 0 && (
+              <Card>
+                <CardContent className="text-center py-12">
+                  <Building2 className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">
+                    No sponsors registered yet
+                  </h3>
+                  <p className="text-gray-600 mb-4">
+                    Join as a sponsor to support local teams and build your brand presence.
+                  </p>
+                  <Button>Become a Sponsor</Button>
+                </CardContent>
+              </Card>
+            )}
+          </TabsContent>
+
+          <TabsContent value="agreements" className="space-y-6">
+            <div className="flex justify-between items-center">
+              <h2 className="text-2xl font-bold">Active Partnerships</h2>
+            </div>
+
+            <div className="space-y-4">
+              {activeAgreements.map((agreement: SponsorshipAgreement) => (
+                <Card key={agreement.id}>
+                  <CardHeader>
+                    <CardTitle className="flex items-center justify-between">
+                      <span>Partnership Agreement #{agreement.id}</span>
+                      <div className="flex items-center space-x-2">
+                        <Badge variant="default">{agreement.status}</Badge>
+                        <Badge variant="secondary">
+                          ${parseFloat(agreement.totalAmount).toLocaleString()}
+                        </Badge>
+                      </div>
+                    </CardTitle>
+                    <CardDescription>
+                      Duration: {agreement.duration} months
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div>
+                        <h4 className="font-medium mb-2">Benefits Provided</h4>
+                        <p className="text-sm text-gray-600">
+                          {agreement.benefits}
+                        </p>
+                      </div>
+                      <div>
+                        <h4 className="font-medium mb-2">Requirements</h4>
+                        <p className="text-sm text-gray-600">
+                          {agreement.requirements}
+                        </p>
+                      </div>
+                      <div>
+                        <h4 className="font-medium mb-2">Terms</h4>
+                        <p className="text-sm text-gray-600">
+                          {agreement.terms}
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            {activeAgreements.length === 0 && (
+              <Card>
+                <CardContent className="text-center py-12">
+                  <Handshake className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">
+                    No active partnerships yet
+                  </h3>
+                  <p className="text-gray-600 mb-4">
+                    Partnerships will appear here once teams and sponsors create agreements.
+                  </p>
+                </CardContent>
+              </Card>
+            )}
+          </TabsContent>
+        </Tabs>
+      </div>
+    </div>
+  );
+}

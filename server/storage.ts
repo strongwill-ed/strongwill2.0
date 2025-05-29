@@ -97,7 +97,10 @@ export class DatabaseStorage implements IStorage {
     try {
       // Check if we already have data
       const existingCategories = await db.select().from(productCategories);
-      if (existingCategories.length === 0) {
+      const existingProducts = await db.select().from(products);
+      
+      // Force reseed if we have fewer than 20 products (our new expanded catalog)
+      if (existingCategories.length === 0 || existingProducts.length < 20) {
         await this.seedData();
       }
       this.initialized = true;

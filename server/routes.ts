@@ -5,6 +5,9 @@ import {
   insertProductCategorySchema, insertProductSchema, insertDesignSchema, 
   insertCartItemSchema, insertOrderSchema, insertOrderItemSchema,
   insertGroupOrderSchema, insertGroupOrderItemSchema,
+  insertSeekerProfileSchema, insertSponsorProfileSchema,
+  insertSponsorshipAgreementSchema, insertSponsorshipCreditSchema,
+  insertSponsorshipMessageSchema,
   type InsertGroupOrder
 } from "@shared/schema";
 import { z } from "zod";
@@ -585,6 +588,228 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(ordersWithItems);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch orders" });
+    }
+  });
+
+  // Sponsorship Platform Routes
+  
+  // Seeker Profile Routes
+  app.get("/api/seeker-profiles", async (req, res) => {
+    try {
+      const profiles = await storage.getSeekerProfiles();
+      res.json(profiles);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch seeker profiles" });
+    }
+  });
+
+  app.get("/api/seeker-profiles/:id", async (req, res) => {
+    try {
+      const profile = await storage.getSeekerProfile(parseInt(req.params.id));
+      if (!profile) {
+        return res.status(404).json({ message: "Seeker profile not found" });
+      }
+      res.json(profile);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch seeker profile" });
+    }
+  });
+
+  app.post("/api/seeker-profiles", async (req, res) => {
+    try {
+      const validatedData = insertSeekerProfileSchema.parse(req.body);
+      const profile = await storage.createSeekerProfile(validatedData);
+      res.status(201).json(profile);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid profile data", errors: error.errors });
+      }
+      res.status(500).json({ message: "Failed to create seeker profile" });
+    }
+  });
+
+  app.patch("/api/seeker-profiles/:id", async (req, res) => {
+    try {
+      const updates = insertSeekerProfileSchema.partial().parse(req.body);
+      const profile = await storage.updateSeekerProfile(parseInt(req.params.id), updates);
+      if (!profile) {
+        return res.status(404).json({ message: "Seeker profile not found" });
+      }
+      res.json(profile);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid profile data", errors: error.errors });
+      }
+      res.status(500).json({ message: "Failed to update seeker profile" });
+    }
+  });
+
+  // Sponsor Profile Routes
+  app.get("/api/sponsor-profiles", async (req, res) => {
+    try {
+      const profiles = await storage.getSponsorProfiles();
+      res.json(profiles);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch sponsor profiles" });
+    }
+  });
+
+  app.get("/api/sponsor-profiles/:id", async (req, res) => {
+    try {
+      const profile = await storage.getSponsorProfile(parseInt(req.params.id));
+      if (!profile) {
+        return res.status(404).json({ message: "Sponsor profile not found" });
+      }
+      res.json(profile);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch sponsor profile" });
+    }
+  });
+
+  app.post("/api/sponsor-profiles", async (req, res) => {
+    try {
+      const validatedData = insertSponsorProfileSchema.parse(req.body);
+      const profile = await storage.createSponsorProfile(validatedData);
+      res.status(201).json(profile);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid profile data", errors: error.errors });
+      }
+      res.status(500).json({ message: "Failed to create sponsor profile" });
+    }
+  });
+
+  app.patch("/api/sponsor-profiles/:id", async (req, res) => {
+    try {
+      const updates = insertSponsorProfileSchema.partial().parse(req.body);
+      const profile = await storage.updateSponsorProfile(parseInt(req.params.id), updates);
+      if (!profile) {
+        return res.status(404).json({ message: "Sponsor profile not found" });
+      }
+      res.json(profile);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid profile data", errors: error.errors });
+      }
+      res.status(500).json({ message: "Failed to update sponsor profile" });
+    }
+  });
+
+  // Sponsorship Agreement Routes
+  app.get("/api/sponsorship-agreements", async (req, res) => {
+    try {
+      const agreements = await storage.getSponsorshipAgreements();
+      res.json(agreements);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch sponsorship agreements" });
+    }
+  });
+
+  app.get("/api/sponsorship-agreements/:id", async (req, res) => {
+    try {
+      const agreement = await storage.getSponsorshipAgreement(parseInt(req.params.id));
+      if (!agreement) {
+        return res.status(404).json({ message: "Sponsorship agreement not found" });
+      }
+      res.json(agreement);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch sponsorship agreement" });
+    }
+  });
+
+  app.post("/api/sponsorship-agreements", async (req, res) => {
+    try {
+      const validatedData = insertSponsorshipAgreementSchema.parse(req.body);
+      const agreement = await storage.createSponsorshipAgreement(validatedData);
+      res.status(201).json(agreement);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid agreement data", errors: error.errors });
+      }
+      res.status(500).json({ message: "Failed to create sponsorship agreement" });
+    }
+  });
+
+  app.patch("/api/sponsorship-agreements/:id", async (req, res) => {
+    try {
+      const updates = insertSponsorshipAgreementSchema.partial().parse(req.body);
+      const agreement = await storage.updateSponsorshipAgreement(parseInt(req.params.id), updates);
+      if (!agreement) {
+        return res.status(404).json({ message: "Sponsorship agreement not found" });
+      }
+      res.json(agreement);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid agreement data", errors: error.errors });
+      }
+      res.status(500).json({ message: "Failed to update sponsorship agreement" });
+    }
+  });
+
+  // Sponsorship Credit Routes
+  app.get("/api/sponsorship-credits/:seekerId", async (req, res) => {
+    try {
+      const credits = await storage.getSponsorshipCredits(parseInt(req.params.seekerId));
+      res.json(credits);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch sponsorship credits" });
+    }
+  });
+
+  app.post("/api/sponsorship-credits", async (req, res) => {
+    try {
+      const validatedData = insertSponsorshipCreditSchema.parse(req.body);
+      const credit = await storage.createSponsorshipCredit(validatedData);
+      res.status(201).json(credit);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid credit data", errors: error.errors });
+      }
+      res.status(500).json({ message: "Failed to create sponsorship credit" });
+    }
+  });
+
+  // Sponsorship Message Routes
+  app.get("/api/messages/:userId", async (req, res) => {
+    try {
+      const messages = await storage.getMessages(parseInt(req.params.userId));
+      res.json(messages);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch messages" });
+    }
+  });
+
+  app.get("/api/conversations/:userId1/:userId2", async (req, res) => {
+    try {
+      const conversation = await storage.getConversation(
+        parseInt(req.params.userId1),
+        parseInt(req.params.userId2)
+      );
+      res.json(conversation);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch conversation" });
+    }
+  });
+
+  app.post("/api/messages", async (req, res) => {
+    try {
+      const validatedData = insertSponsorshipMessageSchema.parse(req.body);
+      const message = await storage.sendMessage(validatedData);
+      res.status(201).json(message);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid message data", errors: error.errors });
+      }
+      res.status(500).json({ message: "Failed to send message" });
+    }
+  });
+
+  app.patch("/api/messages/:id/read", async (req, res) => {
+    try {
+      await storage.markMessageAsRead(parseInt(req.params.id));
+      res.status(200).json({ message: "Message marked as read" });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to mark message as read" });
     }
   });
 

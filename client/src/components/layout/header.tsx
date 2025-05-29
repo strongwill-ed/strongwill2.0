@@ -34,8 +34,9 @@ export default function Header() {
           {/* Logo */}
           <div className="flex-shrink-0">
             <Link href="/">
-              <span className="font-black italic text-3xl text-black cursor-pointer hover:text-gray-700 transition-colors tracking-tight">
-                STRONGWILL
+              <span className="text-3xl text-black cursor-pointer hover:text-gray-700 transition-colors tracking-tight">
+                <span className="font-black italic">STRONGWILL</span>
+                <span className="font-normal italic">SPORTS</span>
               </span>
             </Link>
           </div>
