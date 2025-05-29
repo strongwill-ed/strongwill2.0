@@ -496,7 +496,7 @@ export default function GroupOrders() {
             </div>
             <div className="text-center">
               <div className="w-12 h-12 bg-black rounded-full flex items-center justify-center mx-auto mb-4">
-                <Share2 className="h-6 w-6 text-white" />
+                <Share className="h-6 w-6 text-white" />
               </div>
               <h3 className="font-semibold text-black mb-2">2. Share Link</h3>
               <p className="text-gray-600 text-sm">Share the order link with team members to collect orders</p>
