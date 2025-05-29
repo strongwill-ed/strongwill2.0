@@ -32,15 +32,7 @@ export default function Products() {
   });
 
   const { data: products = [], isLoading: productsLoading } = useQuery<Product[]>({
-    queryKey: ["/api/products", categoryFromUrl || selectedCategory],
-    queryFn: async () => {
-      const url = selectedCategory !== "all" 
-        ? `/api/products?categoryId=${selectedCategory}`
-        : "/api/products";
-      const response = await fetch(url);
-      if (!response.ok) throw new Error("Failed to fetch products");
-      return response.json();
-    },
+    queryKey: ["/api/products"],
   });
 
   // Set initial category from URL
@@ -50,12 +42,48 @@ export default function Products() {
     }
   });
 
+  // Category mapping function
+  const getCategoryForProduct = (product: Product) => {
+    const name = product.name.toLowerCase();
+    
+    // Year 12 Leavers: hoodies, jackets, graduation apparel
+    if (name.includes('hoodie') || name.includes('jacket') || name.includes('year 12') || 
+        name.includes('graduation') || name.includes('varsity') || name.includes('bomber')) {
+      return 'year12';
+    }
+    
+    // Sports Uniforms: jerseys, singlets, team uniforms
+    if (name.includes('jersey') || name.includes('singlet') || name.includes('uniform') || 
+        name.includes('shorts') || name.includes('polo') || name.includes('training')) {
+      return 'sports';
+    }
+    
+    // Gym & Training: athletic wear, performance gear
+    if (name.includes('tank') || name.includes('tee') || name.includes('gym') || 
+        name.includes('fitness') || name.includes('workout') || name.includes('athletic')) {
+      return 'gym';
+    }
+    
+    // Default to sports for wrestling singlets and other athletic items
+    return 'sports';
+  };
+
   // Filter and sort products
   const filteredProducts = products
     .filter(product => {
       const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                            (product.description && product.description.toLowerCase().includes(searchQuery.toLowerCase()));
-      const matchesCategory = selectedCategory === "all" || product.categoryId?.toString() === selectedCategory;
+      
+      // Handle new category system
+      let matchesCategory = true;
+      if (selectedCategory !== "all") {
+        if (selectedCategory === "year12" || selectedCategory === "sports" || selectedCategory === "gym") {
+          matchesCategory = getCategoryForProduct(product) === selectedCategory;
+        } else {
+          matchesCategory = product.categoryId?.toString() === selectedCategory;
+        }
+      }
+      
       const matchesPrice = parseFloat(product.basePrice) >= priceRange[0] && parseFloat(product.basePrice) <= priceRange[1];
       return matchesSearch && matchesCategory && matchesPrice;
     })
@@ -79,9 +107,17 @@ export default function Products() {
 
   const isLoading = categoriesLoading || productsLoading;
 
-  const categoryName = selectedCategory === "all" 
-    ? "All Products" 
-    : categories?.find(cat => cat.id.toString() === selectedCategory)?.name || "Products";
+  const getCategoryDisplayName = (category: string) => {
+    switch (category) {
+      case "year12": return "Year 12 Leavers";
+      case "sports": return "Sports Uniforms";
+      case "gym": return "Gym & Training";
+      case "all": return "All Products";
+      default: return categories?.find(cat => cat.id.toString() === category)?.name || "Products";
+    }
+  };
+
+  const categoryName = getCategoryDisplayName(selectedCategory);
 
   const seoTitle = `${categoryName} - Custom Athletic Apparel | Strongwill Sports`;
   const seoDescription = `Shop premium ${categoryName.toLowerCase()} at Strongwill Sports. Custom athletic apparel with advanced design tools, team uniforms, and wrestling singlets.`;
@@ -205,6 +241,9 @@ export default function Products() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Categories</SelectItem>
+                <SelectItem value="year12">Year 12 Leavers</SelectItem>
+                <SelectItem value="sports">Sports Uniforms</SelectItem>
+                <SelectItem value="gym">Gym & Training</SelectItem>
                 {categories.map((category) => (
                   <SelectItem key={category.id} value={category.id.toString()}>
                     {category.name}

@@ -6,6 +6,9 @@ import { useLocation } from "wouter";
 import { ArrowRight, Check, Users, Palette, ShoppingBag } from "lucide-react";
 import { NewsletterSubscription } from "@/components/newsletter/newsletter-subscription";
 import heroImage from "@assets/aussie football banner team jersey singlet shorts squad.jpg";
+import year12LeaversImage from "@assets/YEAR-12-FINAL-5.jpg";
+import sportsUniformsImage from "@assets/Sports-Uniforms.jpg";
+import gymTrainingImage from "@assets/Gymwear-Training.jpg";
 
 export default function Home() {
   const [, setLocation] = useLocation();
@@ -76,41 +79,64 @@ export default function Home() {
             </p>
           </div>
           
-          {isLoading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-              {[...Array(4)].map((_, i) => (
-                <div key={i} className="bg-white rounded-lg shadow-sm p-6 animate-pulse">
-                  <div className="w-full h-48 bg-gray-200 rounded mb-4"></div>
-                  <div className="h-6 bg-gray-200 rounded mb-2"></div>
-                  <div className="h-4 bg-gray-200 rounded mb-4"></div>
-                  <div className="h-4 bg-gray-200 rounded w-1/2"></div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-              {categories?.map((category) => (
-                <Card 
-                  key={category.id} 
-                  className="card-hover cursor-pointer overflow-hidden"
-                  onClick={() => setLocation(`/products?category=${category.id}`)}
-                >
-                  <div className="aspect-square overflow-hidden">
-                    <img 
-                      src={category.imageUrl || "https://images.unsplash.com/photo-1586790170083-2f9ceadc732d"} 
-                      alt={category.name} 
-                      className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                    />
-                  </div>
-                  <CardContent className="p-6">
-                    <h3 className="text-xl font-semibold text-black mb-2">{category.name}</h3>
-                    <p className="text-gray-600 mb-4">{category.description}</p>
-                    <span className="text-sm font-medium text-black">View Collection</span>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          )}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Year 12 Leavers */}
+            <Card 
+              className="card-hover cursor-pointer overflow-hidden"
+              onClick={() => setLocation("/products?category=year12")}
+            >
+              <div className="aspect-square overflow-hidden">
+                <img 
+                  src={year12LeaversImage}
+                  alt="Year 12 Leavers" 
+                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                />
+              </div>
+              <CardContent className="p-6">
+                <h3 className="text-xl font-semibold text-black mb-2">Year 12 Leavers</h3>
+                <p className="text-gray-600 mb-4">Celebrate your graduation with custom Year 12 leavers apparel. Hoodies, jackets, and more to commemorate your achievement.</p>
+                <span className="text-sm font-medium text-black">View Collection</span>
+              </CardContent>
+            </Card>
+
+            {/* Sports Uniforms */}
+            <Card 
+              className="card-hover cursor-pointer overflow-hidden"
+              onClick={() => setLocation("/products?category=sports")}
+            >
+              <div className="aspect-square overflow-hidden">
+                <img 
+                  src={sportsUniformsImage}
+                  alt="Sports Uniforms" 
+                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                />
+              </div>
+              <CardContent className="p-6">
+                <h3 className="text-xl font-semibold text-black mb-2">Sports Uniforms</h3>
+                <p className="text-gray-600 mb-4">Professional sports uniforms for teams and clubs. Custom designs for rugby, netball, AFL, and all sporting codes.</p>
+                <span className="text-sm font-medium text-black">View Collection</span>
+              </CardContent>
+            </Card>
+
+            {/* Gym & Training */}
+            <Card 
+              className="card-hover cursor-pointer overflow-hidden"
+              onClick={() => setLocation("/products?category=gym")}
+            >
+              <div className="aspect-square overflow-hidden">
+                <img 
+                  src={gymTrainingImage}
+                  alt="Gym & Training" 
+                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                />
+              </div>
+              <CardContent className="p-6">
+                <h3 className="text-xl font-semibold text-black mb-2">Gym & Training</h3>
+                <p className="text-gray-600 mb-4">High-performance training apparel for fitness enthusiasts. Breathable fabrics and ergonomic designs for optimal performance.</p>
+                <span className="text-sm font-medium text-black">View Collection</span>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </section>
 
