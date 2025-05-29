@@ -157,7 +157,21 @@ export default function GroupOrders() {
   });
 
   const onCreateSubmit = (data: z.infer<typeof createGroupOrderSchema>) => {
-    createGroupOrderMutation.mutate(data);
+    if (data.orderType === "custom") {
+      // Redirect to design tool for custom design products
+      const params = new URLSearchParams({
+        groupOrder: 'true',
+        name: data.name,
+        productId: data.productId?.toString() || '',
+        deadline: data.deadline,
+        minimumQuantity: data.minimumQuantity?.toString() || '10',
+        description: data.description || '',
+        organizerUserId: data.organizerUserId?.toString() || ''
+      });
+      window.location.href = `/design-tool?${params.toString()}`;
+    } else {
+      createGroupOrderMutation.mutate(data);
+    }
   };
 
   const onJoinSubmit = (data: z.infer<typeof joinGroupOrderSchema>) => {
@@ -321,7 +335,7 @@ export default function GroupOrders() {
                         <FormItem>
                           <FormLabel>Deadline</FormLabel>
                           <FormControl>
-                            <Input type="datetime-local" {...field} />
+                            <Input type="date" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>

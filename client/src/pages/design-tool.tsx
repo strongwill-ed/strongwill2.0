@@ -34,12 +34,21 @@ export default function DesignTool() {
   const { addToCart } = useCart();
   const queryClient = useQueryClient();
   
-  // Get product ID from URL params
+  // Get URL params for both regular products and group orders
   const urlParams = new URLSearchParams(window.location.search);
   const productId = urlParams.get("product");
+  const isGroupOrderMode = urlParams.get("groupOrder") === "true";
+  const groupOrderData = isGroupOrderMode ? {
+    name: urlParams.get("name") || "",
+    productId: urlParams.get("productId") || "",
+    deadline: urlParams.get("deadline") || "",
+    minimumQuantity: parseInt(urlParams.get("minimumQuantity") || "10"),
+    description: urlParams.get("description") || "",
+    organizerUserId: parseInt(urlParams.get("organizerUserId") || "1")
+  } : null;
   
   const [selectedProduct, setSelectedProduct] = useState<number | null>(
-    productId ? parseInt(productId) : null
+    productId ? parseInt(productId) : (groupOrderData ? parseInt(groupOrderData.productId) : null)
   );
   const [designElements, setDesignElements] = useState<DesignElement[]>([]);
   const [selectedElement, setSelectedElement] = useState<string | null>(null);
@@ -77,11 +86,45 @@ export default function DesignTool() {
     mutationFn: async (designData: InsertDesign) => {
       return apiRequest("POST", "/api/designs", designData);
     },
-    onSuccess: () => {
-      toast({
-        title: "Success",
-        description: "Design saved successfully!",
-      });
+    onSuccess: async (response) => {
+      const savedDesign = await response.json();
+      
+      if (isGroupOrderMode && groupOrderData) {
+        // Create group order with the saved design
+        const groupOrderPayload = {
+          ...groupOrderData,
+          productId: parseInt(groupOrderData.productId),
+          deadline: new Date(groupOrderData.deadline),
+          designId: savedDesign.id,
+          orderType: "custom",
+          status: "active",
+          currentQuantity: 0,
+          paymentMode: "individual",
+          totalEstimate: "0.00",
+        };
+        
+        try {
+          await apiRequest("POST", "/api/group-orders", groupOrderPayload);
+          toast({
+            title: "Success",
+            description: "Design saved and group order created successfully!",
+          });
+          // Redirect back to group orders page
+          window.location.href = "/group-orders";
+        } catch (error) {
+          toast({
+            title: "Error",
+            description: "Design saved but failed to create group order",
+            variant: "destructive",
+          });
+        }
+      } else {
+        toast({
+          title: "Success",
+          description: "Design saved successfully!",
+        });
+      }
+      
       queryClient.invalidateQueries({ queryKey: ["/api/designs"] });
     },
     onError: () => {
@@ -321,7 +364,14 @@ export default function DesignTool() {
           <div className="flex justify-between items-center">
             <div>
               <h1 className="text-3xl font-bold text-black">Design Tool</h1>
-              <p className="text-gray-600 mt-1">Create your perfect custom apparel design</p>
+              {isGroupOrderMode && groupOrderData ? (
+                <div className="mt-2">
+                  <p className="text-blue-600 font-medium">Creating design template for: {groupOrderData.name}</p>
+                  <p className="text-gray-600 text-sm">This design will be used as the template for your group order</p>
+                </div>
+              ) : (
+                <p className="text-gray-600 mt-1">Create your perfect custom apparel design</p>
+              )}
             </div>
             <div className="flex space-x-3">
               <Button variant="outline" onClick={exportDesign}>
@@ -330,7 +380,7 @@ export default function DesignTool() {
               </Button>
               <Button variant="outline" onClick={saveDesign} disabled={saveDesignMutation.isPending}>
                 <Save className="mr-2 h-4 w-4" />
-                {saveDesignMutation.isPending ? "Saving..." : "Save"}
+                {saveDesignMutation.isPending ? "Creating..." : (isGroupOrderMode ? "Create Group Order" : "Save")}
               </Button>
               {addToGroupOrder ? (
                 <Button onClick={addToGroupOrderHandler} className="btn-primary">
