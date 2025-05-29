@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import type { Product } from "@shared/schema";
 import { Palette, ShoppingCart } from "lucide-react";
+import { useCurrency } from "@/lib/currency";
 
 /**
  * Props interface for the ProductCard component
@@ -28,6 +29,8 @@ interface ProductCardProps {
  * @param onAddToCart - Callback for adding item to cart
  */
 export default function ProductCard({ product, onDesignClick, onAddToCart }: ProductCardProps) {
+  const { formatPrice } = useCurrency();
+  
   return (
     <Card className="group card-hover overflow-hidden">
       <div className="aspect-square overflow-hidden">
@@ -105,7 +108,7 @@ export default function ProductCard({ product, onDesignClick, onAddToCart }: Pro
         
         <div className="flex justify-between items-center mb-4">
           <span className="text-xl font-bold text-black">
-            ${product.basePrice}
+            {formatPrice(parseFloat(product.basePrice))}
           </span>
           <span className="text-sm text-gray-500">
             Base price

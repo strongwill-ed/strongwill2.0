@@ -883,6 +883,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const profile = await storage.createSeekerProfile(validatedData);
       res.status(201).json(profile);
     } catch (error) {
+      console.error("Error creating seeker profile:", error);
       if (error instanceof z.ZodError) {
         return res.status(400).json({ message: "Invalid profile data", errors: error.errors });
       }
@@ -934,6 +935,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const profile = await storage.createSponsorProfile(validatedData);
       res.status(201).json(profile);
     } catch (error) {
+      console.error("Error creating sponsor profile:", error);
       if (error instanceof z.ZodError) {
         return res.status(400).json({ message: "Invalid profile data", errors: error.errors });
       }
