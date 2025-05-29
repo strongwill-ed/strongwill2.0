@@ -74,7 +74,7 @@ export default function GroupOrders() {
   const joinGroupOrderForm = useForm<z.infer<typeof joinGroupOrderSchema>>({
     resolver: zodResolver(joinGroupOrderSchema),
     defaultValues: {
-      userId: 1, // TODO: Get from auth context
+      userId: user?.id || 1,
       quantity: 1,
       participantName: "",
       participantEmail: "",

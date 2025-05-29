@@ -546,6 +546,46 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.delete("/api/group-order-items/:id", async (req, res) => {
+    try {
+      const itemId = parseInt(req.params.id);
+      
+      // Get all group order items to find the one being deleted
+      const allItems: any[] = [];
+      const groupOrders = await storage.getGroupOrders();
+      
+      for (const groupOrder of groupOrders) {
+        const items = await storage.getGroupOrderItems(groupOrder.id);
+        allItems.push(...items);
+      }
+      
+      const item = allItems.find(i => i.id === itemId);
+      if (!item) {
+        return res.status(404).json({ message: "Group order item not found" });
+      }
+      
+      const groupOrder = await storage.getGroupOrder(item.groupOrderId);
+      if (!groupOrder) {
+        return res.status(404).json({ message: "Group order not found" });
+      }
+      
+      // Remove the item
+      const success = await storage.removeGroupOrderItem(itemId);
+      if (success) {
+        // Update group order current quantity
+        const newQuantity = Math.max(0, (groupOrder.currentQuantity || 0) - item.quantity);
+        await storage.updateGroupOrder(item.groupOrderId, { currentQuantity: newQuantity });
+        
+        res.json({ success: true });
+      } else {
+        res.status(500).json({ message: "Failed to remove group order item" });
+      }
+    } catch (error) {
+      console.error('Remove group order item error:', error);
+      res.status(500).json({ message: "Failed to remove group order item", error: (error as Error).message });
+    }
+  });
+
   // Orders API
   app.post("/api/orders", async (req, res) => {
     try {

@@ -59,6 +59,7 @@ export interface IStorage {
   updateGroupOrder(id: number, updates: Partial<InsertGroupOrder>): Promise<GroupOrder | undefined>;
   getGroupOrderItems(groupOrderId: number): Promise<GroupOrderItem[]>;
   addGroupOrderItem(item: InsertGroupOrderItem): Promise<GroupOrderItem>;
+  removeGroupOrderItem(itemId: number): Promise<boolean>;
 
   // Sponsorship Platform
   // Seeker Profiles
@@ -685,6 +686,14 @@ export class DatabaseStorage implements IStorage {
       .values(item)
       .returning();
     return newItem;
+  }
+
+  async removeGroupOrderItem(itemId: number): Promise<boolean> {
+    await this.ensureInitialized();
+    const result = await db
+      .delete(groupOrderItems)
+      .where(eq(groupOrderItems.id, itemId));
+    return (result.rowCount || 0) > 0;
   }
 
   // Sponsorship Platform Implementation
