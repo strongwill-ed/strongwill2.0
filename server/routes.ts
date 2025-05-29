@@ -608,6 +608,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.patch("/api/group-order-items/:id", async (req, res) => {
+    try {
+      const itemId = parseInt(req.params.id);
+      const updates = req.body;
+      
+      const updatedItem = await storage.updateGroupOrderItem(itemId, updates);
+      
+      if (!updatedItem) {
+        return res.status(404).json({ message: "Group order item not found" });
+      }
+      
+      res.json(updatedItem);
+    } catch (error) {
+      console.error('Update group order item error:', error);
+      res.status(500).json({ message: "Failed to update group order item", error: (error as Error).message });
+    }
+  });
+
   // Orders API
   app.post("/api/orders", async (req, res) => {
     try {

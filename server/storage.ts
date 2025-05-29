@@ -59,6 +59,7 @@ export interface IStorage {
   updateGroupOrder(id: number, updates: Partial<InsertGroupOrder>): Promise<GroupOrder | undefined>;
   getGroupOrderItems(groupOrderId: number): Promise<GroupOrderItem[]>;
   addGroupOrderItem(item: InsertGroupOrderItem): Promise<GroupOrderItem>;
+  updateGroupOrderItem(itemId: number, updates: Partial<InsertGroupOrderItem>): Promise<GroupOrderItem | undefined>;
   removeGroupOrderItem(itemId: number): Promise<boolean>;
 
   // Sponsorship Platform
@@ -686,6 +687,16 @@ export class DatabaseStorage implements IStorage {
       .values(item)
       .returning();
     return newItem;
+  }
+
+  async updateGroupOrderItem(itemId: number, updates: Partial<InsertGroupOrderItem>): Promise<GroupOrderItem | undefined> {
+    await this.ensureInitialized();
+    const [updatedItem] = await db
+      .update(groupOrderItems)
+      .set(updates)
+      .where(eq(groupOrderItems.id, itemId))
+      .returning();
+    return updatedItem || undefined;
   }
 
   async removeGroupOrderItem(itemId: number): Promise<boolean> {

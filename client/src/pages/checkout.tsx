@@ -56,7 +56,7 @@ export default function Checkout() {
     enabled: isGroupOrderCheckout,
   });
 
-  const { data: products = [] } = useQuery<Product[]>({
+  const { data: products = [], isLoading: productsLoading } = useQuery<Product[]>({
     queryKey: ["/api/products"],
     enabled: isGroupOrderCheckout,
   });
@@ -81,6 +81,13 @@ export default function Checkout() {
       // Calculate totals for group order
       const product = products.find(p => p.id === groupOrderDetails.productId);
       const basePrice = parseFloat(product?.basePrice || "0");
+      
+      console.log('Group order calculation:', {
+        productId: groupOrderDetails.productId,
+        product,
+        basePrice,
+        items: groupOrderDetails.items,
+      });
       
       totalQuantity = groupOrderDetails.items?.reduce((total, item) => total + (item.quantity || 1), 0) || 0;
       subtotal = basePrice * totalQuantity;
