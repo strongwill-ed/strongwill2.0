@@ -133,9 +133,11 @@ export default function SponsorshipPage() {
                       <li>• Manage sponsorship credits and agreements</li>
                     </ul>
                   </div>
-                  <Button className="w-full mt-4">
-                    Create Team Profile
-                  </Button>
+                  <Link href="/create-seeker-profile">
+                    <Button className="w-full mt-4">
+                      Create Team Profile
+                    </Button>
+                  </Link>
                 </CardContent>
               </Card>
 

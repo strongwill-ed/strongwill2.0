@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
@@ -41,10 +41,19 @@ export default function CreateSponsorProfile() {
   const queryClient = useQueryClient();
   const { user } = useAuth();
 
-  // Redirect to login if not authenticated
+  // Show loading or redirect to login if not authenticated
   if (!user) {
-    setLocation("/login");
-    return null;
+    return (
+      <div className="min-h-screen bg-gray-50 py-12">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h1 className="text-2xl font-bold mb-4">Authentication Required</h1>
+          <p className="text-gray-600 mb-6">You need to be logged in to create a sponsor profile.</p>
+          <Button onClick={() => setLocation("/login")}>
+            Go to Login
+          </Button>
+        </div>
+      </div>
+    );
   }
 
   const form = useForm({
