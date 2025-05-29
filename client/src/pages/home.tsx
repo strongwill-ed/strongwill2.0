@@ -49,7 +49,7 @@ export default function Home() {
             <Button 
               variant="outline" 
               size="lg" 
-              className="border-white text-white hover:bg-white hover:text-black font-semibold px-8 py-4 text-lg"
+              className="border-2 border-white text-white bg-transparent hover:bg-white hover:text-black font-semibold px-8 py-4 text-lg transition-all duration-300"
               onClick={() => setLocation("/products")}
             >
               View Products
