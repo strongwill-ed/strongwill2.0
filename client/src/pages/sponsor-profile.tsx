@@ -55,6 +55,24 @@ export default function SponsorProfile() {
     },
   });
 
+  const deleteProfileMutation = useMutation({
+    mutationFn: () => apiRequest("DELETE", `/api/sponsor-profiles/${profile?.id}`),
+    onSuccess: () => {
+      toast({
+        title: "Profile Deleted",
+        description: "Your sponsor profile has been deleted successfully.",
+      });
+      setLocation("/sponsorship");
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to delete profile. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 py-12">
