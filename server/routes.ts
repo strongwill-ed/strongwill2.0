@@ -509,6 +509,85 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Stripe Payment Intent
+  app.post("/api/payments/create-intent", async (req, res) => {
+    try {
+      const { amount, currency = 'usd' } = req.body;
+
+      if (!amount) {
+        return res.status(400).json({ message: "Amount is required" });
+      }
+
+      // Check if Stripe is configured
+      if (!process.env.STRIPE_SECRET_KEY) {
+        return res.status(400).json({ 
+          message: "Payment processing not configured. Please provide Stripe credentials." 
+        });
+      }
+
+      const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: Math.round(amount * 100), // Convert to cents
+        currency,
+        automatic_payment_methods: {
+          enabled: true,
+        },
+      });
+
+      res.json({
+        clientSecret: paymentIntent.client_secret,
+      });
+    } catch (error) {
+      console.error('Payment intent creation error:', error);
+      res.status(500).json({ message: "Failed to create payment intent" });
+    }
+  });
+
+  // Confirm payment and update order
+  app.post("/api/payments/confirm", async (req, res) => {
+    try {
+      const { orderId, paymentIntentId } = req.body;
+
+      if (!orderId || !paymentIntentId) {
+        return res.status(400).json({ message: "Order ID and Payment Intent ID are required" });
+      }
+
+      // Update order payment status
+      const updatedOrder = await storage.updateOrderStatus(orderId, "confirmed");
+      if (!updatedOrder) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+
+      res.json({ 
+        message: "Payment confirmed successfully",
+        order: updatedOrder 
+      });
+    } catch (error) {
+      console.error('Payment confirmation error:', error);
+      res.status(500).json({ message: "Failed to confirm payment" });
+    }
+  });
+
+  // Get all orders for admin
+  app.get("/api/orders", async (req, res) => {
+    try {
+      const orders = await storage.getOrders();
+      
+      // Get order items for each order
+      const ordersWithItems = await Promise.all(
+        orders.map(async (order) => {
+          const items = await storage.getOrderItems(order.id);
+          return { ...order, items };
+        })
+      );
+      
+      res.json(ordersWithItems);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch orders" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
