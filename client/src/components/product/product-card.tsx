@@ -174,9 +174,16 @@ export default function ProductCard({ product, onDesignClick, onAddToCart }: Pro
               </span>
             )}
           </div>
-          <span className="text-sm text-gray-500">
-            Starting at
-          </span>
+          <div className="text-right">
+            <span className="text-sm text-gray-500">
+              Starting at
+            </span>
+            {product.isOnSale && product.salePrice && (
+              <div className="text-xs text-green-600 font-medium">
+                Save {formatPrice(parseFloat(product.basePrice) - parseFloat(product.salePrice))}
+              </div>
+            )}
+          </div>
         </div>
         
         {/* Stock indicator */}
