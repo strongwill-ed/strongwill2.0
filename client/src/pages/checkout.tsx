@@ -46,14 +46,32 @@ type CheckoutFormData = z.infer<typeof checkoutSchema>;
 
 export default function Checkout() {
   const { cartItems, clearCart, getCartTotal } = useCart();
-  const { currentCurrency } = useCurrency();
+  const { currency } = useCurrency();
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const [isProcessing, setIsProcessing] = useState(false);
-  const { user } = useAuthContext();
   const [appliedSponsorshipCredit, setAppliedSponsorshipCredit] = useState(0);
   const [showDeadlineWarning, setShowDeadlineWarning] = useState(false);
   const [pendingSubmitData, setPendingSubmitData] = useState<CheckoutFormData | null>(null);
+
+  // Get current user
+  const { data: user } = useQuery({
+    queryKey: ["/api/auth/me"],
+    queryFn: () => fetch("/api/auth/me", { credentials: "include" })
+      .then(res => res.ok ? res.json() : null),
+  });
+
+  // Get user's seeker profile to check for sponsorship credits
+  const { data: seekerProfile } = useQuery<SeekerProfile>({
+    queryKey: ["/api/seeker-profiles/user", user?.id],
+    enabled: !!user,
+  });
+
+  // Get available sponsorship credits
+  const { data: sponsorshipCredits } = useQuery<SponsorshipCredit[]>({
+    queryKey: ["/api/sponsorship-credits", seekerProfile?.id],
+    enabled: !!seekerProfile,
+  });
 
   // Check if this is a group order checkout
   const urlParams = new URLSearchParams(window.location.search);
@@ -82,6 +100,11 @@ export default function Checkout() {
   });
 
   const sameAsBilling = form.watch("sameAsBilling");
+
+  // Calculate total available sponsorship credits
+  const totalAvailableCredits = sponsorshipCredits?.reduce((total, credit) => 
+    total + parseFloat(credit.remainingAmount), 0
+  ) || 0;
 
   const calculateOrderSummary = () => {
     let subtotal = 0;
@@ -141,8 +164,8 @@ export default function Checkout() {
     };
 
     const shipping = getShippingRate(selectedCountry);
-    const tax = (subtotal - bulkDiscount) * 0.1; // 10% GST for AU/NZ, VAT for EU
-    const total = subtotal - bulkDiscount + shipping + tax;
+    const tax = (subtotal - bulkDiscount - appliedSponsorshipCredit) * 0.1; // 10% GST for AU/NZ, VAT for EU
+    const total = subtotal - bulkDiscount - appliedSponsorshipCredit + shipping + tax;
 
     return { subtotal, bulkDiscount, shipping, tax, total, totalQuantity };
   };
@@ -286,7 +309,7 @@ export default function Checkout() {
         try {
           const paymentResponse = await apiPost<{ clientSecret: string }>("/api/payments/create-intent", {
             amount: total,
-            currency: currentCurrency.toLowerCase()
+            currency: currency.toLowerCase()
           });
           
           if (paymentResponse.clientSecret) {
@@ -786,6 +809,40 @@ export default function Checkout() {
                     <div className="flex justify-between text-green-600 dark:text-green-400">
                       <span>Bulk Discount (10% off 10+ items)</span>
                       <span>-${bulkDiscount.toFixed(2)}</span>
+                    </div>
+                  )}
+
+                  {/* Sponsorship Credits Section */}
+                  {totalAvailableCredits > 0 && (
+                    <div className="space-y-2 p-3 bg-blue-50 dark:bg-blue-950 rounded-lg border border-blue-200 dark:border-blue-800">
+                      <div className="flex items-center gap-2">
+                        <CreditCard className="h-4 w-4 text-blue-600" />
+                        <span className="font-medium text-blue-900 dark:text-blue-100">Sponsorship Credits Available</span>
+                      </div>
+                      <div className="text-sm text-blue-700 dark:text-blue-300">
+                        You have ${totalAvailableCredits.toFixed(2)} in sponsorship credits from your sponsors
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm">Apply credit to order:</span>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="h-7 text-xs"
+                          onClick={() => {
+                            const maxCredit = Math.min(totalAvailableCredits, subtotal - bulkDiscount);
+                            setAppliedSponsorshipCredit(maxCredit);
+                          }}
+                        >
+                          Apply ${Math.min(totalAvailableCredits, subtotal - bulkDiscount).toFixed(2)}
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+
+                  {appliedSponsorshipCredit > 0 && (
+                    <div className="flex justify-between text-blue-600 dark:text-blue-400">
+                      <span>Sponsorship Credit Applied</span>
+                      <span>-${appliedSponsorshipCredit.toFixed(2)}</span>
                     </div>
                   )}
 
