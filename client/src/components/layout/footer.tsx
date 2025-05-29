@@ -7,8 +7,9 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand */}
           <div className="md:col-span-1">
-            <span className="font-logo italic text-2xl font-bold mb-4 block">
-              Strongwillsports
+            <span className="font-logo text-2xl mb-4 block">
+              <span className="font-bold">STRONGWILL</span>{' '}
+              <span className="font-normal">SPORTS</span>
             </span>
             <p className="text-gray-300 text-sm leading-relaxed mb-6">
               Premium custom athletic apparel for champions who never settle for ordinary.
