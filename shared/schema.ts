@@ -110,6 +110,21 @@ export const groupOrderItems = pgTable("group_order_items", {
   participantEmail: text("participant_email").notNull(),
 });
 
+export const refunds = pgTable("refunds", {
+  id: serial("id").primaryKey(),
+  orderId: integer("order_id").references(() => orders.id).notNull(),
+  orderItemId: integer("order_item_id").references(() => orderItems.id),
+  refundAmount: text("refund_amount").notNull(),
+  reason: text("reason").notNull(),
+  status: text("status").notNull().default("pending"), // pending, approved, processed, failed
+  refundMethod: text("refund_method"), // original_payment, bank_transfer, store_credit
+  stripeRefundId: text("stripe_refund_id"),
+  adminNotes: text("admin_notes"),
+  processedBy: integer("processed_by").references(() => users.id),
+  createdAt: timestamp("created_at").defaultNow(),
+  processedAt: timestamp("processed_at"),
+});
+
 // Sponsorship Platform Tables
 export const seekerProfiles = pgTable("seeker_profiles", {
   id: serial("id").primaryKey(),
@@ -196,6 +211,7 @@ export const insertOrderSchema = createInsertSchema(orders).omit({ id: true, cre
 export const insertOrderItemSchema = createInsertSchema(orderItems).omit({ id: true });
 export const insertGroupOrderSchema = createInsertSchema(groupOrders).omit({ id: true, createdAt: true });
 export const insertGroupOrderItemSchema = createInsertSchema(groupOrderItems).omit({ id: true });
+export const insertRefundSchema = createInsertSchema(refunds).omit({ id: true, createdAt: true, processedAt: true });
 export const insertSeekerProfileSchema = createInsertSchema(seekerProfiles).omit({ id: true, createdAt: true });
 export const insertSponsorProfileSchema = createInsertSchema(sponsorProfiles).omit({ id: true, createdAt: true });
 export const insertSponsorshipAgreementSchema = createInsertSchema(sponsorshipAgreements).omit({ id: true, createdAt: true, updatedAt: true });
@@ -221,6 +237,8 @@ export type GroupOrder = typeof groupOrders.$inferSelect;
 export type InsertGroupOrder = z.infer<typeof insertGroupOrderSchema>;
 export type GroupOrderItem = typeof groupOrderItems.$inferSelect;
 export type InsertGroupOrderItem = z.infer<typeof insertGroupOrderItemSchema>;
+export type Refund = typeof refunds.$inferSelect;
+export type InsertRefund = z.infer<typeof insertRefundSchema>;
 export type SeekerProfile = typeof seekerProfiles.$inferSelect;
 export type InsertSeekerProfile = z.infer<typeof insertSeekerProfileSchema>;
 export type SponsorProfile = typeof sponsorProfiles.$inferSelect;
