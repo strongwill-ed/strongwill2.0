@@ -114,7 +114,7 @@ export default function SponsorshipPage() {
 
             {/* Call to Action */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <Card>
+              <Card className="flex flex-col">
                 <CardHeader>
                   <CardTitle className="flex items-center">
                     <Users className="h-5 w-5 mr-2" />
@@ -124,22 +124,22 @@ export default function SponsorshipPage() {
                     Create your profile and connect with sponsors who align with your values and goals.
                   </CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
+                <CardContent className="flex-1 flex flex-col">
+                  <div className="space-y-4 flex-1">
                     <ul className="space-y-2 text-sm text-gray-600">
                       <li>• Showcase your team's achievements and potential</li>
                       <li>• Set clear sponsorship goals and requirements</li>
                       <li>• Connect directly with interested sponsors</li>
                       <li>• Manage sponsorship credits and agreements</li>
                     </ul>
-                    <Button className="w-full">
-                      Create Team Profile
-                    </Button>
                   </div>
+                  <Button className="w-full mt-4">
+                    Create Team Profile
+                  </Button>
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card className="flex flex-col">
                 <CardHeader>
                   <CardTitle className="flex items-center">
                     <Building2 className="h-5 w-5 mr-2" />
@@ -149,18 +149,18 @@ export default function SponsorshipPage() {
                     Discover talented teams and athletes to sponsor while building your brand presence.
                   </CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
+                <CardContent className="flex-1 flex flex-col">
+                  <div className="space-y-4 flex-1">
                     <ul className="space-y-2 text-sm text-gray-600">
                       <li>• Find teams that match your brand values</li>
                       <li>• Set flexible sponsorship terms and budgets</li>
                       <li>• Track ROI and engagement metrics</li>
                       <li>• Build lasting community relationships</li>
                     </ul>
-                    <Button className="w-full">
-                      Become a Sponsor
-                    </Button>
                   </div>
+                  <Button className="w-full mt-4">
+                    Become a Sponsor
+                  </Button>
                 </CardContent>
               </Card>
             </div>
