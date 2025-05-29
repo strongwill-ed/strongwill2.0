@@ -31,7 +31,7 @@ const createGroupOrderSchema = insertGroupOrderSchema.extend({
 });
 
 const joinGroupOrderSchema = insertGroupOrderItemSchema.omit({ groupOrderId: true }).extend({
-  nickname: z.string().optional()
+  nickname: z.string().min(1, "Nickname is required")
 });
 
 export default function GroupOrders() {
@@ -541,7 +541,7 @@ export default function GroupOrders() {
                   name="nickname"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Nickname (Optional)</FormLabel>
+                      <FormLabel>Nickname</FormLabel>
                       <FormControl>
                         <Input
                           {...field}
