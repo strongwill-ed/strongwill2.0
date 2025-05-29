@@ -1,3 +1,36 @@
+/**
+ * Design Tool - Interactive Apparel Customization
+ * 
+ * Advanced design interface allowing users to create custom apparel designs
+ * with real-time preview and professional editing capabilities. Supports
+ * text, images, and graphics with full positioning and styling controls.
+ * 
+ * Key Features:
+ * - Product template system with realistic apparel shapes
+ * - Drag-and-drop design element positioning
+ * - Text editing with font, size, and color controls
+ * - Image upload and manipulation capabilities
+ * - Undo/redo functionality for design history
+ * - Save designs for future editing and reuse
+ * - Direct integration with cart and group orders
+ * 
+ * Design Workflow:
+ * 1. Select product template (singlet, uniform, etc.)
+ * 2. Add design elements (text, images, graphics)
+ * 3. Position and style elements using drag controls
+ * 4. Preview design on realistic product template
+ * 5. Save design and add to cart or group order
+ * 
+ * Technical Implementation:
+ * - Canvas-based rendering for smooth interactions
+ * - JSON serialization for design persistence
+ * - Real-time preview with apparel templates
+ * - Integration with product catalog and ordering system
+ * 
+ * @see client/src/components/design/design-canvas.tsx for canvas implementation
+ * @see client/src/components/design/apparel-templates.tsx for product templates
+ * @see shared/schema.ts for Design type definition
+ */
 import { useState, useRef, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";

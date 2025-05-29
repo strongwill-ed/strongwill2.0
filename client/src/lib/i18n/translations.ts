@@ -1,3 +1,22 @@
+/**
+ * Internationalization Translations
+ * 
+ * Provides multi-language support for the Strongwill Sports platform.
+ * Currently supports English (EN) and German (DE) languages.
+ * 
+ * Structure:
+ * - Organized by functional areas (nav, common, home, products, etc.)
+ * - Maintains consistent key naming across languages
+ * - Supports dynamic content and placeholders
+ * 
+ * Usage:
+ * - Import useTranslation hook in components
+ * - Access translations via t('key.subkey') syntax
+ * - Language switching handled by i18n configuration
+ * 
+ * @see client/src/lib/i18n/index.ts for configuration
+ * @see client/src/lib/i18n/use-translation.ts for hook implementation
+ */
 export const translations = {
   en: {
     // Navigation

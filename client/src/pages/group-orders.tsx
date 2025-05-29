@@ -1,3 +1,28 @@
+/**
+ * Group Orders Management Page
+ * 
+ * Comprehensive group ordering system that allows users to create and manage
+ * bulk orders for teams, clubs, and organizations. Supports member management,
+ * deadline tracking, and collaborative ordering workflows.
+ * 
+ * Key Features:
+ * - Create group orders with custom products or existing catalog items
+ * - Member invitation and management system
+ * - Real-time order tracking and status updates
+ * - Deadline management with automated notifications
+ * - Social sharing capabilities for order recruitment
+ * - Admin controls for order organizers
+ * 
+ * User Flow:
+ * 1. Create group order with basic details and minimum quantity
+ * 2. Share order link with potential members
+ * 3. Members join and add their product selections
+ * 4. Track progress toward minimum quantity goal
+ * 5. Complete order when minimum is reached and deadline approaches
+ * 
+ * @see shared/schema.ts for GroupOrder and GroupOrderItem type definitions
+ * @see server/routes.ts for API endpoints (/api/group-orders)
+ */
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";

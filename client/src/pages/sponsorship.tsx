@@ -1,3 +1,32 @@
+/**
+ * Sponsorship Marketplace Page
+ * 
+ * Central hub for the sponsorship ecosystem connecting teams/athletes seeking
+ * sponsorship with businesses offering sponsorship opportunities. Features
+ * advanced filtering, profile matching, and agreement management.
+ * 
+ * Key Features:
+ * - Seeker profile browsing with sport and location filters
+ * - Sponsor profile directory with industry categorization
+ * - Active sponsorship agreement tracking and management
+ * - Profile creation workflows for both seekers and sponsors
+ * - Privacy controls with anonymous profile sharing options
+ * 
+ * User Types:
+ * - Seekers: Teams, athletes, clubs seeking sponsorship
+ * - Sponsors: Businesses offering sponsorship opportunities
+ * - General Users: Browse public profiles and agreements
+ * 
+ * Navigation Flow:
+ * - Overview: Dashboard with key metrics and recent activity
+ * - Seekers: Browse and filter seeker profiles
+ * - Sponsors: Browse sponsor profiles by industry
+ * - Agreements: View active sponsorship partnerships
+ * 
+ * @see client/src/pages/create-seeker-profile.tsx for seeker onboarding
+ * @see client/src/pages/create-sponsor-profile.tsx for sponsor onboarding
+ * @see shared/schema.ts for SeekerProfile, SponsorProfile, and SponsorshipAgreement types
+ */
 import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";

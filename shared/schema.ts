@@ -1,3 +1,20 @@
+/**
+ * Database Schema Definition
+ * 
+ * Defines the complete database structure for Strongwill Sports platform using Drizzle ORM.
+ * Includes tables for e-commerce, group ordering, sponsorship marketplace, and user management.
+ * 
+ * Key Features:
+ * - Complete e-commerce functionality (products, orders, cart)
+ * - Group ordering system with member management
+ * - Sponsorship marketplace connecting teams and sponsors
+ * - User authentication and role-based access
+ * - Design tool integration for custom apparel
+ * - Internationalization support
+ * 
+ * @see server/db.ts for database connection configuration
+ * @see server/storage.ts for data access layer implementation
+ */
 import { pgTable, text, serial, integer, boolean, decimal, timestamp, json } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
