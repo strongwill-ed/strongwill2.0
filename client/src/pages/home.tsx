@@ -25,37 +25,28 @@ function DynamicText() {
   ];
   
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
-  const [isAnimating, setIsAnimating] = useState(false);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setIsAnimating(true);
-      
-      setTimeout(() => {
-        setCurrentWordIndex((prev) => (prev + 1) % words.length);
-        setIsAnimating(false);
-      }, 400);
+      setCurrentWordIndex((prev) => (prev + 1) % words.length);
     }, 2500);
 
     return () => clearInterval(interval);
   }, []);
 
   return (
-    <span className="relative inline-block overflow-hidden h-[1.2em] align-top">
-      <span 
-        className={`absolute w-full text-center transition-transform duration-400 ease-out ${
-          isAnimating ? 'transform -translate-y-full' : 'transform translate-y-0'
-        }`}
-      >
-        {words[currentWordIndex]}
-      </span>
-      <span 
-        className={`absolute w-full text-center transition-transform duration-400 ease-out ${
-          isAnimating ? 'transform translate-y-0' : 'transform translate-y-full'
-        }`}
-      >
-        {words[(currentWordIndex + 1) % words.length]}
-      </span>
+    <span className="relative inline-block overflow-hidden min-w-[200px]" style={{ height: '1.2em' }}>
+      {words.map((word, index) => (
+        <span
+          key={word}
+          className="absolute left-0 top-0 w-full transition-transform duration-500 ease-in-out"
+          style={{
+            transform: `translateY(${(index - currentWordIndex) * 100}%)`,
+          }}
+        >
+          {word}
+        </span>
+      ))}
     </span>
   );
 }
