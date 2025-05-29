@@ -329,7 +329,7 @@ export default function Checkout() {
                           <FormItem>
                             <FormLabel>City</FormLabel>
                             <FormControl>
-                              <Input placeholder="New York" {...field} />
+                              <Input placeholder="Sydney" {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -342,7 +342,7 @@ export default function Checkout() {
                           <FormItem>
                             <FormLabel>State</FormLabel>
                             <FormControl>
-                              <Input placeholder="NY" {...field} />
+                              <Input placeholder="NSW" {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -358,7 +358,7 @@ export default function Checkout() {
                           <FormItem>
                             <FormLabel>ZIP Code</FormLabel>
                             <FormControl>
-                              <Input placeholder="10001" {...field} />
+                              <Input placeholder="2000" {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -463,7 +463,7 @@ export default function Checkout() {
                         <FormItem>
                           <FormLabel>Phone Number</FormLabel>
                           <FormControl>
-                            <Input placeholder="+1 (555) 123-4567" {...field} />
+                            <Input placeholder="+61 2 9234 5678" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
