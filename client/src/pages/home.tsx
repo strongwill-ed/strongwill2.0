@@ -15,21 +15,20 @@ import gymTrainingImage from "@assets/Gymwear-Training.jpg";
 // Dynamic text rotation component
 function DynamicText() {
   const words = [
+    "Champions",
     "Athletic",
+    "Performance",
     "Team",
+    "Custom",
+    "Training",
+    "Competition",
+    "Squad",
+    "League",
+    "Class",
+    "Winners",
     "Graduation",
     "Club",
-    "Training",
-    "Squad",
-    "Performance",
-    "Competition",
-    "Class",
-    "Custom",
-    "Class",
-    "Celebration",
-    "Winners",
-    "League",
-    "Champions"
+    "Celebration"
   ];
   
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
