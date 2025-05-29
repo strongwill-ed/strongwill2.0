@@ -3,11 +3,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useQuery } from "@tanstack/react-query";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { Package, Calendar, DollarSign, ArrowLeft } from "lucide-react";
 
 export default function Orders() {
   const { user } = useAuth();
+  const [, setLocation] = useLocation();
 
   const { data: orders = [], isLoading } = useQuery({
     queryKey: ["/api/orders"],

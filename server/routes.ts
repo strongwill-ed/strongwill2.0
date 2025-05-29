@@ -1088,11 +1088,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/sponsorship-agreements", async (req, res) => {
     try {
+      console.log("Received sponsorship agreement data:", req.body);
       const validatedData = insertSponsorshipAgreementSchema.parse(req.body);
       const agreement = await storage.createSponsorshipAgreement(validatedData);
       res.status(201).json(agreement);
     } catch (error) {
+      console.log("Sponsorship agreement error:", error);
       if (error instanceof z.ZodError) {
+        console.log("Validation errors:", error.errors);
         return res.status(400).json({ message: "Invalid agreement data", errors: error.errors });
       }
       res.status(500).json({ message: "Failed to create sponsorship agreement" });
