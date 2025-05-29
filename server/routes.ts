@@ -457,37 +457,55 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Group Orders
   app.get("/api/group-orders", async (req, res) => {
     try {
+      // Get user info from headers (set by frontend auth)
+      const userId = req.headers['x-user-id'];
+      const userRole = req.headers['x-user-role'];
+      
+      if (!userId || !userRole) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+
       const { active } = req.query;
       let groupOrders;
-      
-      // For now, show all group orders to everyone until we fix authentication
-      // TODO: Implement proper session-based authentication
-      if (active === 'true') {
-        groupOrders = await storage.getActiveGroupOrders();
-      } else {
-        groupOrders = await storage.getGroupOrders();
-      }
-      
-      // Add creator information for all users for now
-      const groupOrdersWithCreators = await Promise.all(
-        groupOrders.map(async (groupOrder) => {
-          if (groupOrder.organizerUserId) {
-            const creator = await storage.getUser(groupOrder.organizerUserId);
+
+      if (userRole === 'admin') {
+        // Admin can see all group orders with creator information
+        if (active === 'true') {
+          groupOrders = await storage.getActiveGroupOrders();
+        } else {
+          groupOrders = await storage.getGroupOrders();
+        }
+        
+        // Add creator information for admin view
+        const groupOrdersWithCreators = await Promise.all(
+          groupOrders.map(async (groupOrder) => {
+            if (groupOrder.organizerUserId) {
+              const creator = await storage.getUser(groupOrder.organizerUserId);
+              return {
+                ...groupOrder,
+                creatorUsername: creator?.username || 'Unknown',
+                creatorEmail: creator?.email || 'Unknown'
+              };
+            }
             return {
               ...groupOrder,
-              creatorUsername: creator?.username || 'Unknown',
-              creatorEmail: creator?.email || 'Unknown'
+              creatorUsername: 'Unknown',
+              creatorEmail: 'Unknown'
             };
-          }
-          return {
-            ...groupOrder,
-            creatorUsername: 'Unknown',
-            creatorEmail: 'Unknown'
-          };
-        })
-      );
-      
-      res.json(groupOrdersWithCreators);
+          })
+        );
+        
+        res.json(groupOrdersWithCreators);
+      } else {
+        // Regular users only see their own group orders
+        const currentUserId = parseInt(userId as string);
+        if (active === 'true') {
+          groupOrders = await storage.getActiveGroupOrdersByUser(currentUserId);
+        } else {
+          groupOrders = await storage.getGroupOrdersByUser(currentUserId);
+        }
+        res.json(groupOrders);
+      }
     } catch (error) {
       console.error('Get group orders error:', error);
       res.status(500).json({ message: "Failed to fetch group orders" });
