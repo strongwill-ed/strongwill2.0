@@ -29,11 +29,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const response = await apiRequest("GET", "/api/auth/me");
         const data = await response.json();
         if (data && typeof data === 'object') {
-          setUser(data as User);
+          const userData = data as User;
+          setUser(userData);
+          setCurrentUser(userData);
         }
       } catch (error) {
         // User not authenticated
         setUser(null);
+        setCurrentUser(null);
       } finally {
         setIsLoading(false);
       }
@@ -49,7 +52,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
     const data = await response.json();
     if (response.ok && data) {
-      setUser(data as User);
+      const userData = data as User;
+      setUser(userData);
+      setCurrentUser(userData);
     }
   };
 
@@ -61,7 +66,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
     const data = await response.json();
     if (response.ok && data) {
-      setUser(data as User);
+      const userData = data as User;
+      setUser(userData);
+      setCurrentUser(userData);
     }
   };
 
@@ -72,6 +79,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // Continue with logout even if request fails
     }
     setUser(null);
+    setCurrentUser(null);
   };
 
   return (
