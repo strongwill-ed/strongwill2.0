@@ -74,11 +74,15 @@ export class DatabaseStorage implements IStorage {
 
   private async seedData() {
     // Seed categories
-    const [singletCategory, uniformCategory] = await db
+    const [singletCategory, uniformCategory, accessoriesCategory, trainwearCategory, headwearCategory, footwearCategory] = await db
       .insert(productCategories)
       .values([
         { name: "Singlets", description: "Professional wrestling singlets", imageUrl: null },
-        { name: "Team Uniforms", description: "Complete team uniform sets", imageUrl: null }
+        { name: "Team Uniforms", description: "Complete team uniform sets", imageUrl: null },
+        { name: "Accessories", description: "Sports accessories and equipment", imageUrl: null },
+        { name: "Training Wear", description: "Training and workout apparel", imageUrl: null },
+        { name: "Headwear", description: "Caps, beanies, and headbands", imageUrl: null },
+        { name: "Footwear", description: "Athletic shoes and socks", imageUrl: null }
       ])
       .returning();
 
@@ -86,6 +90,7 @@ export class DatabaseStorage implements IStorage {
     await db
       .insert(products)
       .values([
+        // Singlets
         {
           name: "Classic Wrestling Singlet",
           description: "High-performance wrestling singlet with moisture-wicking fabric",
@@ -97,6 +102,18 @@ export class DatabaseStorage implements IStorage {
           isActive: true,
         },
         {
+          name: "Competition Wrestling Singlet",
+          description: "Professional competition singlet with UWW approval",
+          basePrice: "109.99",
+          imageUrl: null,
+          categoryId: singletCategory.id,
+          sizes: ["XS", "S", "M", "L", "XL", "XXL"],
+          colors: ["Black", "Navy", "Red", "Royal Blue", "Green"],
+          isActive: true,
+        },
+
+        // Team Uniforms
+        {
           name: "Team Basketball Uniform",
           description: "Complete basketball uniform set with jersey and shorts",
           basePrice: "129.99",
@@ -104,6 +121,182 @@ export class DatabaseStorage implements IStorage {
           categoryId: uniformCategory.id,
           sizes: ["S", "M", "L", "XL", "XXL"],
           colors: ["Black/White", "Navy/Gold", "Red/White"],
+          isActive: true,
+        },
+        {
+          name: "Soccer Team Kit",
+          description: "Professional soccer uniform with jersey, shorts, and socks",
+          basePrice: "149.99",
+          imageUrl: null,
+          categoryId: uniformCategory.id,
+          sizes: ["S", "M", "L", "XL", "XXL"],
+          colors: ["Blue/White", "Red/Black", "Green/Gold", "Black/Silver"],
+          isActive: true,
+        },
+        {
+          name: "Baseball Uniform Set",
+          description: "Complete baseball uniform with jersey, pants, and cap",
+          basePrice: "159.99",
+          imageUrl: null,
+          categoryId: uniformCategory.id,
+          sizes: ["S", "M", "L", "XL", "XXL"],
+          colors: ["Navy/White", "Red/Gray", "Black/Gold"],
+          isActive: true,
+        },
+        {
+          name: "Track & Field Uniform",
+          description: "Lightweight running uniform for track and field events",
+          basePrice: "119.99",
+          imageUrl: null,
+          categoryId: uniformCategory.id,
+          sizes: ["XS", "S", "M", "L", "XL", "XXL"],
+          colors: ["Blue", "Red", "Black", "Green"],
+          isActive: true,
+        },
+
+        // Training Wear
+        {
+          name: "Performance Training T-Shirt",
+          description: "Moisture-wicking training shirt for all sports",
+          basePrice: "29.99",
+          imageUrl: null,
+          categoryId: trainwearCategory.id,
+          sizes: ["XS", "S", "M", "L", "XL", "XXL"],
+          colors: ["Black", "Navy", "Red", "Gray", "White"],
+          isActive: true,
+        },
+        {
+          name: "Athletic Shorts",
+          description: "Breathable athletic shorts with moisture management",
+          basePrice: "34.99",
+          imageUrl: null,
+          categoryId: trainwearCategory.id,
+          sizes: ["XS", "S", "M", "L", "XL", "XXL"],
+          colors: ["Black", "Navy", "Red", "Gray"],
+          isActive: true,
+        },
+        {
+          name: "Team Hoodie",
+          description: "Premium team hoodie with custom design options",
+          basePrice: "59.99",
+          imageUrl: null,
+          categoryId: trainwearCategory.id,
+          sizes: ["S", "M", "L", "XL", "XXL"],
+          colors: ["Black", "Navy", "Gray", "Red"],
+          isActive: true,
+        },
+        {
+          name: "Training Polo Shirt",
+          description: "Professional polo shirt for coaches and staff",
+          basePrice: "39.99",
+          imageUrl: null,
+          categoryId: trainwearCategory.id,
+          sizes: ["S", "M", "L", "XL", "XXL"],
+          colors: ["Navy", "Black", "White", "Red"],
+          isActive: true,
+        },
+
+        // Headwear
+        {
+          name: "Team Baseball Cap",
+          description: "Structured baseball cap with embroidered designs",
+          basePrice: "24.99",
+          imageUrl: null,
+          categoryId: headwearCategory.id,
+          sizes: ["One Size"],
+          colors: ["Black", "Navy", "Red", "White", "Gray"],
+          isActive: true,
+        },
+        {
+          name: "Sports Beanie",
+          description: "Knitted beanie for cold weather training",
+          basePrice: "19.99",
+          imageUrl: null,
+          categoryId: headwearCategory.id,
+          sizes: ["One Size"],
+          colors: ["Black", "Navy", "Red", "Gray"],
+          isActive: true,
+        },
+        {
+          name: "Performance Headband",
+          description: "Moisture-wicking headband for athletes",
+          basePrice: "12.99",
+          imageUrl: null,
+          categoryId: headwearCategory.id,
+          sizes: ["One Size"],
+          colors: ["Black", "White", "Red", "Blue"],
+          isActive: true,
+        },
+        {
+          name: "Sweatband Set",
+          description: "Wristbands and headband set for intense training",
+          basePrice: "14.99",
+          imageUrl: null,
+          categoryId: headwearCategory.id,
+          sizes: ["One Size"],
+          colors: ["Black", "White", "Red", "Blue", "Yellow"],
+          isActive: true,
+        },
+
+        // Accessories
+        {
+          name: "Sports Water Bottle",
+          description: "BPA-free sports bottle with team customization",
+          basePrice: "16.99",
+          imageUrl: null,
+          categoryId: accessoriesCategory.id,
+          sizes: ["750ml"],
+          colors: ["Black", "Blue", "Red", "Clear", "White"],
+          isActive: true,
+        },
+        {
+          name: "Microfiber Sports Towel",
+          description: "Quick-dry towel perfect for athletes",
+          basePrice: "22.99",
+          imageUrl: null,
+          categoryId: accessoriesCategory.id,
+          sizes: ["Medium", "Large"],
+          colors: ["Black", "Navy", "Red", "Gray", "White"],
+          isActive: true,
+        },
+        {
+          name: "Team Sticker Pack",
+          description: "Weatherproof vinyl stickers for equipment and gear",
+          basePrice: "8.99",
+          imageUrl: null,
+          categoryId: accessoriesCategory.id,
+          sizes: ["Pack of 10"],
+          colors: ["Full Color"],
+          isActive: true,
+        },
+        {
+          name: "Sports Bag",
+          description: "Durable team sports bag with multiple compartments",
+          basePrice: "49.99",
+          imageUrl: null,
+          categoryId: accessoriesCategory.id,
+          sizes: ["Medium", "Large"],
+          colors: ["Black", "Navy", "Red"],
+          isActive: true,
+        },
+        {
+          name: "Athletic Socks",
+          description: "Performance crew socks with cushioning",
+          basePrice: "18.99",
+          imageUrl: null,
+          categoryId: footwearCategory.id,
+          sizes: ["S", "M", "L", "XL"],
+          colors: ["Black", "White", "Navy", "Red"],
+          isActive: true,
+        },
+        {
+          name: "Compression Sleeves",
+          description: "Arm compression sleeves for recovery and performance",
+          basePrice: "26.99",
+          imageUrl: null,
+          categoryId: accessoriesCategory.id,
+          sizes: ["S", "M", "L", "XL"],
+          colors: ["Black", "White", "Navy"],
           isActive: true,
         }
       ]);
