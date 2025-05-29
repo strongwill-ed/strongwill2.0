@@ -1,0 +1,38 @@
+Strongwill Sports 2.0 - Prompts for Replit (Claude)
+Overall Project Goal: To build a highly functional, ready-to-use custom apparel e-commerce platform, "Strongwill Sports 2.0," as detailed in the Product Requirements Document (PRD Version 2.3). The platform will feature a 2D custom design tool, comprehensive e-commerce with group ordering, a sponsorship module, and an admin panel.
+Core Technologies:
+Frontend: Next.js (with SSR for key pages), React, Ant Design (heavily customized for a premium black & white theme), Tailwind CSS.
+Backend: Node.js, Express.js.
+Database: MongoDB.
+Version Control: Initialize a Git repository from the start.
+General Instructions for Claude:
+Adhere strictly to the features and specifications outlined in the PRD Version 2.3.
+Prioritize a premium black and white aesthetic with the "Strongwillsports" italic logo. Ant Design components will need significant custom styling.
+Implement robust error handling, input validation, and security best practices throughout the application.
+Write modular, well-commented code.
+Include placeholders for sensitive information like API keys (e.g., STRIPE_PUBLISHABLE_KEY, STRIPE_SECRET_KEY, MONGODB_URI, EMAIL_SERVICE_API_KEY).
+Generate basic unit tests or testing stubs for key backend functionalities.
+Ensure the application is fully responsive for mobile, tablet, and desktop.
+Focus on SEO best practices as outlined in the PRD.
+Phase 1: Project Setup & Core Structure
+Master Prompt for Phase 1:
+"Initialize a new project on Replit for 'Strongwill Sports 2.0'. Set up a monorepo structure if suitable, or a clear frontend/backend separation.
+Frontend (Next.js):
+Install Next.js, React, Ant Design, and Tailwind CSS.
+Configure Tailwind CSS to work with Ant Design.
+Set up basic project structure (pages, components, styles, utils).
+Implement a global layout component incorporating the premium black and white theme, the 'Strongwillsports' italic logo, a basic header, and footer.
+Create placeholder pages for Home, Products, Design Tool, About Us, Contact Us.
+Backend (Node.js/Express.js):
+Set up a Node.js server with Express.js.
+Establish a basic project structure (routes, controllers, models, services, middleware, config).
+Implement basic error handling middleware.
+Set up environment variable management (e.g., using dotenv).
+Database (MongoDB):
+Define Mongoose schemas for initial core models: User, ProductBase (for apparel types like singlets, hoodies), Design.
+Set up a connection to MongoDB (use a placeholder MONGODB_URI).
+API Design:
+Define initial RESTful API endpoints for user authentication (stubbed), fetching product bases.
+Implement basic request validation.
+Styling Foundation:
+Create a global CSS file or Tailwind config to enforce the black and white theme. Customize Ant Design's default theme (colors, fonts, component styles) to match the 'premium, almost editorial, fresh, and modern feel' described in the PRD. Ensure the 'Strongwillsports' italic logo is used appropriately."
