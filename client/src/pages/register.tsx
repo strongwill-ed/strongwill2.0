@@ -28,6 +28,10 @@ export default function Register() {
   const { login } = useAuth();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  
+  // Get redirect parameter from URL
+  const urlParams = new URLSearchParams(window.location.search);
+  const redirectTo = urlParams.get('redirect') || '/sponsorship';
 
   const form = useForm<RegisterForm>({
     resolver: zodResolver(registerSchema),
@@ -52,7 +56,7 @@ export default function Register() {
           title: "Welcome to Strongwill Sports!",
           description: "Your account has been created successfully.",
         });
-        setLocation("/");
+        setLocation(redirectTo);
       } else {
         throw new Error(user.message || "Registration failed");
       }

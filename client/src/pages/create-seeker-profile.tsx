@@ -51,7 +51,7 @@ export default function CreateSeekerProfile() {
           
           <div className="space-y-4">
             <Button 
-              onClick={() => setLocation("/login")}
+              onClick={() => setLocation("/login?redirect=/create-seeker-profile")}
               className="w-full"
             >
               Sign In to Continue
@@ -62,7 +62,7 @@ export default function CreateSeekerProfile() {
               <Button 
                 variant="link" 
                 className="p-0 h-auto"
-                onClick={() => setLocation("/register")}
+                onClick={() => setLocation("/register?redirect=/create-seeker-profile")}
               >
                 Create Account
               </Button>

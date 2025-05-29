@@ -136,9 +136,9 @@ export default function TeamProfile() {
     });
   };
 
-  const isOwnProfile = user?.id === profile.userId;
-  const isAdmin = user?.username === 'admin';
-  const canDelete = isOwnProfile || isAdmin;
+  const isOwnProfile = user && profile && user.id === profile.userId;
+  const isAdmin = user && user.username === 'admin';
+  const canDelete = (isOwnProfile || isAdmin) && user;
   const canSponsor = user && !isOwnProfile && sponsorProfile;
 
   return (
