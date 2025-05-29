@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useCart } from "@/hooks/use-cart";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -17,11 +17,12 @@ import { useToast } from "@/hooks/use-toast";
 import { Link, useLocation } from "wouter";
 import { apiPost } from "@/lib/api";
 import { apiRequest } from "@/lib/queryClient";
-import { AlertTriangle, CreditCard, Plus } from "lucide-react";
+import { AlertTriangle, CreditCard, Plus, CheckCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import type { GroupOrder, GroupOrderItem, Product, SeekerProfile, SponsorshipCredit } from "@shared/schema";
 import { useCurrency } from "@/lib/currency";
+import confetti from 'canvas-confetti';
 
 const checkoutSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -54,6 +55,8 @@ export default function Checkout() {
   const [appliedSponsorshipCredit, setAppliedSponsorshipCredit] = useState(0);
   const [showDeadlineWarning, setShowDeadlineWarning] = useState(false);
   const [pendingSubmitData, setPendingSubmitData] = useState<CheckoutFormData | null>(null);
+  const [orderSuccess, setOrderSuccess] = useState(false);
+  const [orderId, setOrderId] = useState<string | null>(null);
 
   // Mutation for adding recommended products to cart
   const addToCartMutation = useMutation({
@@ -370,8 +373,37 @@ export default function Checkout() {
         });
       }
 
+      // Trigger confetti animation on successful order
+      confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 }
+      });
+      
+      // Add extra celebration burst after a short delay
+      setTimeout(() => {
+        confetti({
+          particleCount: 50,
+          angle: 60,
+          spread: 55,
+          origin: { x: 0 }
+        });
+        confetti({
+          particleCount: 50,
+          angle: 120,
+          spread: 55,
+          origin: { x: 1 }
+        });
+      }, 300);
+
+      setOrderSuccess(true);
+      setOrderId(response.orderId);
       clearCart();
-      setLocation("/orders");
+      
+      // Navigate to orders after celebrating
+      setTimeout(() => {
+        setLocation("/orders");
+      }, 2000);
     } catch (error) {
       console.error("Checkout error:", error);
       toast({
@@ -399,6 +431,44 @@ export default function Checkout() {
                 </Button>
               </Link>
             </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show order success screen
+  if (orderSuccess && orderId) {
+    return (
+      <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white flex items-center justify-center">
+        <div className="max-w-md mx-auto text-center px-4">
+          <div className="mb-6">
+            <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
+            <h1 className="text-3xl font-bold mb-2">Order Confirmed!</h1>
+            <p className="text-gray-600 dark:text-gray-400">
+              Thank you for your order. We've received your payment and will begin processing immediately.
+            </p>
+          </div>
+          
+          <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-6 mb-6">
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Order Number</p>
+            <p className="text-xl font-bold">#{orderId}</p>
+          </div>
+          
+          <div className="space-y-3">
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              A confirmation email has been sent to your inbox with order details and tracking information.
+            </p>
+            <Link href="/orders">
+              <Button className="w-full bg-black text-white hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-200">
+                View Order Status
+              </Button>
+            </Link>
+            <Link href="/products">
+              <Button variant="outline" className="w-full">
+                Continue Shopping
+              </Button>
+            </Link>
           </div>
         </div>
       </div>

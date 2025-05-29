@@ -74,10 +74,10 @@ export default function ProductCard({ product, onDesignClick, onAddToCart }: Pro
           </Button>
         </div>
         
-        {/* Sale badge */}
-        {Math.random() > 0.7 && (
+        {/* Sale badge - only show when product has actual sale pricing */}
+        {product.salePrice && parseFloat(product.salePrice) < parseFloat(product.basePrice) && (
           <Badge className="absolute top-2 left-2 bg-red-500 hover:bg-red-600 text-white">
-            Sale
+            SALE
           </Badge>
         )}
       </div>
