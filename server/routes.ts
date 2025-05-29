@@ -461,12 +461,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userId = req.headers['x-user-id'];
       const userRole = req.headers['x-user-role'];
       
-      if (!userId || !userRole) {
-        return res.status(401).json({ message: "Authentication required" });
-      }
-
       const { active } = req.query;
       let groupOrders;
+
+      if (!userId || !userRole) {
+        // For guests, show all active group orders
+        if (active === 'true') {
+          groupOrders = await storage.getActiveGroupOrders();
+        } else {
+          groupOrders = await storage.getGroupOrders();
+        }
+        res.json(groupOrders);
+        return;
+      }
 
       if (userRole === 'admin') {
         // Admin can see all group orders with creator information
