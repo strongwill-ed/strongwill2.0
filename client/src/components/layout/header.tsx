@@ -137,15 +137,17 @@ export default function Header() {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            {/* Admin Button */}
-            <Link href="/admin">
-              <Button 
-                size="sm" 
-                className={`btn-primary ${isActiveLink("/admin") ? "bg-gray-800" : ""}`}
-              >
-                Admin
-              </Button>
-            </Link>
+            {/* Admin Button - Only show for authenticated admin users */}
+            {user && user.role === "admin" && (
+              <Link href="/admin">
+                <Button 
+                  size="sm" 
+                  className={`btn-primary ${isActiveLink("/admin") ? "bg-gray-800" : ""}`}
+                >
+                  Admin
+                </Button>
+              </Link>
+            )}
 
             {/* Mobile menu button */}
             <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
