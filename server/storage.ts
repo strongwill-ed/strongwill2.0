@@ -1,6 +1,6 @@
-import { users, productCategories, products, designs, cartItems, orders, orderItems, groupOrders, groupOrderItems, seekerProfiles, sponsorProfiles, sponsorshipAgreements, sponsorshipCredits, sponsorshipMessages, type User, type ProductCategory, type Product, type Design, type CartItem, type Order, type OrderItem, type GroupOrder, type GroupOrderItem, type SeekerProfile, type SponsorProfile, type SponsorshipAgreement, type SponsorshipCredit, type SponsorshipMessage, type InsertUser, type InsertProductCategory, type InsertProduct, type InsertDesign, type InsertCartItem, type InsertOrder, type InsertOrderItem, type InsertGroupOrder, type InsertGroupOrderItem, type InsertSeekerProfile, type InsertSponsorProfile, type InsertSponsorshipAgreement, type InsertSponsorshipCredit, type InsertSponsorshipMessage } from "@shared/schema";
+import { users, productCategories, products, designs, cartItems, orders, orderItems, groupOrders, groupOrderItems, seekerProfiles, sponsorProfiles, sponsorshipAgreements, sponsorshipCredits, sponsorshipMessages, pages, blogPosts, quoteRequests, adminSettings, type User, type ProductCategory, type Product, type Design, type CartItem, type Order, type OrderItem, type GroupOrder, type GroupOrderItem, type SeekerProfile, type SponsorProfile, type SponsorshipAgreement, type SponsorshipCredit, type SponsorshipMessage, type InsertUser, type InsertProductCategory, type InsertProduct, type InsertDesign, type InsertCartItem, type InsertOrder, type InsertOrderItem, type InsertGroupOrder, type InsertGroupOrderItem, type InsertSeekerProfile, type InsertSponsorProfile, type InsertSponsorshipAgreement, type InsertSponsorshipCredit, type InsertSponsorshipMessage, type Page, type InsertPage, type BlogPost, type InsertBlogPost, type QuoteRequest, type InsertQuoteRequest, type AdminSetting, type InsertAdminSetting } from "@shared/schema";
 import { db } from "./db";
-import { eq } from "drizzle-orm";
+import { eq, count, sum } from "drizzle-orm";
 
 export interface IStorage {
   // Users
@@ -86,6 +86,50 @@ export interface IStorage {
   getConversation(userId1: number, userId2: number): Promise<SponsorshipMessage[]>;
   sendMessage(message: InsertSponsorshipMessage): Promise<SponsorshipMessage>;
   markMessageAsRead(messageId: number): Promise<void>;
+
+  // CMS & Admin
+  // Pages
+  getPages(): Promise<Page[]>;
+  getPublishedPages(): Promise<Page[]>;
+  getPage(id: number): Promise<Page | undefined>;
+  getPageBySlug(slug: string): Promise<Page | undefined>;
+  createPage(page: InsertPage): Promise<Page>;
+  updatePage(id: number, updates: Partial<InsertPage>): Promise<Page | undefined>;
+  deletePage(id: number): Promise<boolean>;
+
+  // Blog Posts
+  getBlogPosts(): Promise<BlogPost[]>;
+  getPublishedBlogPosts(): Promise<BlogPost[]>;
+  getBlogPost(id: number): Promise<BlogPost | undefined>;
+  getBlogPostBySlug(slug: string): Promise<BlogPost | undefined>;
+  createBlogPost(post: InsertBlogPost): Promise<BlogPost>;
+  updateBlogPost(id: number, updates: Partial<InsertBlogPost>): Promise<BlogPost | undefined>;
+  deleteBlogPost(id: number): Promise<boolean>;
+
+  // Quote Requests
+  getQuoteRequests(): Promise<QuoteRequest[]>;
+  getQuoteRequest(id: number): Promise<QuoteRequest | undefined>;
+  createQuoteRequest(quote: InsertQuoteRequest): Promise<QuoteRequest>;
+  updateQuoteRequest(id: number, updates: Partial<InsertQuoteRequest>): Promise<QuoteRequest | undefined>;
+  deleteQuoteRequest(id: number): Promise<boolean>;
+
+  // Admin Settings
+  getAdminSettings(): Promise<AdminSetting[]>;
+  getAdminSetting(key: string): Promise<AdminSetting | undefined>;
+  createAdminSetting(setting: InsertAdminSetting): Promise<AdminSetting>;
+  updateAdminSetting(key: string, value: string): Promise<AdminSetting | undefined>;
+
+  // Admin Analytics
+  getAdminStats(): Promise<{
+    totalUsers: number;
+    totalOrders: number;
+    totalRevenue: string;
+    activeSponsorships: number;
+  }>;
+
+  // User Management
+  getAllUsers(): Promise<User[]>;
+  updateUserRole(userId: number, role: string): Promise<User | undefined>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -763,6 +807,212 @@ export class DatabaseStorage implements IStorage {
       .update(sponsorshipMessages)
       .set({ isRead: true })
       .where(eq(sponsorshipMessages.id, messageId));
+  }
+
+  // CMS & Admin Methods
+  // Pages
+  async getPages(): Promise<Page[]> {
+    await this.ensureInitialized();
+    return await db.select().from(pages);
+  }
+
+  async getPublishedPages(): Promise<Page[]> {
+    await this.ensureInitialized();
+    return await db.select().from(pages).where(eq(pages.isPublished, true));
+  }
+
+  async getPage(id: number): Promise<Page | undefined> {
+    await this.ensureInitialized();
+    const [page] = await db.select().from(pages).where(eq(pages.id, id));
+    return page || undefined;
+  }
+
+  async getPageBySlug(slug: string): Promise<Page | undefined> {
+    await this.ensureInitialized();
+    const [page] = await db.select().from(pages).where(eq(pages.slug, slug));
+    return page || undefined;
+  }
+
+  async createPage(page: InsertPage): Promise<Page> {
+    await this.ensureInitialized();
+    const [newPage] = await db
+      .insert(pages)
+      .values(page)
+      .returning();
+    return newPage;
+  }
+
+  async updatePage(id: number, updates: Partial<InsertPage>): Promise<Page | undefined> {
+    await this.ensureInitialized();
+    const [updatedPage] = await db
+      .update(pages)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(pages.id, id))
+      .returning();
+    return updatedPage || undefined;
+  }
+
+  async deletePage(id: number): Promise<boolean> {
+    await this.ensureInitialized();
+    const result = await db.delete(pages).where(eq(pages.id, id));
+    return (result.rowCount || 0) > 0;
+  }
+
+  // Blog Posts
+  async getBlogPosts(): Promise<BlogPost[]> {
+    await this.ensureInitialized();
+    return await db.select().from(blogPosts);
+  }
+
+  async getPublishedBlogPosts(): Promise<BlogPost[]> {
+    await this.ensureInitialized();
+    return await db.select().from(blogPosts).where(eq(blogPosts.isPublished, true));
+  }
+
+  async getBlogPost(id: number): Promise<BlogPost | undefined> {
+    await this.ensureInitialized();
+    const [post] = await db.select().from(blogPosts).where(eq(blogPosts.id, id));
+    return post || undefined;
+  }
+
+  async getBlogPostBySlug(slug: string): Promise<BlogPost | undefined> {
+    await this.ensureInitialized();
+    const [post] = await db.select().from(blogPosts).where(eq(blogPosts.slug, slug));
+    return post || undefined;
+  }
+
+  async createBlogPost(post: InsertBlogPost): Promise<BlogPost> {
+    await this.ensureInitialized();
+    const [newPost] = await db
+      .insert(blogPosts)
+      .values(post)
+      .returning();
+    return newPost;
+  }
+
+  async updateBlogPost(id: number, updates: Partial<InsertBlogPost>): Promise<BlogPost | undefined> {
+    await this.ensureInitialized();
+    const [updatedPost] = await db
+      .update(blogPosts)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(blogPosts.id, id))
+      .returning();
+    return updatedPost || undefined;
+  }
+
+  async deleteBlogPost(id: number): Promise<boolean> {
+    await this.ensureInitialized();
+    const result = await db.delete(blogPosts).where(eq(blogPosts.id, id));
+    return (result.rowCount || 0) > 0;
+  }
+
+  // Quote Requests
+  async getQuoteRequests(): Promise<QuoteRequest[]> {
+    await this.ensureInitialized();
+    return await db.select().from(quoteRequests);
+  }
+
+  async getQuoteRequest(id: number): Promise<QuoteRequest | undefined> {
+    await this.ensureInitialized();
+    const [quote] = await db.select().from(quoteRequests).where(eq(quoteRequests.id, id));
+    return quote || undefined;
+  }
+
+  async createQuoteRequest(quote: InsertQuoteRequest): Promise<QuoteRequest> {
+    await this.ensureInitialized();
+    const [newQuote] = await db
+      .insert(quoteRequests)
+      .values(quote)
+      .returning();
+    return newQuote;
+  }
+
+  async updateQuoteRequest(id: number, updates: Partial<InsertQuoteRequest>): Promise<QuoteRequest | undefined> {
+    await this.ensureInitialized();
+    const [updatedQuote] = await db
+      .update(quoteRequests)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(quoteRequests.id, id))
+      .returning();
+    return updatedQuote || undefined;
+  }
+
+  async deleteQuoteRequest(id: number): Promise<boolean> {
+    await this.ensureInitialized();
+    const result = await db.delete(quoteRequests).where(eq(quoteRequests.id, id));
+    return (result.rowCount || 0) > 0;
+  }
+
+  // Admin Settings
+  async getAdminSettings(): Promise<AdminSetting[]> {
+    await this.ensureInitialized();
+    return await db.select().from(adminSettings);
+  }
+
+  async getAdminSetting(key: string): Promise<AdminSetting | undefined> {
+    await this.ensureInitialized();
+    const [setting] = await db.select().from(adminSettings).where(eq(adminSettings.key, key));
+    return setting || undefined;
+  }
+
+  async createAdminSetting(setting: InsertAdminSetting): Promise<AdminSetting> {
+    await this.ensureInitialized();
+    const [newSetting] = await db
+      .insert(adminSettings)
+      .values(setting)
+      .returning();
+    return newSetting;
+  }
+
+  async updateAdminSetting(key: string, value: string): Promise<AdminSetting | undefined> {
+    await this.ensureInitialized();
+    const [updatedSetting] = await db
+      .update(adminSettings)
+      .set({ value, updatedAt: new Date() })
+      .where(eq(adminSettings.key, key))
+      .returning();
+    return updatedSetting || undefined;
+  }
+
+  // Admin Analytics
+  async getAdminStats(): Promise<{
+    totalUsers: number;
+    totalOrders: number;
+    totalRevenue: string;
+    activeSponsorships: number;
+  }> {
+    await this.ensureInitialized();
+    
+    const [usersCount] = await db.select({ count: count() }).from(users);
+    const [ordersCount] = await db.select({ count: count() }).from(orders);
+    const [revenueResult] = await db.select({ 
+      total: sum(orders.totalAmount) 
+    }).from(orders).where(eq(orders.status, 'completed'));
+    const [sponsorshipsCount] = await db.select({ count: count() }).from(sponsorshipAgreements)
+      .where(eq(sponsorshipAgreements.status, 'active'));
+
+    return {
+      totalUsers: usersCount.count,
+      totalOrders: ordersCount.count,
+      totalRevenue: revenueResult.total || '0',
+      activeSponsorships: sponsorshipsCount.count
+    };
+  }
+
+  // User Management
+  async getAllUsers(): Promise<User[]> {
+    await this.ensureInitialized();
+    return await db.select().from(users);
+  }
+
+  async updateUserRole(userId: number, role: string): Promise<User | undefined> {
+    await this.ensureInitialized();
+    const [updatedUser] = await db
+      .update(users)
+      .set({ role })
+      .where(eq(users.id, userId))
+      .returning();
+    return updatedUser || undefined;
   }
 }
 

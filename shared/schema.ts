@@ -231,3 +231,71 @@ export type SponsorshipCredit = typeof sponsorshipCredits.$inferSelect;
 export type InsertSponsorshipCredit = z.infer<typeof insertSponsorshipCreditSchema>;
 export type SponsorshipMessage = typeof sponsorshipMessages.$inferSelect;
 export type InsertSponsorshipMessage = z.infer<typeof insertSponsorshipMessageSchema>;
+
+// CMS & Admin Tables
+export const pages = pgTable("pages", {
+  id: serial("id").primaryKey(),
+  slug: text("slug").notNull().unique(),
+  title: text("title").notNull(),
+  content: text("content").notNull(),
+  metaTitle: text("meta_title"),
+  metaDescription: text("meta_description"),
+  isPublished: boolean("is_published").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const blogPosts = pgTable("blog_posts", {
+  id: serial("id").primaryKey(),
+  slug: text("slug").notNull().unique(),
+  title: text("title").notNull(),
+  excerpt: text("excerpt"),
+  content: text("content").notNull(),
+  featuredImage: text("featured_image"),
+  tags: text("tags").array(),
+  authorId: integer("author_id").references(() => users.id),
+  isPublished: boolean("is_published").default(false),
+  publishedAt: timestamp("published_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const adminSettings = pgTable("admin_settings", {
+  id: serial("id").primaryKey(),
+  key: text("key").notNull().unique(),
+  value: text("value").notNull(),
+  description: text("description"),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const quoteRequests = pgTable("quote_requests", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  email: text("email").notNull(),
+  company: text("company"),
+  phone: text("phone"),
+  productType: text("product_type").notNull(),
+  quantity: integer("quantity").notNull(),
+  details: text("details").notNull(),
+  status: text("status").notNull().default("pending"), // pending, reviewed, quoted, rejected
+  adminNotes: text("admin_notes"),
+  estimatedPrice: decimal("estimated_price", { precision: 10, scale: 2 }),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Insert schemas for CMS
+export const insertPageSchema = createInsertSchema(pages).omit({ id: true, createdAt: true, updatedAt: true });
+export const insertBlogPostSchema = createInsertSchema(blogPosts).omit({ id: true, createdAt: true, updatedAt: true });
+export const insertAdminSettingSchema = createInsertSchema(adminSettings).omit({ id: true, updatedAt: true });
+export const insertQuoteRequestSchema = createInsertSchema(quoteRequests).omit({ id: true, createdAt: true, updatedAt: true });
+
+// CMS Types
+export type Page = typeof pages.$inferSelect;
+export type InsertPage = z.infer<typeof insertPageSchema>;
+export type BlogPost = typeof blogPosts.$inferSelect;
+export type InsertBlogPost = z.infer<typeof insertBlogPostSchema>;
+export type AdminSetting = typeof adminSettings.$inferSelect;
+export type InsertAdminSetting = z.infer<typeof insertAdminSettingSchema>;
+export type QuoteRequest = typeof quoteRequests.$inferSelect;
+export type InsertQuoteRequest = z.infer<typeof insertQuoteRequestSchema>;
