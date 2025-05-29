@@ -252,8 +252,7 @@ export default function DesignTool() {
       for (const [key, quantity] of Object.entries(orderItems)) {
         if (quantity > 0) {
           const [size, color] = key.split('-');
-          await apiRequest("POST", "/api/group-order-items", {
-            groupOrderId: selectedGroupOrder,
+          await apiRequest("POST", `/api/group-orders/${selectedGroupOrder}/join`, {
             userId: 1, // TODO: Get from auth context
             quantity,
             size,
@@ -283,20 +282,22 @@ export default function DesignTool() {
   };
 
   const exportDesign = () => {
-    if (!canvasRef.current) {
-      toast({
-        title: "Error",
-        description: "Canvas not ready for export",
-        variant: "destructive",
-      });
-      return;
-    }
-    
     try {
+      // Find the actual canvas element within the canvas container
+      const canvasElement = document.querySelector('#design-canvas canvas') as HTMLCanvasElement;
+      if (!canvasElement) {
+        toast({
+          title: "Error",
+          description: "Canvas not ready for export",
+          variant: "destructive",
+        });
+        return;
+      }
+      
       // Create download link
       const link = document.createElement('a');
       link.download = `${designName || 'design'}.png`;
-      link.href = canvasRef.current.toDataURL('image/png');
+      link.href = canvasElement.toDataURL('image/png');
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -306,6 +307,7 @@ export default function DesignTool() {
         description: "Design exported successfully!",
       });
     } catch (error) {
+      console.error('Export error:', error);
       toast({
         title: "Error",
         description: "Failed to export design",
