@@ -522,6 +522,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.patch("/api/group-orders/:id", async (req, res) => {
+    try {
+      const groupOrderId = parseInt(req.params.id);
+      const updates = req.body;
+      
+      // Convert productId and designId to integers if provided
+      if (updates.productId) updates.productId = parseInt(updates.productId);
+      if (updates.designId) updates.designId = parseInt(updates.designId);
+      
+      const updatedGroupOrder = await storage.updateGroupOrder(groupOrderId, updates);
+      
+      if (!updatedGroupOrder) {
+        return res.status(404).json({ message: "Group order not found" });
+      }
+      
+      res.json(updatedGroupOrder);
+    } catch (error) {
+      console.error('Group order update error:', error);
+      res.status(500).json({ message: "Failed to update group order", error: (error as Error).message });
+    }
+  });
+
   app.post("/api/group-orders/:id/join", async (req, res) => {
     try {
       const groupOrderId = parseInt(req.params.id);

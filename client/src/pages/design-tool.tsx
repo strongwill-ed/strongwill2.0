@@ -37,14 +37,10 @@ export default function DesignTool() {
   // Get URL params for both regular products and group orders
   const urlParams = new URLSearchParams(window.location.search);
   const productId = urlParams.get("product");
-  const isGroupOrderMode = urlParams.get("groupOrder") === "true";
-  const groupOrderData = isGroupOrderMode ? {
-    name: urlParams.get("name") || "",
-    deadline: urlParams.get("deadline") || "",
-    minimumQuantity: parseInt(urlParams.get("minimumQuantity") || "10"),
-    description: urlParams.get("description") || "",
-    organizerUserId: parseInt(urlParams.get("organizerUserId") || "1")
-  } : null;
+  const groupOrderId = urlParams.get("groupOrderId");
+  const groupOrderName = urlParams.get("groupOrderName");
+  const returnTo = urlParams.get("returnTo");
+  const isGroupOrderMode = !!groupOrderId;
   
   const [selectedProduct, setSelectedProduct] = useState<number | null>(
     productId ? parseInt(productId) : null
@@ -88,32 +84,28 @@ export default function DesignTool() {
     onSuccess: async (response) => {
       const savedDesign = await response.json();
       
-      if (isGroupOrderMode && groupOrderData) {
-        // Create group order with the saved design
-        const groupOrderPayload = {
-          ...groupOrderData,
-          productId: selectedProduct,
-          deadline: new Date(groupOrderData.deadline),
-          designId: savedDesign.id,
-          orderType: "custom",
-          status: "active",
-          currentQuantity: 0,
-          paymentMode: "individual",
-          totalEstimate: "0.00",
-        };
-        
+      if (isGroupOrderMode && groupOrderId) {
+        // Update the existing group order with the design and product
         try {
-          await apiRequest("POST", "/api/group-orders", groupOrderPayload);
+          await apiRequest("PATCH", `/api/group-orders/${groupOrderId}`, {
+            productId: selectedProduct,
+            designId: savedDesign.id,
+            orderType: "custom"
+          });
+          
           toast({
             title: "Success",
-            description: "Design saved and group order created successfully!",
+            description: "Design saved and linked to group order successfully!",
           });
+          
           // Redirect back to group orders page
-          window.location.href = "/group-orders";
+          if (returnTo === 'group-orders') {
+            window.location.href = "/group-orders";
+          }
         } catch (error) {
           toast({
             title: "Error",
-            description: "Design saved but failed to create group order",
+            description: "Design saved but failed to update group order",
             variant: "destructive",
           });
         }
@@ -363,9 +355,9 @@ export default function DesignTool() {
           <div className="flex justify-between items-center">
             <div>
               <h1 className="text-3xl font-bold text-black">Design Tool</h1>
-              {isGroupOrderMode && groupOrderData ? (
+              {isGroupOrderMode && groupOrderName ? (
                 <div className="mt-2">
-                  <p className="text-blue-600 font-medium">Creating design template for: {groupOrderData.name}</p>
+                  <p className="text-blue-600 font-medium">Creating design template for: {groupOrderName}</p>
                   <p className="text-gray-600 text-sm">This design will be used as the template for your group order</p>
                 </div>
               ) : (
