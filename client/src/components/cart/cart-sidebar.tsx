@@ -2,11 +2,13 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { useCart } from "@/hooks/use-cart";
 import { useQuery } from "@tanstack/react-query";
+import { useLocation } from "wouter";
 import { Minus, Plus, X, ShoppingBag } from "lucide-react";
 import type { Product } from "@shared/schema";
 
 export default function CartSidebar() {
   const { isCartOpen, toggleCart, cartItems, updateQuantity, removeFromCart, getCartTotal } = useCart();
+  const [, setLocation] = useLocation();
 
   const productIds = [...new Set(cartItems.map(item => item.productId))];
   
@@ -20,8 +22,9 @@ export default function CartSidebar() {
   };
 
   const handleCheckout = () => {
-    // TODO: Implement checkout logic
     console.log("Proceeding to checkout...", cartItems);
+    toggleCart(); // Close the cart sidebar
+    setLocation("/checkout"); // Navigate to checkout page
   };
 
   return (
