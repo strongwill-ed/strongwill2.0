@@ -276,7 +276,9 @@ export default function SponsorProfile() {
                   <div className="bg-gray-50 p-4 rounded-lg">
                     <h3 className="font-semibold mb-2">Sponsorship Budget</h3>
                     <div className="text-2xl font-bold text-green-600">
-                      ${profile.sponsorshipBudget ? parseFloat(profile.sponsorshipBudget.toString()).toLocaleString() : 'Contact for details'}
+                      {profile.sponsorshipBudget && profile.sponsorshipBudget !== null ? 
+                        `$${parseFloat(profile.sponsorshipBudget.toString()).toLocaleString()}` : 
+                        'Contact for details'}
                     </div>
                     <p className="text-sm text-gray-600 mt-1">
                       Available for team sponsorships

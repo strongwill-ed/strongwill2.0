@@ -64,7 +64,7 @@ export default function CreateSponsorProfile() {
           
           <div className="space-y-4">
             <Button 
-              onClick={() => setLocation("/login")}
+              onClick={() => setLocation("/login?redirect=/create-sponsor-profile")}
               className="w-full"
             >
               Sign In to Continue
@@ -75,7 +75,7 @@ export default function CreateSponsorProfile() {
               <Button 
                 variant="link" 
                 className="p-0 h-auto"
-                onClick={() => setLocation("/register")}
+                onClick={() => setLocation("/register?redirect=/create-sponsor-profile")}
               >
                 Create Account
               </Button>

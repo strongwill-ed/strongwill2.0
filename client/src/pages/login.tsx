@@ -23,6 +23,10 @@ export default function Login() {
   const { login } = useAuth();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  
+  // Get redirect parameter from URL
+  const urlParams = new URLSearchParams(window.location.search);
+  const redirectTo = urlParams.get('redirect') || '/sponsorship';
 
   const form = useForm<LoginForm>({
     resolver: zodResolver(loginSchema),
@@ -44,7 +48,7 @@ export default function Login() {
           title: "Welcome back!",
           description: "You have successfully logged in.",
         });
-        setLocation("/");
+        setLocation(redirectTo);
       } else {
         throw new Error(user.message || "Login failed");
       }
