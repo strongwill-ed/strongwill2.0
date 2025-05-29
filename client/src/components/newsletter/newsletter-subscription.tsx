@@ -125,36 +125,34 @@ export function NewsletterSubscription({ variant = "default", className = "" }: 
   }
 
   return (
-    <div className={`bg-gradient-to-r from-black to-gray-900 text-white p-6 rounded-lg ${className}`}>
-      <div className="max-w-6xl mx-auto">
-        <div className="grid lg:grid-cols-3 md:grid-cols-2 gap-6 items-center">
-          <div className="lg:col-span-2">
-            <div className="flex flex-col lg:flex-row lg:items-center lg:gap-8">
-              <div className="mb-4 lg:mb-0">
-                <h2 className="text-2xl font-bold mb-2">
-                  <span className="font-black">STRONGWILL</span>{" "}
-                  <span className="font-normal">SPORTS</span> Newsletter
-                </h2>
-                <p className="text-gray-300">
-                  Get exclusive access to new product launches, training guides, and special offers for serious athletes.
-                </p>
-              </div>
-              <div className="bg-white/10 rounded-lg p-3 flex-shrink-0">
-                <p className="text-white font-semibold text-sm mb-1">🎁 Limited Time Offer</p>
-                <p className="text-gray-300 text-xs">
-                  Sign up now and receive <span className="text-white font-bold">one free custom item</span> with your first order!
-                </p>
-              </div>
+    <div className={`bg-gradient-to-r from-black to-gray-900 text-white p-8 rounded-lg ${className}`}>
+      <div className="max-w-4xl mx-auto">
+        <div className="grid md:grid-cols-2 gap-8 items-center">
+          <div className="space-y-4">
+            <h2 className="text-3xl font-bold">
+              <span className="font-black">STRONGWILL</span>{" "}
+              <span className="font-normal">SPORTS</span> Newsletter
+            </h2>
+            <p className="text-gray-300 text-lg">
+              Get exclusive access to new product launches, training guides, 
+              and special offers for serious athletes.
+            </p>
+            <div className="bg-white/10 rounded-lg p-4 mb-4">
+              <p className="text-white font-semibold mb-2">🎁 Limited Time Offer</p>
+              <p className="text-gray-300 text-sm">
+                Sign up now and receive <span className="text-white font-bold">one free custom item</span> with your first order!
+                <span className="text-xs block mt-1 text-gray-400">*Terms and conditions apply</span>
+              </p>
             </div>
-            <ul className="grid grid-cols-2 gap-x-6 gap-y-1 text-xs text-gray-400 mt-3">
-              <li>• Early access to new athletic gear</li>
+            <ul className="space-y-2 text-sm text-gray-400">
+              <li>• Early access to new wrestling gear</li>
               <li>• Training tips from professional athletes</li>
               <li>• Exclusive discounts and promotions</li>
               <li>• Custom design inspiration and tutorials</li>
             </ul>
           </div>
           
-          <div className="space-y-3">
+          <div className="space-y-4">
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />

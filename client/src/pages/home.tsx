@@ -14,8 +14,22 @@ import gymTrainingImage from "@assets/Gymwear-Training.jpg";
 
 // Dynamic text rotation component
 function DynamicText() {
-  const { t } = useTranslation();
-  const words = t('home.dynamicWords') as string[];
+  const words = [
+    "Athletic",
+    "Team",
+    "Graduation",
+    "Club",
+    "Training",
+    "Squad",
+    "Performance",
+    "Competition",
+    "Class",
+    "Custom",
+    "Class",
+    "Celebration",
+    "Winners",
+    "League"
+  ];
   
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const [isVisible, setIsVisible] = useState(true);
@@ -31,7 +45,7 @@ function DynamicText() {
     }, 2500);
 
     return () => clearInterval(interval);
-  }, [words.length]);
+  }, []);
 
   return (
     <span 
@@ -70,8 +84,7 @@ export default function Home() {
         {/* Hero Content */}
         <div className="relative z-10 text-center text-white px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto">
           <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold mb-6 leading-tight tracking-tight" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.8)' }}>
-            {t('home.heroTitle')} <span className="italic font-black">Perfect</span><br />
-            <DynamicText /> {t('home.apparel')}
+            {t('home.heroTitle')} <span className="italic font-black">Perfect</span> <DynamicText /> {t('home.apparel')}
           </h1>
           <p className="text-xl md:text-2xl mb-12 max-w-3xl mx-auto font-light leading-relaxed">
             {t('home.heroSubtitle')}
@@ -105,9 +118,9 @@ export default function Home() {
       </section>
 
       {/* Product Categories */}
-      <section className="py-12 bg-gray-50">
+      <section className="py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-8">
+          <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-black mb-4">Our Product Range</h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
               Professional-grade athletic apparel designed for peak performance and customization.
@@ -178,7 +191,7 @@ export default function Home() {
       </section>
 
       {/* Design Tool Preview */}
-      <section className="py-12 bg-white">
+      <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
@@ -254,9 +267,9 @@ export default function Home() {
       </section>
 
       {/* Group Orders Section */}
-      <section className="py-12 bg-gray-50">
+      <section className="py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-8">
+          <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-black mb-4">Team & Group Orders</h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
               Simplify team orders with our group ordering system. Perfect for schools, clubs, and organizations.
@@ -291,7 +304,7 @@ export default function Home() {
             ))}
           </div>
           
-          <div className="text-center mt-8">
+          <div className="text-center mt-12">
             <Button 
               size="lg" 
               className="btn-primary"
@@ -305,9 +318,9 @@ export default function Home() {
       </section>
 
       {/* Features Section */}
-      <section className="py-12 bg-white">
+      <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-8">
+          <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-black mb-4">Why Choose Strongwill Sports</h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
               We combine premium quality with cutting-edge technology to deliver the best custom apparel experience.
@@ -358,7 +371,7 @@ export default function Home() {
       </section>
 
       {/* Newsletter Section */}
-      <section className="py-12 bg-gray-50">
+      <section className="py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <NewsletterSubscription />
         </div>

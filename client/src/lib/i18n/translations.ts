@@ -57,23 +57,7 @@ export const translations = {
         year12Leavers: "Year 12 Leavers",
         sportsUniforms: "Sports Uniforms", 
         gymTraining: "Gym & Training"
-      },
-      dynamicWords: [
-        "Athletic",
-        "Team", 
-        "Graduation",
-        "Club",
-        "Training",
-        "Squad",
-        "Performance",
-        "Competition",
-        "Class",
-        "Champions",
-        "Celebration",
-        "Winners",
-        "League",
-        "Custom"
-      ]
+      }
     },
 
     // Products
@@ -251,23 +235,7 @@ export const translations = {
         year12Leavers: "Schulabgänger Klasse 12",
         sportsUniforms: "Sportuniformen",
         gymTraining: "Fitness & Training"
-      },
-      dynamicWords: [
-        "Sport",
-        "Team",
-        "Abschluss",
-        "Club",
-        "Training",
-        "Squad",
-        "Leistung",
-        "Spiel",
-        "Klasse",
-        "Champions",
-        "Feier",
-        "Gewinner",
-        "Liga",
-        "Custom"
-      ]
+      }
     },
 
     // Products
