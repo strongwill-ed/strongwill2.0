@@ -141,6 +141,8 @@ export const seekerProfiles = pgTable("seeker_profiles", {
   fundingGoal: decimal("funding_goal", { precision: 10, scale: 2 }),
   website: text("website"),
   socialMedia: json("social_media"), // { facebook, instagram, twitter }
+  isAnonymous: boolean("is_anonymous").default(false),
+  shareableToken: text("shareable_token").unique(),
   isActive: boolean("is_active").default(true),
   createdAt: timestamp("created_at").defaultNow(),
 });
