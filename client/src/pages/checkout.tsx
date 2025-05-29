@@ -314,7 +314,7 @@ export default function Checkout() {
                         <FormItem>
                           <FormLabel>Address</FormLabel>
                           <FormControl>
-                            <Input placeholder="123 Main St" {...field} />
+                            <Input placeholder="123 George Street" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>

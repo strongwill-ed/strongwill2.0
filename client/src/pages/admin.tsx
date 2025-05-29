@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -147,6 +147,30 @@ export default function Admin() {
     },
   });
 
+  const updateProductMutation = useMutation({
+    mutationFn: async ({ id, data }: { id: number; data: z.infer<typeof createProductSchema> }) => {
+      return apiRequest("PUT", `/api/products/${id}`, data);
+    },
+    onSuccess: () => {
+      toast({
+        title: "Success",
+        description: "Product updated successfully!",
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/products"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/stats"] });
+      setIsEditProductOpen(false);
+      setEditingProduct(null);
+      editProductForm.reset();
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to update product",
+        variant: "destructive",
+      });
+    },
+  });
+
   const updateOrderStatusMutation = useMutation({
     mutationFn: async ({ orderId, status }: { orderId: number; status: string }) => {
       return apiRequest("PUT", `/api/orders/${orderId}/status`, { status });
@@ -175,6 +199,28 @@ export default function Admin() {
   const onCreateCategory = (data: z.infer<typeof createCategorySchema>) => {
     createCategoryMutation.mutate(data);
   };
+
+  const onEditProduct = (data: z.infer<typeof createProductSchema>) => {
+    if (editingProduct) {
+      updateProductMutation.mutate({ id: editingProduct.id, data });
+    }
+  };
+
+  // Effect to populate edit form when product is selected
+  React.useEffect(() => {
+    if (editingProduct) {
+      editProductForm.reset({
+        name: editingProduct.name,
+        description: editingProduct.description || "",
+        categoryId: editingProduct.categoryId,
+        basePrice: editingProduct.basePrice,
+        imageUrl: editingProduct.imageUrl || "",
+        sizes: editingProduct.sizes || [],
+        colors: editingProduct.colors || [],
+        isActive: editingProduct.isActive,
+      });
+    }
+  }, [editingProduct, editProductForm]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -543,6 +589,186 @@ export default function Admin() {
 
                         <Button type="submit" className="w-full btn-primary" disabled={createProductMutation.isPending}>
                           {createProductMutation.isPending ? "Creating..." : "Create Product"}
+                        </Button>
+                      </form>
+                    </Form>
+                  </DialogContent>
+                </Dialog>
+
+                {/* Edit Product Dialog */}
+                <Dialog open={isEditProductOpen} onOpenChange={setIsEditProductOpen}>
+                  <DialogContent className="max-w-2xl">
+                    <DialogHeader>
+                      <DialogTitle>Edit Product</DialogTitle>
+                    </DialogHeader>
+                    <Form {...editProductForm}>
+                      <form onSubmit={editProductForm.handleSubmit(onEditProduct)} className="space-y-4">
+                        <div className="grid grid-cols-2 gap-4">
+                          <FormField
+                            control={editProductForm.control}
+                            name="name"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Product Name</FormLabel>
+                                <FormControl>
+                                  <Input placeholder="Classic Wrestling Singlet" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={editProductForm.control}
+                            name="categoryId"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Category</FormLabel>
+                                <Select onValueChange={(value) => field.onChange(parseInt(value))} value={field.value?.toString()}>
+                                  <FormControl>
+                                    <SelectTrigger>
+                                      <SelectValue placeholder="Select a category" />
+                                    </SelectTrigger>
+                                  </FormControl>
+                                  <SelectContent>
+                                    {categories.map((category) => (
+                                      <SelectItem key={category.id} value={category.id.toString()}>
+                                        {category.name}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+                        <FormField
+                          control={editProductForm.control}
+                          name="description"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Description</FormLabel>
+                              <FormControl>
+                                <Textarea 
+                                  placeholder="High-quality wrestling singlet made from moisture-wicking fabric..." 
+                                  {...field} 
+                                  value={field.value || ""}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <div className="grid grid-cols-2 gap-4">
+                          <FormField
+                            control={editProductForm.control}
+                            name="basePrice"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Base Price (AUD)</FormLabel>
+                                <FormControl>
+                                  <Input placeholder="59.99" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={editProductForm.control}
+                            name="imageUrl"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Image URL</FormLabel>
+                                <FormControl>
+                                  <Input 
+                                    placeholder="https://example.com/image.jpg" 
+                                    {...field} 
+                                    value={field.value || ""}
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                          <FormField
+                            control={editProductForm.control}
+                            name="sizes"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Available Sizes</FormLabel>
+                                <div className="grid grid-cols-3 gap-2">
+                                  {availableSizes.map((size) => (
+                                    <label key={size} className="flex items-center space-x-2">
+                                      <input
+                                        type="checkbox"
+                                        checked={field.value.includes(size)}
+                                        onChange={(e) => {
+                                          if (e.target.checked) {
+                                            field.onChange([...field.value, size]);
+                                          } else {
+                                            field.onChange(field.value.filter(s => s !== size));
+                                          }
+                                        }}
+                                      />
+                                      <span className="text-sm">{size}</span>
+                                    </label>
+                                  ))}
+                                </div>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={editProductForm.control}
+                            name="colors"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Available Colors</FormLabel>
+                                <div className="grid grid-cols-2 gap-2">
+                                  {availableColors.map((color) => (
+                                    <label key={color} className="flex items-center space-x-2">
+                                      <input
+                                        type="checkbox"
+                                        checked={field.value.includes(color)}
+                                        onChange={(e) => {
+                                          if (e.target.checked) {
+                                            field.onChange([...field.value, color]);
+                                          } else {
+                                            field.onChange(field.value.filter(c => c !== color));
+                                          }
+                                        }}
+                                      />
+                                      <span className="text-sm">{color}</span>
+                                    </label>
+                                  ))}
+                                </div>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+                        <FormField
+                          control={editProductForm.control}
+                          name="isActive"
+                          render={({ field }) => (
+                            <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                              <FormControl>
+                                <input
+                                  type="checkbox"
+                                  checked={field.value}
+                                  onChange={field.onChange}
+                                />
+                              </FormControl>
+                              <FormLabel className="text-sm font-normal">
+                                Product is active
+                              </FormLabel>
+                            </FormItem>
+                          )}
+                        />
+                        <Button type="submit" className="w-full btn-primary" disabled={updateProductMutation.isPending}>
+                          {updateProductMutation.isPending ? "Updating..." : "Update Product"}
                         </Button>
                       </form>
                     </Form>
