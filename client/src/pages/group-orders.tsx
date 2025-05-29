@@ -10,13 +10,14 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/use-auth";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { insertGroupOrderSchema, insertGroupOrderItemSchema } from "@shared/schema";
 import type { GroupOrder, Product, GroupOrderItem } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
 import { z } from "zod";
-import { Plus, Users, Calendar, Package, Share2, Copy } from "lucide-react";
+import { Plus, Users, Calendar, Package, Share2, Copy, Edit, Trash2, Settings } from "lucide-react";
 import { format } from "date-fns";
 
 const createGroupOrderSchema = insertGroupOrderSchema.extend({
@@ -37,10 +38,12 @@ const joinGroupOrderSchema = insertGroupOrderItemSchema.omit({ groupOrderId: tru
 
 export default function GroupOrders() {
   const { toast } = useToast();
+  const { user } = useAuth();
   const queryClient = useQueryClient();
   const [selectedGroupOrder, setSelectedGroupOrder] = useState<GroupOrder | null>(null);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isJoinDialogOpen, setIsJoinDialogOpen] = useState(false);
+  const [isManageDialogOpen, setIsManageDialogOpen] = useState(false);
 
   const { data: groupOrders = [], isLoading } = useQuery<GroupOrder[]>({
     queryKey: ["/api/group-orders"],
@@ -63,7 +66,7 @@ export default function GroupOrders() {
       deadline: "",
       minimumQuantity: 10,
       description: "",
-      organizerUserId: 1, // TODO: Get from auth context
+      organizerUserId: user?.id || 1,
       orderType: "product" as const,
     },
   });
@@ -127,6 +130,27 @@ export default function GroupOrders() {
       toast({
         title: "Error",
         description: "Failed to join group order",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const removeGroupOrderItemMutation = useMutation({
+    mutationFn: async (itemId: number) => {
+      return apiRequest("DELETE", `/api/group-order-items/${itemId}`);
+    },
+    onSuccess: () => {
+      toast({
+        title: "Success",
+        description: "Member removed from group order",
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/group-orders"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/group-orders", selectedGroupOrder?.id] });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to remove member from group order",
         variant: "destructive",
       });
     },
@@ -457,24 +481,52 @@ export default function GroupOrders() {
 
                       {/* Actions */}
                       <div className="flex space-x-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => {
-                            setSelectedGroupOrder(groupOrder);
-                            setIsJoinDialogOpen(true);
-                          }}
-                          className="flex-1"
-                        >
-                          Join Order
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => copyShareLink(groupOrder.id)}
-                        >
-                          <Copy className="h-4 w-4" />
-                        </Button>
+                        {user && groupOrder.organizerUserId === user.id ? (
+                          // Owner controls
+                          <>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                setSelectedGroupOrder(groupOrder);
+                                setIsManageDialogOpen(true);
+                              }}
+                              className="flex-1"
+                            >
+                              <Settings className="h-4 w-4 mr-1" />
+                              Manage
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => copyShareLink(groupOrder.id)}
+                            >
+                              <Copy className="h-4 w-4" />
+                            </Button>
+                          </>
+                        ) : (
+                          // Join controls for non-owners
+                          <>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                setSelectedGroupOrder(groupOrder);
+                                setIsJoinDialogOpen(true);
+                              }}
+                              className="flex-1"
+                            >
+                              Join Order
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => copyShareLink(groupOrder.id)}
+                            >
+                              <Copy className="h-4 w-4" />
+                            </Button>
+                          </>
+                        )}
                       </div>
                     </div>
                   </CardContent>
@@ -483,6 +535,95 @@ export default function GroupOrders() {
             })
           )}
         </div>
+
+        {/* Manage Group Order Dialog */}
+        <Dialog open={isManageDialogOpen} onOpenChange={setIsManageDialogOpen}>
+          <DialogContent className="sm:max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>Manage Group Order</DialogTitle>
+            </DialogHeader>
+            {selectedGroupOrder && (
+              <div className="space-y-6">
+                {/* Order Info */}
+                <div className="p-4 bg-gray-50 rounded-lg">
+                  <h4 className="font-medium text-lg">{selectedGroupOrder.name}</h4>
+                  <p className="text-sm text-gray-600">
+                    {products.find(p => p.id === selectedGroupOrder.productId)?.name}
+                  </p>
+                  <div className="flex items-center gap-4 mt-2 text-sm">
+                    <span>Status: <Badge className={getStatusColor(selectedGroupOrder.status || "active")}>{selectedGroupOrder.status}</Badge></span>
+                    <span>Progress: {selectedGroupOrder.currentQuantity || 0} / {selectedGroupOrder.minimumQuantity || 10}</span>
+                    <span>Deadline: {format(new Date(selectedGroupOrder.deadline), "MMM dd, yyyy")}</span>
+                  </div>
+                </div>
+
+                {/* Order Members */}
+                <div>
+                  <h5 className="font-medium mb-3">Order Members</h5>
+                  {groupOrderDetails?.items && groupOrderDetails.items.length > 0 ? (
+                    <div className="space-y-3">
+                      {groupOrderDetails.items.map((item) => (
+                        <div key={item.id} className="flex items-center justify-between p-3 border rounded-lg">
+                          <div>
+                            <p className="font-medium">{item.participantName}</p>
+                            <p className="text-sm text-gray-600">{item.participantEmail}</p>
+                            <p className="text-sm text-gray-500">
+                              Qty: {item.quantity} • Size: {item.size} • Color: {item.color}
+                              {item.nickname && ` • ${item.nickname}`}
+                            </p>
+                          </div>
+                          <div className="flex gap-2">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => {
+                                // TODO: Edit individual order
+                              }}
+                            >
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => {
+                                if (window.confirm('Are you sure you want to remove this member from the group order?')) {
+                                  removeGroupOrderItemMutation.mutate(item.id);
+                                }
+                              }}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-gray-500 text-center py-4">No members have joined yet</p>
+                  )}
+                </div>
+
+                {/* Actions */}
+                <div className="flex gap-3">
+                  <Button
+                    onClick={() => copyShareLink(selectedGroupOrder.id)}
+                    variant="outline"
+                    className="flex-1"
+                  >
+                    <Copy className="h-4 w-4 mr-2" />
+                    Copy Share Link
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => setIsManageDialogOpen(false)}
+                    className="flex-1"
+                  >
+                    Close
+                  </Button>
+                </div>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
 
         {/* Join Group Order Dialog */}
         <Dialog open={isJoinDialogOpen} onOpenChange={setIsJoinDialogOpen}>
