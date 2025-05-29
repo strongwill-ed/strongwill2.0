@@ -104,9 +104,9 @@ export default function Home() {
       </section>
 
       {/* Product Categories */}
-      <section className="py-16 bg-gray-50">
+      <section className="py-12 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
+          <div className="text-center mb-8">
             <h2 className="text-3xl md:text-4xl font-bold text-black mb-4">Our Product Range</h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
               Professional-grade athletic apparel designed for peak performance and customization.
@@ -177,7 +177,7 @@ export default function Home() {
       </section>
 
       {/* Design Tool Preview */}
-      <section className="py-16 bg-white">
+      <section className="py-12 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
@@ -253,9 +253,9 @@ export default function Home() {
       </section>
 
       {/* Group Orders Section */}
-      <section className="py-16 bg-gray-50">
+      <section className="py-12 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
+          <div className="text-center mb-8">
             <h2 className="text-3xl md:text-4xl font-bold text-black mb-4">Team & Group Orders</h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
               Simplify team orders with our group ordering system. Perfect for schools, clubs, and organizations.
