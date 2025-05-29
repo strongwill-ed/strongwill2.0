@@ -2,11 +2,40 @@ import { Link } from "wouter";
 import { NewsletterSubscription } from "@/components/newsletter/newsletter-subscription";
 import { Facebook, Instagram, Linkedin } from "lucide-react";
 import { SiTiktok, SiOnlyfans } from "react-icons/si";
+import { useState } from "react";
 
 export function Footer() {
+  const [showRickRoll, setShowRickRoll] = useState(false);
+
+  const handleOnlyFansClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setShowRickRoll(true);
+    
+    // After 4 seconds, hide the video and redirect to homepage
+    setTimeout(() => {
+      setShowRickRoll(false);
+      window.location.href = '/';
+    }, 4000);
+  };
+
   return (
-    <footer className="bg-black text-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <>
+      {showRickRoll && (
+        <div className="fixed inset-0 z-50 bg-black flex items-center justify-center">
+          <iframe
+            width="80%"
+            height="80%"
+            src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&controls=0&showinfo=0&rel=0&modestbranding=1"
+            title="Rick Roll"
+            frameBorder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            className="max-w-4xl max-h-96"
+          />
+        </div>
+      )}
+      <footer className="bg-black text-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Brand Section */}
           <div className="space-y-4">
@@ -54,15 +83,13 @@ export function Footer() {
               >
                 <Linkedin className="h-5 w-5" />
               </a>
-              <a
-                href="https://onlyfans.com/strongwillsports"
-                target="_blank"
-                rel="noopener noreferrer"
+              <button
+                onClick={handleOnlyFansClick}
                 className="text-gray-300 hover:text-white transition-colors"
                 aria-label="Follow us on OnlyFans"
               >
                 <SiOnlyfans className="h-5 w-5" />
-              </a>
+              </button>
             </div>
           </div>
 
@@ -144,7 +171,8 @@ export function Footer() {
             </div>
           </div>
         </div>
-      </div>
-    </footer>
+        </div>
+      </footer>
+    </>
   );
 }
