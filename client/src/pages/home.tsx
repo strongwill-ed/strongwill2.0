@@ -28,7 +28,8 @@ function DynamicText() {
     "Class",
     "Celebration",
     "Winners",
-    "League"
+    "League",
+    "Champions"
   ];
   
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
@@ -118,9 +119,9 @@ export default function Home() {
       </section>
 
       {/* Product Categories */}
-      <section className="py-20 bg-gray-50">
+      <section className="py-12 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
+          <div className="text-center mb-10">
             <h2 className="text-3xl md:text-4xl font-bold text-black mb-4">Our Product Range</h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
               Professional-grade athletic apparel designed for peak performance and customization.

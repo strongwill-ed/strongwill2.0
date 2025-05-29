@@ -133,19 +133,18 @@ export function NewsletterSubscription({ variant = "default", className = "" }: 
               <span className="font-black">STRONGWILL</span>{" "}
               <span className="font-normal">SPORTS</span> Newsletter
             </h2>
-            <p className="text-gray-300 text-lg">
-              Get exclusive access to new product launches, training guides, 
-              and special offers for serious athletes.
+            <p className="text-gray-300 text-base">
+              Get exclusive access to new product launches, training guides, and special offers for serious athletes.
             </p>
-            <div className="bg-white/10 rounded-lg p-4 mb-4">
-              <p className="text-white font-semibold mb-2">🎁 Limited Time Offer</p>
+            <div className="bg-white/10 rounded-lg p-3 mb-3">
+              <p className="text-white font-semibold mb-1">🎁 Limited Time Offer</p>
               <p className="text-gray-300 text-sm">
                 Sign up now and receive <span className="text-white font-bold">one free custom item</span> with your first order!
                 <span className="text-xs block mt-1 text-gray-400">*Terms and conditions apply</span>
               </p>
             </div>
-            <ul className="space-y-2 text-sm text-gray-400">
-              <li>• Early access to new wrestling gear</li>
+            <ul className="space-y-1 text-sm text-gray-400">
+              <li>• Early access to new custom apparel</li>
               <li>• Training tips from professional athletes</li>
               <li>• Exclusive discounts and promotions</li>
               <li>• Custom design inspiration and tutorials</li>
