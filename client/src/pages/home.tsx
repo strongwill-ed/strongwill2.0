@@ -79,7 +79,7 @@ export default function Home() {
             </p>
           </div>
           
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {/* Left Column - Sports Uniforms and Gym & Training */}
             <div className="space-y-4">
               {/* Sports Uniforms */}
@@ -109,8 +109,7 @@ export default function Home() {
                   <img 
                     src={gymTrainingImage}
                     alt="Gym & Training" 
-                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                    style={{ objectPosition: '50% 20%' }}
+                    className="w-full h-full object-contain hover:scale-105 transition-transform duration-300"
                   />
                 </div>
                 <CardContent className="p-6">
