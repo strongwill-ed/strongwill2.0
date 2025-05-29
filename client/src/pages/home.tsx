@@ -25,7 +25,6 @@ function DynamicText() {
   ];
   
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
-  const [nextWordIndex, setNextWordIndex] = useState(1);
   const [isAnimating, setIsAnimating] = useState(false);
 
   useEffect(() => {
@@ -33,30 +32,31 @@ function DynamicText() {
       setIsAnimating(true);
       
       setTimeout(() => {
-        setCurrentWordIndex(nextWordIndex);
-        setNextWordIndex((nextWordIndex + 1) % words.length);
+        setCurrentWordIndex((prev) => (prev + 1) % words.length);
         setIsAnimating(false);
-      }, 600);
+      }, 500);
     }, 2500);
 
     return () => clearInterval(interval);
-  }, [nextWordIndex]);
+  }, []);
 
   return (
-    <span className="relative inline-block overflow-hidden h-[1.2em]">
+    <span className="relative inline-block overflow-hidden" style={{ height: '1.2em', lineHeight: '1.2' }}>
       <span 
-        className={`absolute inset-0 transition-transform duration-600 ease-in-out ${
-          isAnimating ? 'transform -translate-y-full' : 'transform translate-y-0'
+        className={`block transition-transform duration-500 ease-in-out ${
+          isAnimating ? '-translate-y-full opacity-0' : 'translate-y-0 opacity-100'
         }`}
+        style={{ transform: isAnimating ? 'translateY(-100%)' : 'translateY(0%)' }}
       >
         {words[currentWordIndex]}
       </span>
       <span 
-        className={`absolute inset-0 transition-transform duration-600 ease-in-out ${
-          isAnimating ? 'transform translate-y-0' : 'transform translate-y-full'
+        className={`absolute top-0 left-0 block transition-transform duration-500 ease-in-out ${
+          isAnimating ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'
         }`}
+        style={{ transform: isAnimating ? 'translateY(0%)' : 'translateY(100%)' }}
       >
-        {words[nextWordIndex]}
+        {words[(currentWordIndex + 1) % words.length]}
       </span>
     </span>
   );
