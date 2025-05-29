@@ -20,8 +20,8 @@ export default function Home() {
         {/* Background Image */}
         <div className="absolute inset-0 z-0">
           <img 
-            src="https://images.unsplash.com/photo-1606868306217-dbf5046868d2?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&h=1200"
-            alt="Mixed team sport action"
+            src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&h=1200"
+            alt="Athletic performance and teamwork"
             className="w-full h-full object-cover"
           />
           {/* Dark overlay for text readability */}
