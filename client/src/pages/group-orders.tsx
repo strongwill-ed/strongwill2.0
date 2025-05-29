@@ -49,8 +49,8 @@ export default function GroupOrders() {
     queryKey: ["/api/products"],
   });
 
-  const { data: groupOrderDetails } = useQuery<GroupOrder & { items: GroupOrderItem[] }>({
-    queryKey: ["/api/group-orders", selectedGroupOrder?.id],
+  const { data: groupOrderDetails, isLoading: isLoadingDetails } = useQuery<GroupOrder & { items: GroupOrderItem[] }>({
+    queryKey: [`/api/group-orders/${selectedGroupOrder?.id}`],
     enabled: !!selectedGroupOrder && isManageDialogOpen,
   });
 
@@ -485,28 +485,36 @@ export default function GroupOrders() {
                 {/* Order Members */}
                 <div>
                   <h5 className="font-medium mb-3">Order Members ({selectedGroupOrder.currentQuantity || 0})</h5>
-                  {groupOrderDetails && groupOrderDetails.items && groupOrderDetails.items.length > 0 ? (
+                  {isLoadingDetails ? (
+                    <div className="text-center py-8">
+                      <div className="animate-spin w-6 h-6 border-2 border-gray-300 border-t-black rounded-full mx-auto mb-2"></div>
+                      <p className="text-gray-500">Loading member details...</p>
+                    </div>
+                  ) : groupOrderDetails && groupOrderDetails.items && groupOrderDetails.items.length > 0 ? (
                     <div className="space-y-3">
                       {groupOrderDetails.items.map((item) => (
-                        <div key={item.id} className="flex items-center justify-between p-3 border rounded-lg">
-                          <div>
-                            <p className="font-medium">{item.participantName}</p>
+                        <div key={item.id} className="flex items-center justify-between p-3 border rounded-lg bg-white">
+                          <div className="flex-1">
+                            <p className="font-medium text-black">{item.participantName}</p>
                             <p className="text-sm text-gray-600">{item.participantEmail}</p>
-                            <p className="text-sm text-gray-500">
-                              Qty: {item.quantity} • Size: {item.size || 'Not specified'} • Color: {item.color || 'Not specified'}
-                              {item.nickname && ` • Nickname: ${item.nickname}`}
-                            </p>
+                            <div className="text-sm text-gray-500 mt-1">
+                              <span className="inline-block mr-3">Qty: <strong>{item.quantity}</strong></span>
+                              <span className="inline-block mr-3">Size: <strong>{item.size || 'Not specified'}</strong></span>
+                              <span className="inline-block mr-3">Color: <strong>{item.color || 'Not specified'}</strong></span>
+                              {item.nickname && <span className="inline-block">Nickname: <strong>{item.nickname}</strong></span>}
+                            </div>
                           </div>
                           <div className="flex gap-2">
                             <Button
                               variant="ghost"
                               size="sm"
                               onClick={() => {
-                                if (window.confirm('Are you sure you want to remove this member from the group order?')) {
+                                if (window.confirm(`Are you sure you want to remove ${item.participantName} from this group order?`)) {
                                   removeGroupOrderItemMutation.mutate(item.id);
                                 }
                               }}
                               title="Remove member"
+                              className="text-red-600 hover:text-red-700 hover:bg-red-50"
                             >
                               <Trash2 className="h-4 w-4" />
                             </Button>
