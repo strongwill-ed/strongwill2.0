@@ -40,6 +40,7 @@ const checkoutSchema = z.object({
   shippingZipCode: z.string().optional(),
   shippingCountry: z.string().optional(),
   paymentMethod: z.enum(["card", "paypal"]).default("card"),
+  subscribeToNewsletter: z.boolean().default(true),
 });
 
 type CheckoutFormData = z.infer<typeof checkoutSchema>;
@@ -96,6 +97,7 @@ export default function Checkout() {
       paymentMethod: "card",
       country: "AU",
       shippingCountry: "AU",
+      subscribeToNewsletter: true,
     },
   });
 
@@ -397,6 +399,29 @@ export default function Checkout() {
                             <Input type="email" placeholder="john@example.com" {...field} />
                           </FormControl>
                           <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form.control}
+                      name="subscribeToNewsletter"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                          <FormControl>
+                            <Checkbox
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                            />
+                          </FormControl>
+                          <div className="space-y-1 leading-none">
+                            <FormLabel className="text-sm font-normal">
+                              Keep me updated with the latest drops, inspiration, giveaways and exclusive events
+                            </FormLabel>
+                            <p className="text-xs text-gray-500">
+                              Uncheck this box if you don't want to miss out on our premium releases and member-only benefits
+                            </p>
+                          </div>
                         </FormItem>
                       )}
                     />

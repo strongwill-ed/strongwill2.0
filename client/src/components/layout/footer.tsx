@@ -1,5 +1,7 @@
 import { Link } from "wouter";
 import { NewsletterSubscription } from "@/components/newsletter/newsletter-subscription";
+import { Facebook, Instagram, Linkedin } from "lucide-react";
+import { SiTiktok } from "react-icons/si";
 
 export function Footer() {
   return (
@@ -15,6 +17,44 @@ export function Footer() {
             <p className="text-gray-300 text-sm">
               Premium custom apparel for serious athletes. Create, customize, and compete with confidence.
             </p>
+            <div className="flex space-x-4">
+              <a
+                href="https://facebook.com/strongwillsports"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-300 hover:text-white transition-colors"
+                aria-label="Follow us on Facebook"
+              >
+                <Facebook className="h-5 w-5" />
+              </a>
+              <a
+                href="https://instagram.com/strongwillsports"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-300 hover:text-white transition-colors"
+                aria-label="Follow us on Instagram"
+              >
+                <Instagram className="h-5 w-5" />
+              </a>
+              <a
+                href="https://tiktok.com/@strongwillsports"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-300 hover:text-white transition-colors"
+                aria-label="Follow us on TikTok"
+              >
+                <SiTiktok className="h-5 w-5" />
+              </a>
+              <a
+                href="https://linkedin.com/company/strongwillsports"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-300 hover:text-white transition-colors"
+                aria-label="Follow us on LinkedIn"
+              >
+                <Linkedin className="h-5 w-5" />
+              </a>
+            </div>
           </div>
 
           {/* Quick Links */}
