@@ -22,7 +22,6 @@ import { format } from "date-fns";
 
 const createGroupOrderSchema = z.object({
   name: z.string().min(1, "Group order name is required"),
-  productId: z.number().min(1, "Product selection is required"),
   deadline: z.string().min(1, "Deadline is required"),
   minimumQuantity: z.number().min(1, "Minimum quantity must be at least 1"),
   description: z.string().optional(),
@@ -59,7 +58,6 @@ export default function GroupOrders() {
     resolver: zodResolver(createGroupOrderSchema),
     defaultValues: {
       name: "",
-      productId: products[0]?.id || 101,
       deadline: "",
       minimumQuantity: 10,
       description: "",
@@ -259,30 +257,6 @@ export default function GroupOrders() {
                       )}
                     />
 
-                    <FormField
-                      control={createGroupOrderForm.control}
-                      name="productId"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Base Product</FormLabel>
-                          <Select onValueChange={(value) => field.onChange(parseInt(value))} value={field.value?.toString() || ""}>
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select a product" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {products.map((product) => (
-                                <SelectItem key={product.id} value={product.id.toString()}>
-                                  {product.name}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
 
                     <FormField
                       control={createGroupOrderForm.control}

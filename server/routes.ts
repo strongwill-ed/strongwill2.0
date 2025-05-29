@@ -493,18 +493,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Basic validation and processing
       const { name, productId, deadline, minimumQuantity, organizerUserId, description, orderType } = req.body;
       
-      if (!name || !productId || !deadline || !organizerUserId) {
+      if (!name || !deadline || !organizerUserId) {
         return res.status(400).json({ message: "Missing required fields" });
       }
       
       const groupOrderData = {
         name,
-        productId: parseInt(productId),
+        productId: productId ? parseInt(productId) : null,
         deadline: new Date(deadline),
         minimumQuantity: minimumQuantity || 10,
         organizerUserId: parseInt(organizerUserId),
         description: description || null,
-        orderType: orderType || "product",
+        orderType: orderType || "custom",
         status: "active",
         currentQuantity: 0,
         paymentMode: "individual",
