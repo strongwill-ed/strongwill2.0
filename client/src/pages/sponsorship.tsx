@@ -32,8 +32,8 @@ export default function SponsorshipPage() {
 
   // Get unique countries from both profiles
   const allCountries = useMemo(() => {
-    const seekerCountries = seekerProfiles.map((profile: SeekerProfile) => profile.location).filter(Boolean);
-    const sponsorCountries = sponsorProfiles.map((profile: SponsorProfile) => profile.location).filter(Boolean);
+    const seekerCountries = seekerProfiles.map((profile: SeekerProfile) => profile.country).filter(Boolean);
+    const sponsorCountries = sponsorProfiles.map((profile: SponsorProfile) => profile.country).filter(Boolean);
     const uniqueCountries = Array.from(new Set([...seekerCountries, ...sponsorCountries]));
     return uniqueCountries.sort();
   }, [seekerProfiles, sponsorProfiles]);
@@ -41,12 +41,12 @@ export default function SponsorshipPage() {
   // Filter profiles by country
   const filteredSeekerProfiles = useMemo(() => {
     if (countryFilter === "all") return seekerProfiles;
-    return seekerProfiles.filter((profile: SeekerProfile) => profile.location === countryFilter);
+    return seekerProfiles.filter((profile: SeekerProfile) => profile.country === countryFilter);
   }, [seekerProfiles, countryFilter]);
 
   const filteredSponsorProfiles = useMemo(() => {
     if (countryFilter === "all") return sponsorProfiles;
-    return sponsorProfiles.filter((profile: SponsorProfile) => profile.location === countryFilter);
+    return sponsorProfiles.filter((profile: SponsorProfile) => profile.country === countryFilter);
   }, [sponsorProfiles, countryFilter]);
 
   const totalSponsorshipValue = activeAgreements.reduce(
@@ -247,7 +247,7 @@ export default function SponsorshipPage() {
                       </Badge>
                     </CardTitle>
                     <CardDescription>
-                      {profile.sportType} • {profile.location}
+                      {profile.sportType} • {profile.location ? `${profile.location}, ${profile.country}` : profile.country}
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
