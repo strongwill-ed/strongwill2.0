@@ -7,7 +7,7 @@ export const users = pgTable("users", {
   username: text("username").notNull().unique(),
   password: text("password").notNull(),
   email: text("email").notNull().unique(),
-  role: text("role").notNull().default("customer"), // customer, admin
+  role: text("role").notNull().default("customer"), // customer, admin, seeker, sponsor
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -110,6 +110,82 @@ export const groupOrderItems = pgTable("group_order_items", {
   participantEmail: text("participant_email").notNull(),
 });
 
+// Sponsorship Platform Tables
+export const seekerProfiles = pgTable("seeker_profiles", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  organizationName: text("organization_name").notNull(),
+  organizationType: text("organization_type").notNull(), // school, club, team
+  sportType: text("sport_type").notNull(),
+  location: text("location"),
+  contactName: text("contact_name").notNull(),
+  contactPhone: text("contact_phone"),
+  description: text("description"),
+  fundingGoal: decimal("funding_goal", { precision: 10, scale: 2 }),
+  website: text("website"),
+  socialMedia: json("social_media"), // { facebook, instagram, twitter }
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const sponsorProfiles = pgTable("sponsor_profiles", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  companyName: text("company_name").notNull(),
+  industry: text("industry").notNull(),
+  contactName: text("contact_name").notNull(),
+  contactPhone: text("contact_phone"),
+  description: text("description"),
+  sponsorshipBudget: decimal("sponsorship_budget", { precision: 10, scale: 2 }),
+  targetAudience: text("target_audience"),
+  logoUrl: text("logo_url"),
+  website: text("website"),
+  socialMedia: json("social_media"), // { facebook, instagram, twitter }
+  preferredSports: text("preferred_sports").array(),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const sponsorshipAgreements = pgTable("sponsorship_agreements", {
+  id: serial("id").primaryKey(),
+  seekerId: integer("seeker_id").references(() => seekerProfiles.id).notNull(),
+  sponsorId: integer("sponsor_id").references(() => sponsorProfiles.id).notNull(),
+  amount: decimal("amount", { precision: 10, scale: 2 }).notNull(),
+  duration: integer("duration").notNull(), // months
+  logoUsageRights: text("logo_usage_rights").notNull(),
+  description: text("description"),
+  status: text("status").default("pending"), // pending, accepted, rejected, active, completed
+  proposedBy: text("proposed_by").notNull(), // seeker or sponsor
+  paymentStatus: text("payment_status").default("pending"), // pending, paid, failed
+  stripePaymentIntentId: text("stripe_payment_intent_id"),
+  startDate: timestamp("start_date"),
+  endDate: timestamp("end_date"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const sponsorshipCredits = pgTable("sponsorship_credits", {
+  id: serial("id").primaryKey(),
+  seekerId: integer("seeker_id").references(() => seekerProfiles.id).notNull(),
+  agreementId: integer("agreement_id").references(() => sponsorshipAgreements.id).notNull(),
+  amount: decimal("amount", { precision: 10, scale: 2 }).notNull(),
+  remainingAmount: decimal("remaining_amount", { precision: 10, scale: 2 }).notNull(),
+  isActive: boolean("is_active").default(true),
+  expiresAt: timestamp("expires_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const sponsorshipMessages = pgTable("sponsorship_messages", {
+  id: serial("id").primaryKey(),
+  senderId: integer("sender_id").references(() => users.id).notNull(),
+  receiverId: integer("receiver_id").references(() => users.id).notNull(),
+  agreementId: integer("agreement_id").references(() => sponsorshipAgreements.id),
+  subject: text("subject"),
+  message: text("message").notNull(),
+  isRead: boolean("is_read").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).omit({ id: true, createdAt: true });
 export const insertProductCategorySchema = createInsertSchema(productCategories).omit({ id: true });
@@ -120,6 +196,11 @@ export const insertOrderSchema = createInsertSchema(orders).omit({ id: true, cre
 export const insertOrderItemSchema = createInsertSchema(orderItems).omit({ id: true });
 export const insertGroupOrderSchema = createInsertSchema(groupOrders).omit({ id: true, createdAt: true });
 export const insertGroupOrderItemSchema = createInsertSchema(groupOrderItems).omit({ id: true });
+export const insertSeekerProfileSchema = createInsertSchema(seekerProfiles).omit({ id: true, createdAt: true });
+export const insertSponsorProfileSchema = createInsertSchema(sponsorProfiles).omit({ id: true, createdAt: true });
+export const insertSponsorshipAgreementSchema = createInsertSchema(sponsorshipAgreements).omit({ id: true, createdAt: true, updatedAt: true });
+export const insertSponsorshipCreditSchema = createInsertSchema(sponsorshipCredits).omit({ id: true, createdAt: true });
+export const insertSponsorshipMessageSchema = createInsertSchema(sponsorshipMessages).omit({ id: true, createdAt: true });
 
 // Types
 export type User = typeof users.$inferSelect;
@@ -140,3 +221,13 @@ export type GroupOrder = typeof groupOrders.$inferSelect;
 export type InsertGroupOrder = z.infer<typeof insertGroupOrderSchema>;
 export type GroupOrderItem = typeof groupOrderItems.$inferSelect;
 export type InsertGroupOrderItem = z.infer<typeof insertGroupOrderItemSchema>;
+export type SeekerProfile = typeof seekerProfiles.$inferSelect;
+export type InsertSeekerProfile = z.infer<typeof insertSeekerProfileSchema>;
+export type SponsorProfile = typeof sponsorProfiles.$inferSelect;
+export type InsertSponsorProfile = z.infer<typeof insertSponsorProfileSchema>;
+export type SponsorshipAgreement = typeof sponsorshipAgreements.$inferSelect;
+export type InsertSponsorshipAgreement = z.infer<typeof insertSponsorshipAgreementSchema>;
+export type SponsorshipCredit = typeof sponsorshipCredits.$inferSelect;
+export type InsertSponsorshipCredit = z.infer<typeof insertSponsorshipCreditSchema>;
+export type SponsorshipMessage = typeof sponsorshipMessages.$inferSelect;
+export type InsertSponsorshipMessage = z.infer<typeof insertSponsorshipMessageSchema>;
