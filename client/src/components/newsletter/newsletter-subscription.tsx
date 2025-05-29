@@ -153,6 +153,11 @@ export function NewsletterSubscription({ variant = "default", className = "" }: 
           
           <div className="space-y-3">
             <form onSubmit={handleSubmit} className="space-y-3">
+              {/* Limited Time Offer Box */}
+              <div className="bg-white text-black p-2 rounded text-xs font-semibold text-center">
+                LIMITED TIME: 15% OFF FIRST ORDER + FREE SHIPPING
+              </div>
+              
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
                 <Input
