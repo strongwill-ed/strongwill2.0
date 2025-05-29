@@ -71,6 +71,7 @@ export interface IStorage {
   getSeekerProfileByUserId(userId: number): Promise<SeekerProfile | undefined>;
   createSeekerProfile(profile: InsertSeekerProfile): Promise<SeekerProfile>;
   updateSeekerProfile(id: number, updates: Partial<InsertSeekerProfile>): Promise<SeekerProfile | undefined>;
+  deleteSeekerProfile(id: number): Promise<boolean>;
 
   // Sponsor Profiles
   getSponsorProfiles(): Promise<SponsorProfile[]>;
@@ -78,6 +79,7 @@ export interface IStorage {
   getSponsorProfileByUserId(userId: number): Promise<SponsorProfile | undefined>;
   createSponsorProfile(profile: InsertSponsorProfile): Promise<SponsorProfile>;
   updateSponsorProfile(id: number, updates: Partial<InsertSponsorProfile>): Promise<SponsorProfile | undefined>;
+  deleteSponsorProfile(id: number): Promise<boolean>;
 
   // Sponsorship Agreements
   getSponsorshipAgreements(): Promise<SponsorshipAgreement[]>;

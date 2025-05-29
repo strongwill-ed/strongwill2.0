@@ -922,6 +922,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.delete("/api/seeker-profiles/:id", async (req, res) => {
+    try {
+      if (!req.isAuthenticated() || req.user.username !== 'admin') {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+      const success = await storage.deleteSeekerProfile(parseInt(req.params.id));
+      if (!success) {
+        return res.status(404).json({ message: "Seeker profile not found" });
+      }
+      res.json({ message: "Seeker profile deleted successfully" });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to delete seeker profile" });
+    }
+  });
+
   // Sponsor Profile Routes
   app.get("/api/sponsor-profiles", async (req, res) => {
     try {
@@ -929,6 +944,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(profiles);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch sponsor profiles" });
+    }
+  });
+
+  app.get("/api/sponsor-profiles/user", async (req, res) => {
+    try {
+      if (!req.isAuthenticated()) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+      const profile = await storage.getSponsorProfileByUserId(req.user.id);
+      res.json(profile || null);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch sponsor profile" });
     }
   });
 
@@ -971,6 +998,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid profile data", errors: error.errors });
       }
       res.status(500).json({ message: "Failed to update sponsor profile" });
+    }
+  });
+
+  app.delete("/api/sponsor-profiles/:id", async (req, res) => {
+    try {
+      if (!req.isAuthenticated() || req.user.username !== 'admin') {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+      const success = await storage.deleteSponsorProfile(parseInt(req.params.id));
+      if (!success) {
+        return res.status(404).json({ message: "Sponsor profile not found" });
+      }
+      res.json({ message: "Sponsor profile deleted successfully" });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to delete sponsor profile" });
     }
   });
 
