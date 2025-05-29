@@ -11,11 +11,11 @@ export function Footer() {
     e.preventDefault();
     setShowRickRoll(true);
     
-    // After 4 seconds, hide the video and redirect to homepage
+    // After 9 seconds, hide the video and redirect to homepage
     setTimeout(() => {
       setShowRickRoll(false);
       window.location.href = '/';
-    }, 4000);
+    }, 9000);
   };
 
   return (
