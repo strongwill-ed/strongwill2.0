@@ -41,7 +41,7 @@ export const translations = {
     // Homepage
     home: {
       heroTitle: "Design Your",
-      heroSubtitle: "Premium custom sports apparel with our advanced design tool. Perfect for teams, clubs, and individual athletes who demand excellence.",
+      heroSubtitle: "Premium custom apparel for teams who accept no compromise. Quality that lasts, legacy that endures.",
       apparel: "Apparel",
       startDesigning: "Start Designing",
       browseProducts: "Browse Products",
@@ -235,7 +235,7 @@ export const translations = {
     // Homepage
     home: {
       heroTitle: "Gestalten Sie",
-      heroSubtitle: "Premium maßgeschneiderte Sportbekleidung mit unserem fortschrittlichen Design-Tool. Perfekt für Teams, Vereine und Einzelsportler, die Exzellenz fordern.",
+      heroSubtitle: "Premium maßgeschneiderte Bekleidung für Teams, die keine Kompromisse eingehen. Qualität, die hält, Vermächtnis, das bleibt.",
       apparel: "Bekleidung",
       startDesigning: "Design Beginnen",
       browseProducts: "Produkte Durchsuchen",
