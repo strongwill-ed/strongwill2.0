@@ -96,8 +96,7 @@ export default function Home() {
                 </div>
                 <CardContent className="p-6">
                   <h3 className="text-xl font-semibold text-black mb-2">Sports Uniforms</h3>
-                  <p className="text-gray-600 mb-4">Professional sports uniforms for teams and clubs. Custom designs for rugby, netball, AFL, and all sporting codes.</p>
-                  <span className="text-sm font-medium text-black">View Collection</span>
+                  <p className="text-gray-600">Professional sports uniforms for teams and clubs. Custom designs for rugby, netball, AFL, and all sporting codes.</p>
                 </CardContent>
               </Card>
 
@@ -116,8 +115,7 @@ export default function Home() {
                 </div>
                 <CardContent className="p-6">
                   <h3 className="text-xl font-semibold text-black mb-2">Gym & Training</h3>
-                  <p className="text-gray-600 mb-4">High-performance training apparel for fitness enthusiasts. Breathable fabrics and ergonomic designs for optimal performance.</p>
-                  <span className="text-sm font-medium text-black">View Collection</span>
+                  <p className="text-gray-600">High-performance training apparel for fitness enthusiasts. Breathable fabrics and ergonomic designs for optimal performance.</p>
                 </CardContent>
               </Card>
             </div>
@@ -137,8 +135,7 @@ export default function Home() {
                 </div>
                 <CardContent className="p-6">
                   <h3 className="text-xl font-semibold text-black mb-2">Year 12 Leavers</h3>
-                  <p className="text-gray-600 mb-4">Celebrate your graduation with custom Year 12 leavers apparel. Hoodies, jackets, and more to commemorate your achievement.</p>
-                  <span className="text-sm font-medium text-black">View Collection</span>
+                  <p className="text-gray-600">Celebrate your graduation with custom Year 12 leavers apparel. Hoodies, jackets, and more to commemorate your achievement.</p>
                 </CardContent>
               </Card>
             </div>
