@@ -11,6 +11,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
+import { useAuth } from "@/components/auth/auth-provider";
 import { Building2, ArrowLeft } from "lucide-react";
 import { insertSponsorProfileSchema } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
@@ -38,11 +39,18 @@ export default function CreateSponsorProfile() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { user } = useAuth();
+
+  // Redirect to login if not authenticated
+  if (!user) {
+    setLocation("/login");
+    return null;
+  }
 
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      userId: 1, // In a real app, this would come from auth context
+      userId: user.id,
       companyName: "",
       industry: "",
       contactName: "",

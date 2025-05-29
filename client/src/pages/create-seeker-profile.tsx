@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
+import { useAuth } from "@/components/auth/auth-provider";
 import { Users, ArrowLeft } from "lucide-react";
 import { insertSeekerProfileSchema } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
@@ -23,11 +24,18 @@ export default function CreateSeekerProfile() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { user } = useAuth();
+
+  // Redirect to login if not authenticated
+  if (!user) {
+    setLocation("/login");
+    return null;
+  }
 
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      userId: 1, // In a real app, this would come from auth context
+      userId: user.id,
       organizationName: "",
       organizationType: "",
       sportType: "",
@@ -43,15 +51,22 @@ export default function CreateSeekerProfile() {
   });
 
   const createProfileMutation = useMutation({
-    mutationFn: (data: any) => {
+    mutationFn: async (data: any) => {
       const profileData = {
         ...data,
         fundingGoal: parseFloat(data.fundingGoal),
       };
-      return apiRequest("/api/seeker-profiles", {
+      const response = await fetch("/api/seeker-profiles", {
         method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify(profileData),
       });
+      if (!response.ok) {
+        throw new Error("Failed to create profile");
+      }
+      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/seeker-profiles"] });
