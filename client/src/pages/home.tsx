@@ -5,6 +5,7 @@ import type { ProductCategory } from "@shared/schema";
 import { useLocation } from "wouter";
 import { ArrowRight, Check, Users, Palette, ShoppingBag } from "lucide-react";
 import { NewsletterSubscription } from "@/components/newsletter/newsletter-subscription";
+import heroImage from "@assets/aussie football banner team jersey singlet shorts squad.jpg";
 
 export default function Home() {
   const [, setLocation] = useLocation();
@@ -20,8 +21,8 @@ export default function Home() {
         {/* Background Image */}
         <div className="absolute inset-0 z-0">
           <img 
-            src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&h=1200"
-            alt="Athletic performance and teamwork"
+            src={heroImage}
+            alt="Mixed team playing Australian football"
             className="w-full h-full object-cover"
           />
           {/* Dark overlay for text readability */}
