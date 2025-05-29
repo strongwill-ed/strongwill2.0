@@ -34,27 +34,25 @@ function DynamicText() {
       setTimeout(() => {
         setCurrentWordIndex((prev) => (prev + 1) % words.length);
         setIsAnimating(false);
-      }, 500);
+      }, 400);
     }, 2500);
 
     return () => clearInterval(interval);
   }, []);
 
   return (
-    <span className="relative inline-block overflow-hidden" style={{ height: '1.2em', lineHeight: '1.2' }}>
+    <span className="relative inline-block overflow-hidden h-[1.2em] align-top">
       <span 
-        className={`block transition-transform duration-500 ease-in-out ${
-          isAnimating ? '-translate-y-full opacity-0' : 'translate-y-0 opacity-100'
+        className={`absolute w-full text-center transition-transform duration-400 ease-out ${
+          isAnimating ? 'transform -translate-y-full' : 'transform translate-y-0'
         }`}
-        style={{ transform: isAnimating ? 'translateY(-100%)' : 'translateY(0%)' }}
       >
         {words[currentWordIndex]}
       </span>
       <span 
-        className={`absolute top-0 left-0 block transition-transform duration-500 ease-in-out ${
-          isAnimating ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'
+        className={`absolute w-full text-center transition-transform duration-400 ease-out ${
+          isAnimating ? 'transform translate-y-0' : 'transform translate-y-full'
         }`}
-        style={{ transform: isAnimating ? 'translateY(0%)' : 'translateY(100%)' }}
       >
         {words[(currentWordIndex + 1) % words.length]}
       </span>
