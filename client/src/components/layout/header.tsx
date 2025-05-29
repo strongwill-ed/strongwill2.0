@@ -17,6 +17,7 @@ export default function Header() {
     { name: "Products", href: "/products" },
     { name: "Design Tool", href: "/design-tool" },
     { name: "Group Orders", href: "/group-orders" },
+    { name: "Sponsorship", href: "/sponsorship" },
     { name: "About", href: "/about" },
     { name: "Contact", href: "/contact" },
   ];

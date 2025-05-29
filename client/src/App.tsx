@@ -8,6 +8,7 @@ import Home from "@/pages/home";
 import Products from "@/pages/products";
 import DesignTool from "@/pages/design-tool";
 import GroupOrders from "@/pages/group-orders";
+import Sponsorship from "@/pages/sponsorship";
 import Admin from "@/pages/admin";
 import About from "@/pages/about";
 import Contact from "@/pages/contact";
@@ -25,6 +26,7 @@ function Router() {
       <Route path="/products" component={Products} />
       <Route path="/design-tool" component={DesignTool} />
       <Route path="/group-orders" component={GroupOrders} />
+      <Route path="/sponsorship" component={Sponsorship} />
       <Route path="/admin" component={Admin} />
       <Route path="/about" component={About} />
       <Route path="/contact" component={Contact} />

@@ -29,7 +29,7 @@ export default function SponsorshipPage() {
 
   const totalSponsorshipValue = activeAgreements.reduce(
     (total: number, agreement: SponsorshipAgreement) => 
-      total + parseFloat(agreement.totalAmount), 0
+      total + parseFloat(agreement.amount), 0
   );
 
   return (
@@ -180,13 +180,13 @@ export default function SponsorshipPage() {
                 <Card key={profile.id} className="hover:shadow-lg transition-shadow">
                   <CardHeader>
                     <CardTitle className="flex items-center justify-between">
-                      {profile.teamName}
+                      {profile.organizationName}
                       <Badge variant={profile.isActive ? "default" : "secondary"}>
                         {profile.isActive ? "Active" : "Inactive"}
                       </Badge>
                     </CardTitle>
                     <CardDescription>
-                      {profile.sport} • {profile.location}
+                      {profile.sportType} • {profile.location}
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
@@ -196,10 +196,10 @@ export default function SponsorshipPage() {
                       </p>
                       <div className="flex items-center justify-between text-sm">
                         <span className="font-medium">
-                          Goal: ${parseFloat(profile.sponsorshipGoals).toLocaleString()}
+                          Goal: ${profile.fundingGoal ? parseFloat(profile.fundingGoal).toLocaleString() : 'Not specified'}
                         </span>
                         <span className="text-gray-500">
-                          {profile.teamSize} members
+                          {profile.organizationType}
                         </span>
                       </div>
                       <Button variant="outline" className="w-full">
