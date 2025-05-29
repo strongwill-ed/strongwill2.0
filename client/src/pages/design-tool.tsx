@@ -53,7 +53,7 @@ export default function DesignTool() {
   const [fontFamily, setFontFamily] = useState("Arial");
   
   // Canvas ref
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const canvasRef = useRef<any>(null);
 
   const { data: products = [] } = useQuery<Product[]>({
     queryKey: ["/api/products"],

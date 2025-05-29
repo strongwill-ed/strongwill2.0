@@ -1,0 +1,89 @@
+
+---
+
+## 🚀 Run the App
+
+In Replit, make sure:
+
+1. **Frontend** is served via Next.js (`npm run dev`)
+2. **Backend** runs on a separate port (Express server)
+
+You may need to configure Replit `.replit` to run both with [multi-process setup](https://docs.replit.com).
+
+---
+
+## 🧩 Phase 2 Modules
+
+### 🎨 1. Advanced 2D Design Tool
+
+- Canvas-based editor with:
+  - Color zones
+  - Text styling & positioning
+  - Image uploads (SVG/PNG/JPG)
+- Built using `Fabric.js` or `Konva.js`
+- Export to high-res preview
+- Save designs as JSON to MongoDB
+
+### 🗂️ 2. Design Saving & Versioning
+
+- Save & fetch user or guest designs
+- Guest: prompt for email and send a unique resume link
+- Basic version history support (timestamps)
+- `Design` schema includes product base, images, transformations, etc.
+
+### 👕 3. Group Order Flow
+
+- Organizer starts group order
+- Select mode:
+  - Organizer pays all
+  - Individuals pay for their piece
+- Generate shared link to collect:
+  - Sizes, nicknames, payment
+- Organizer dashboard to view submissions and send reminders
+
+### 💳 4. Sponsorship Platform (Beta)
+
+- Seeker & Sponsor profiles
+- Agreement creation and tracking
+- Stripe-based (placeholder) payment from sponsor
+- Sponsorship credits apply at checkout
+
+### 🔐 5. Full Auth & Dashboard
+
+- JWT-based login/signup
+- Secure user dashboard:
+  - Saved designs
+  - Orders
+  - Group orders
+- Ant Design layout & mobile support
+
+### ✨ 6. UI Polish & Responsive Pass
+
+- Tailwind & AntD theme unification (black & white)
+- Typography cleanup
+- Framer Motion microinteractions
+- Responsive support for all flows
+
+---
+
+## 🧪 Testing & Notes
+
+- Add console logs or simple stubs for external services (emails, Stripe, etc.)
+- Save all design-related data in backend
+- Add basic error handling middleware
+- Ensure mobile responsiveness with Tailwind classes
+- Ant Design overrides are handled in `tailwind.config.js` and custom CSS
+
+---
+
+## 📍 Next Phase (Preview)
+
+- Full e-commerce flow (checkout, cart, payments)
+- Admin Panel
+- CMS for static pages/blog
+- Internationalization (EN/DE)
+- Final SEO enhancements
+
+---
+
+Made with 💪 for custom apparel teams.
