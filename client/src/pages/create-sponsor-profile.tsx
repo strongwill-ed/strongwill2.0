@@ -41,16 +41,35 @@ export default function CreateSponsorProfile() {
   const queryClient = useQueryClient();
   const { user } = useAuth();
 
-  // Show loading or redirect to login if not authenticated
+  // Show authentication forms if not logged in
   if (!user) {
     return (
       <div className="min-h-screen bg-gray-50 py-12">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-2xl font-bold mb-4">Authentication Required</h1>
-          <p className="text-gray-600 mb-6">You need to be logged in to create a sponsor profile.</p>
-          <Button onClick={() => setLocation("/login")}>
-            Go to Login
-          </Button>
+        <div className="max-w-md mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-8">
+            <h1 className="text-2xl font-bold mb-2">Create Sponsor Profile</h1>
+            <p className="text-gray-600">Sign in to create your sponsorship profile</p>
+          </div>
+          
+          <div className="space-y-4">
+            <Button 
+              onClick={() => setLocation("/login")}
+              className="w-full"
+            >
+              Sign In to Continue
+            </Button>
+            
+            <div className="text-center">
+              <span className="text-gray-500">Don't have an account? </span>
+              <Button 
+                variant="link" 
+                className="p-0 h-auto"
+                onClick={() => setLocation("/register")}
+              >
+                Create Account
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
     );
