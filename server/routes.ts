@@ -345,21 +345,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/group-orders", async (req, res) => {
     try {
-      // Convert string deadline to Date object
-      const processedData = {
-        ...req.body,
-        deadline: new Date(req.body.deadline)
-      };
+      // Basic validation and processing
+      const { name, productId, deadline, minimumQuantity, organizerUserId, description } = req.body;
       
-      const groupOrderData = insertGroupOrderSchema.parse(processedData);
+      if (!name || !productId || !deadline || !organizerUserId) {
+        return res.status(400).json({ message: "Missing required fields" });
+      }
+      
+      const groupOrderData = {
+        name,
+        productId: parseInt(productId),
+        deadline: new Date(deadline),
+        minimumQuantity: minimumQuantity || 10,
+        organizerUserId: parseInt(organizerUserId),
+        description: description || null,
+        status: "active",
+        currentQuantity: 0,
+        paymentMode: "individual",
+        totalEstimate: "0.00",
+        organizerEmail: null,
+        shareableLink: null,
+        designId: null
+      } as InsertGroupOrder;
+      
       const groupOrder = await storage.createGroupOrder(groupOrderData);
       res.status(201).json(groupOrder);
     } catch (error) {
-      if (error instanceof z.ZodError) {
-        res.status(400).json({ message: "Invalid group order data", errors: error.errors });
-      } else {
-        res.status(500).json({ message: "Failed to create group order" });
-      }
+      console.error('Group order creation error:', error);
+      res.status(500).json({ message: "Failed to create group order", error: error.message });
     }
   });
 
