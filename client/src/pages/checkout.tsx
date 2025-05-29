@@ -397,7 +397,7 @@ export default function Checkout() {
       }, 300);
 
       setOrderSuccess(true);
-      setOrderId(response.orderId);
+      setOrderId(response.orderId.toString());
       clearCart();
       
       // Navigate to orders after celebrating
