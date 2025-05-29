@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import ProductCard from "@/components/product/product-card";
+import AddToCartModal from "@/components/product/add-to-cart-modal";
 import type { Product, ProductCategory } from "@shared/schema";
 import { Search, Filter } from "lucide-react";
 
@@ -14,6 +15,8 @@ export default function Products() {
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("name");
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [isCartModalOpen, setIsCartModalOpen] = useState(false);
 
   // Get category from URL params
   const urlParams = new URLSearchParams(window.location.search);
@@ -177,6 +180,10 @@ export default function Products() {
                   key={product.id} 
                   product={product}
                   onDesignClick={() => setLocation(`/design-tool?product=${product.id}`)}
+                  onAddToCart={() => {
+                    setSelectedProduct(product);
+                    setIsCartModalOpen(true);
+                  }}
                 />
               ))}
             </div>
@@ -199,6 +206,16 @@ export default function Products() {
           </Button>
         </div>
       </div>
+
+      {/* Add to Cart Modal */}
+      <AddToCartModal
+        product={selectedProduct}
+        isOpen={isCartModalOpen}
+        onClose={() => {
+          setIsCartModalOpen(false);
+          setSelectedProduct(null);
+        }}
+      />
     </div>
   );
 }
