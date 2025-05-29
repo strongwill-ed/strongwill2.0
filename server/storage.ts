@@ -144,7 +144,18 @@ export class DatabaseStorage implements IStorage {
       const existingProducts = await db.select().from(products);
       
       // Force reseed if we have fewer than 20 products (our new expanded catalog)
-      if (existingCategories.length === 0 || existingProducts.length < 20) {
+      // or if products don't have updated image URLs
+      const needsUpdate = existingProducts.length < 20 || 
+        existingProducts.some(p => !p.imageUrl || p.imageUrl.includes('placeholder'));
+      
+      if (existingCategories.length === 0 || needsUpdate) {
+        // Clear existing data before reseeding
+        if (existingProducts.length > 0) {
+          await db.delete(products);
+        }
+        if (existingCategories.length > 0) {
+          await db.delete(productCategories);
+        }
         await this.seedData();
       }
       this.initialized = true;
@@ -176,7 +187,7 @@ export class DatabaseStorage implements IStorage {
           name: "Classic Wrestling Singlet",
           description: "High-performance wrestling singlet with moisture-wicking fabric",
           basePrice: "89.99",
-          imageUrl: null,
+          imageUrl: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400",
           categoryId: singletCategory.id,
           sizes: ["XS", "S", "M", "L", "XL", "XXL"],
           colors: ["Black", "Navy", "Red", "Royal Blue"],
@@ -186,7 +197,7 @@ export class DatabaseStorage implements IStorage {
           name: "Competition Wrestling Singlet",
           description: "Professional competition singlet with UWW approval",
           basePrice: "109.99",
-          imageUrl: null,
+          imageUrl: "https://images.unsplash.com/photo-1544966503-7cc5ac882d5f?w=400",
           categoryId: singletCategory.id,
           sizes: ["XS", "S", "M", "L", "XL", "XXL"],
           colors: ["Black", "Navy", "Red", "Royal Blue", "Green"],
@@ -198,7 +209,7 @@ export class DatabaseStorage implements IStorage {
           name: "Team Basketball Uniform",
           description: "Complete basketball uniform set with jersey and shorts",
           basePrice: "129.99",
-          imageUrl: null,
+          imageUrl: "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=400",
           categoryId: uniformCategory.id,
           sizes: ["S", "M", "L", "XL", "XXL"],
           colors: ["Black/White", "Navy/Gold", "Red/White"],
@@ -208,7 +219,7 @@ export class DatabaseStorage implements IStorage {
           name: "Soccer Team Kit",
           description: "Professional soccer uniform with jersey, shorts, and socks",
           basePrice: "149.99",
-          imageUrl: null,
+          imageUrl: "https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=400",
           categoryId: uniformCategory.id,
           sizes: ["S", "M", "L", "XL", "XXL"],
           colors: ["Blue/White", "Red/Black", "Green/Gold", "Black/Silver"],
@@ -218,7 +229,7 @@ export class DatabaseStorage implements IStorage {
           name: "Baseball Uniform Set",
           description: "Complete baseball uniform with jersey, pants, and cap",
           basePrice: "159.99",
-          imageUrl: null,
+          imageUrl: "https://images.unsplash.com/photo-1566577739112-5180d4bf9390?w=400",
           categoryId: uniformCategory.id,
           sizes: ["S", "M", "L", "XL", "XXL"],
           colors: ["Navy/White", "Red/Gray", "Black/Gold"],
@@ -228,7 +239,7 @@ export class DatabaseStorage implements IStorage {
           name: "Track & Field Uniform",
           description: "Lightweight running uniform for track and field events",
           basePrice: "119.99",
-          imageUrl: null,
+          imageUrl: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400",
           categoryId: uniformCategory.id,
           sizes: ["XS", "S", "M", "L", "XL", "XXL"],
           colors: ["Blue", "Red", "Black", "Green"],
@@ -240,7 +251,7 @@ export class DatabaseStorage implements IStorage {
           name: "Performance Training T-Shirt",
           description: "Moisture-wicking training shirt for all sports",
           basePrice: "29.99",
-          imageUrl: null,
+          imageUrl: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400",
           categoryId: trainwearCategory.id,
           sizes: ["XS", "S", "M", "L", "XL", "XXL"],
           colors: ["Black", "Navy", "Red", "Gray", "White"],
@@ -250,7 +261,7 @@ export class DatabaseStorage implements IStorage {
           name: "Athletic Shorts",
           description: "Breathable athletic shorts with moisture management",
           basePrice: "34.99",
-          imageUrl: null,
+          imageUrl: "https://images.unsplash.com/photo-1506629905607-89fa8ac8c5ba?w=400",
           categoryId: trainwearCategory.id,
           sizes: ["XS", "S", "M", "L", "XL", "XXL"],
           colors: ["Black", "Navy", "Red", "Gray"],
@@ -260,7 +271,7 @@ export class DatabaseStorage implements IStorage {
           name: "Team Hoodie",
           description: "Premium team hoodie with custom design options",
           basePrice: "59.99",
-          imageUrl: null,
+          imageUrl: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=400",
           categoryId: trainwearCategory.id,
           sizes: ["S", "M", "L", "XL", "XXL"],
           colors: ["Black", "Navy", "Gray", "Red"],
@@ -270,7 +281,7 @@ export class DatabaseStorage implements IStorage {
           name: "Training Polo Shirt",
           description: "Professional polo shirt for coaches and staff",
           basePrice: "39.99",
-          imageUrl: null,
+          imageUrl: "https://images.unsplash.com/photo-1586790170083-2f9ceadc732d?w=400",
           categoryId: trainwearCategory.id,
           sizes: ["S", "M", "L", "XL", "XXL"],
           colors: ["Navy", "Black", "White", "Red"],
@@ -282,7 +293,7 @@ export class DatabaseStorage implements IStorage {
           name: "Team Baseball Cap",
           description: "Structured baseball cap with embroidered designs",
           basePrice: "24.99",
-          imageUrl: null,
+          imageUrl: "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=400",
           categoryId: headwearCategory.id,
           sizes: ["One Size"],
           colors: ["Black", "Navy", "Red", "White", "Gray"],
@@ -292,7 +303,7 @@ export class DatabaseStorage implements IStorage {
           name: "Sports Beanie",
           description: "Knitted beanie for cold weather training",
           basePrice: "19.99",
-          imageUrl: null,
+          imageUrl: "https://images.unsplash.com/photo-1544966503-7cc5ac882d5f?w=400",
           categoryId: headwearCategory.id,
           sizes: ["One Size"],
           colors: ["Black", "Navy", "Red", "Gray"],
