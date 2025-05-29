@@ -12,6 +12,7 @@ import type { SeekerProfile, SponsorProfile, SponsorshipAgreement } from "@share
 export default function SponsorshipPage() {
   const [activeTab, setActiveTab] = useState("overview");
   const [countryFilter, setCountryFilter] = useState("all");
+  const [sportFilter, setSportFilter] = useState("all");
   const [, setLocation] = useLocation();
 
   const { data: seekerProfiles = [] } = useQuery({
@@ -30,7 +31,7 @@ export default function SponsorshipPage() {
     (agreement: SponsorshipAgreement) => agreement.status === "active"
   );
 
-  // Get unique countries from both profiles
+  // Get unique countries and sports from both profiles
   const allCountries = useMemo(() => {
     const seekerCountries = seekerProfiles.map((profile: SeekerProfile) => profile.country).filter(Boolean);
     const sponsorCountries = sponsorProfiles.map((profile: SponsorProfile) => profile.country).filter(Boolean);
@@ -38,16 +39,43 @@ export default function SponsorshipPage() {
     return uniqueCountries.sort();
   }, [seekerProfiles, sponsorProfiles]);
 
-  // Filter profiles by country
+  const allSports = useMemo(() => {
+    const seekerSports = seekerProfiles.map((profile: SeekerProfile) => profile.sportType).filter(Boolean);
+    const sponsorSports = sponsorProfiles.flatMap((profile: SponsorProfile) => profile.preferredSports || []).filter(Boolean);
+    const uniqueSports = Array.from(new Set([...seekerSports, ...sponsorSports]));
+    return uniqueSports.sort();
+  }, [seekerProfiles, sponsorProfiles]);
+
+  // Filter profiles by country and sport
   const filteredSeekerProfiles = useMemo(() => {
-    if (countryFilter === "all") return seekerProfiles;
-    return seekerProfiles.filter((profile: SeekerProfile) => profile.country === countryFilter);
-  }, [seekerProfiles, countryFilter]);
+    let filtered = seekerProfiles;
+    
+    if (countryFilter !== "all") {
+      filtered = filtered.filter((profile: SeekerProfile) => profile.country === countryFilter);
+    }
+    
+    if (sportFilter !== "all") {
+      filtered = filtered.filter((profile: SeekerProfile) => profile.sportType === sportFilter);
+    }
+    
+    return filtered;
+  }, [seekerProfiles, countryFilter, sportFilter]);
 
   const filteredSponsorProfiles = useMemo(() => {
-    if (countryFilter === "all") return sponsorProfiles;
-    return sponsorProfiles.filter((profile: SponsorProfile) => profile.country === countryFilter);
-  }, [sponsorProfiles, countryFilter]);
+    let filtered = sponsorProfiles;
+    
+    if (countryFilter !== "all") {
+      filtered = filtered.filter((profile: SponsorProfile) => profile.country === countryFilter);
+    }
+    
+    if (sportFilter !== "all") {
+      filtered = filtered.filter((profile: SponsorProfile) => 
+        profile.preferredSports && profile.preferredSports.includes(sportFilter)
+      );
+    }
+    
+    return filtered;
+  }, [sponsorProfiles, countryFilter, sportFilter]);
 
   const totalSponsorshipValue = activeAgreements.reduce(
     (total: number, agreement: SponsorshipAgreement) => 
@@ -71,10 +99,7 @@ export default function SponsorshipPage() {
         {/* Filter Controls */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
-              <Filter className="h-4 w-4 text-gray-500" />
-              <span className="text-sm font-medium">Filter by Country:</span>
-            </div>
+            <Filter className="h-4 w-4 text-gray-500" />
             <Select value={countryFilter} onValueChange={setCountryFilter}>
               <SelectTrigger className="w-48">
                 <SelectValue placeholder="All Countries" />
@@ -88,15 +113,31 @@ export default function SponsorshipPage() {
                 ))}
               </SelectContent>
             </Select>
+            <Select value={sportFilter} onValueChange={setSportFilter}>
+              <SelectTrigger className="w-48">
+                <SelectValue placeholder="All Sports" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Sports</SelectItem>
+                {allSports.map((sport) => (
+                  <SelectItem key={sport} value={sport}>
+                    {sport}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
-          {countryFilter !== "all" && (
+          {(countryFilter !== "all" || sportFilter !== "all") && (
             <Button 
               variant="ghost" 
               size="sm" 
-              onClick={() => setCountryFilter("all")}
+              onClick={() => {
+                setCountryFilter("all");
+                setSportFilter("all");
+              }}
               className="text-gray-500 hover:text-gray-700"
             >
-              Clear Filter
+              Clear Filters
             </Button>
           )}
         </div>
