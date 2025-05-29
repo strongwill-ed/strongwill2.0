@@ -86,11 +86,6 @@ export default function ProductCard({ product, onDesignClick, onAddToCart }: Pro
           <h3 className="text-lg font-semibold text-black line-clamp-1">
             {product.name}
           </h3>
-          {product.isActive && (
-            <Badge variant="secondary" className="bg-green-100 text-green-800 text-xs">
-              Active
-            </Badge>
-          )}
         </div>
         
         {/* Rating and Reviews */}
