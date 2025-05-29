@@ -187,7 +187,7 @@ export default function SponsorshipPage() {
                 <Card key={profile.id} className="hover:shadow-lg transition-shadow">
                   <CardHeader>
                     <CardTitle className="flex items-center justify-between">
-                      {profile.organizationName}
+                      {profile.isAnonymous ? "Anonymous Team" : profile.organizationName}
                       <Badge variant={profile.isActive ? "default" : "secondary"}>
                         {profile.isActive ? "Active" : "Inactive"}
                       </Badge>

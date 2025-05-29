@@ -740,6 +740,12 @@ export class DatabaseStorage implements IStorage {
     return profile || undefined;
   }
 
+  async getSeekerProfileByToken(token: string): Promise<SeekerProfile | undefined> {
+    await this.ensureInitialized();
+    const [profile] = await db.select().from(seekerProfiles).where(eq(seekerProfiles.shareableToken, token));
+    return profile || undefined;
+  }
+
   async createSeekerProfile(profile: InsertSeekerProfile): Promise<SeekerProfile> {
     await this.ensureInitialized();
     const [newProfile] = await db

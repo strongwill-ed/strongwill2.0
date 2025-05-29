@@ -89,12 +89,23 @@ export default function CreateSeekerProfile() {
       };
       return apiRequest("POST", "/api/seeker-profiles", profileData);
     },
-    onSuccess: () => {
+    onSuccess: (response: any) => {
       queryClient.invalidateQueries({ queryKey: ["/api/seeker-profiles"] });
-      toast({
-        title: "Success!",
-        description: "Team profile created successfully.",
-      });
+      const profile = response;
+      
+      if (profile.isAnonymous && profile.shareableToken) {
+        const shareableLink = `${window.location.origin}/shared/${profile.shareableToken}`;
+        toast({
+          title: "Success! Anonymous Profile Created",
+          description: `Team profile created. Share this link: ${shareableLink}`,
+          duration: 10000,
+        });
+      } else {
+        toast({
+          title: "Success!",
+          description: "Team profile created successfully.",
+        });
+      }
       setLocation("/sponsorship");
     },
     onError: () => {
