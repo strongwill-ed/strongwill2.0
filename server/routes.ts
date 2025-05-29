@@ -897,6 +897,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get sponsorship credits for current user (authenticated route)
+  app.get("/api/user/sponsorship-credits", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "Authentication required" });
+    }
+
+    try {
+      // First check if user has a seeker profile
+      const seekerProfile = await storage.getSeekerProfileByUserId(req.user.id);
+      if (!seekerProfile) {
+        return res.json([]); // No seeker profile, no credits
+      }
+
+      const credits = await storage.getSponsorshipCredits(seekerProfile.id);
+      res.json(credits);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch sponsorship credits" });
+    }
+  });
+
   app.post("/api/sponsorship-credits", async (req, res) => {
     try {
       const validatedData = insertSponsorshipCreditSchema.parse(req.body);

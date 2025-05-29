@@ -2,11 +2,24 @@ import { useCart } from "@/hooks/use-cart";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Trash2, Plus, Minus } from "lucide-react";
+import { Trash2, Plus, Minus, CreditCard } from "lucide-react";
 import { Link } from "wouter";
+import { useQuery } from "@tanstack/react-query";
+import { useAuth } from "@/hooks/use-auth";
+import { useState } from "react";
+import { Checkbox } from "@/components/ui/checkbox";
+import type { SponsorshipCredit } from "@shared/schema";
 
 export default function Cart() {
   const { cartItems, removeFromCart, updateQuantity, clearCart, getCartTotal } = useCart();
+  const { user } = useAuth();
+  const [appliedCredits, setAppliedCredits] = useState<number[]>([]);
+
+  // Fetch available sponsorship credits for authenticated users
+  const { data: sponsorshipCredits = [] } = useQuery<SponsorshipCredit[]>({
+    queryKey: ["/api/sponsorship-credits", user?.id],
+    enabled: !!user?.id,
+  });
 
   const handleQuantityChange = (id: number, newQuantity: number) => {
     if (newQuantity <= 0) {
@@ -30,11 +43,30 @@ export default function Cart() {
     return 0;
   };
 
+  const calculateSponsorshipDiscount = () => {
+    return appliedCredits.reduce((total, creditId) => {
+      const credit = sponsorshipCredits.find(c => c.id === creditId);
+      if (credit && credit.isActive) {
+        return total + parseFloat(credit.remainingAmount);
+      }
+      return total;
+    }, 0);
+  };
+
+  const handleCreditToggle = (creditId: number, checked: boolean) => {
+    if (checked) {
+      setAppliedCredits(prev => [...prev, creditId]);
+    } else {
+      setAppliedCredits(prev => prev.filter(id => id !== creditId));
+    }
+  };
+
   const subtotal = calculateSubtotal();
   const totalQuantity = cartItems.reduce((total, item) => total + (item.quantity || 1), 0);
   const bulkDiscount = calculateBulkDiscount(subtotal, totalQuantity);
+  const sponsorshipDiscount = calculateSponsorshipDiscount();
   const shipping = 15.00; // Flat rate shipping
-  const total = subtotal - bulkDiscount + shipping;
+  const total = Math.max(0, subtotal - bulkDiscount - sponsorshipDiscount + shipping);
 
   if (cartItems.length === 0) {
     return (
@@ -147,6 +179,41 @@ export default function Cart() {
                   <div className="flex justify-between text-green-600 dark:text-green-400">
                     <span>Bulk Discount (10% off 10+ items)</span>
                     <span>-${bulkDiscount.toFixed(2)}</span>
+                  </div>
+                )}
+
+                {/* Sponsorship Credits Section */}
+                {user && sponsorshipCredits.length > 0 && (
+                  <div className="border-t border-gray-200 dark:border-gray-800 pt-4">
+                    <h4 className="font-semibold mb-3 flex items-center">
+                      <CreditCard className="h-4 w-4 mr-2" />
+                      Apply Sponsorship Credits
+                    </h4>
+                    <div className="space-y-2 max-h-32 overflow-y-auto">
+                      {sponsorshipCredits
+                        .filter(credit => credit.isActive && parseFloat(credit.remainingAmount) > 0)
+                        .map((credit) => (
+                          <div key={credit.id} className="flex items-center space-x-2 text-sm">
+                            <Checkbox
+                              id={`credit-${credit.id}`}
+                              checked={appliedCredits.includes(credit.id)}
+                              onCheckedChange={(checked) => handleCreditToggle(credit.id, checked as boolean)}
+                            />
+                            <label 
+                              htmlFor={`credit-${credit.id}`} 
+                              className="flex-1 cursor-pointer"
+                            >
+                              ${parseFloat(credit.remainingAmount).toFixed(2)} available
+                            </label>
+                          </div>
+                        ))}
+                    </div>
+                    {sponsorshipDiscount > 0 && (
+                      <div className="flex justify-between text-blue-600 dark:text-blue-400 mt-2 pt-2 border-t border-gray-100 dark:border-gray-700">
+                        <span>Sponsorship Credits Applied</span>
+                        <span>-${sponsorshipDiscount.toFixed(2)}</span>
+                      </div>
+                    )}
                   </div>
                 )}
 
