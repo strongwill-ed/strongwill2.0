@@ -16,6 +16,9 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { Link, useLocation } from "wouter";
 import { apiPost } from "@/lib/api";
+import { AlertTriangle } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import type { GroupOrder, GroupOrderItem, Product } from "@shared/schema";
 
 const checkoutSchema = z.object({
@@ -44,6 +47,8 @@ export default function Checkout() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const [isProcessing, setIsProcessing] = useState(false);
+  const [showDeadlineWarning, setShowDeadlineWarning] = useState(false);
+  const [pendingSubmitData, setPendingSubmitData] = useState<CheckoutFormData | null>(null);
 
   // Check if this is a group order checkout
   const urlParams = new URLSearchParams(window.location.search);
@@ -139,6 +144,51 @@ export default function Checkout() {
 
   const { subtotal, bulkDiscount, shipping, tax, total, totalQuantity } = calculateOrderSummary();
 
+  // Calculate shipping timeline based on country
+  const getShippingTimelineInDays = (country: string) => {
+    // Priority markets - fastest shipping
+    const priorityMarkets = ["AU", "NZ", "GB", "CA", "DE", "NL"];
+    if (priorityMarkets.includes(country)) {
+      return 7; // 7 days for priority markets
+    }
+    
+    // EU countries
+    const euCountries = ["AT", "BE", "DK", "FI", "FR", "IE", "IT", "LU", "ES", "SE", "PT", "GR", "CY", "MT"];
+    if (euCountries.includes(country)) {
+      return 10; // 10 days for EU
+    }
+    
+    // North America
+    if (["US", "MX"].includes(country)) {
+      return 12; // 12 days for North America
+    }
+    
+    // Asia Pacific
+    const apacCountries = ["JP", "SG", "HK", "KR", "TH", "MY", "PH", "ID", "VN", "CN", "TW"];
+    if (apacCountries.includes(country)) {
+      return 15; // 15 days for Asia Pacific
+    }
+    
+    // Rest of world
+    return 21; // 21 days for rest of world
+  };
+
+  // Check if shipping deadline will be met
+  const checkShippingDeadline = (data: CheckoutFormData): boolean => {
+    if (!groupOrderDetails) return true; // No deadline to check for regular orders
+    
+    const shippingDays = getShippingTimelineInDays(data.country);
+    const productionDays = 14; // Assume 14 days for production
+    const totalDays = shippingDays + productionDays;
+    
+    const estimatedDeliveryDate = new Date();
+    estimatedDeliveryDate.setDate(estimatedDeliveryDate.getDate() + totalDays);
+    
+    const groupDeadline = new Date(groupOrderDetails.deadline);
+    
+    return estimatedDeliveryDate <= groupDeadline;
+  };
+
   const onSubmit = async (data: CheckoutFormData) => {
     if (cartItems.length === 0) {
       toast({
@@ -149,6 +199,17 @@ export default function Checkout() {
       return;
     }
 
+    // Check shipping deadline for group orders
+    if (!checkShippingDeadline(data)) {
+      setPendingSubmitData(data);
+      setShowDeadlineWarning(true);
+      return;
+    }
+
+    await processCheckout(data);
+  };
+
+  const processCheckout = async (data: CheckoutFormData) => {
     setIsProcessing(true);
     try {
       // Create order with shipping and billing information
@@ -733,6 +794,63 @@ export default function Checkout() {
           </div>
         </div>
       </div>
+
+      {/* Shipping Deadline Warning Dialog */}
+      <Dialog open={showDeadlineWarning} onOpenChange={setShowDeadlineWarning}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-yellow-500" />
+              Shipping Deadline Warning
+            </DialogTitle>
+            <DialogDescription>
+              Based on your shipping address and current production timelines, your order may not arrive before the group order deadline. 
+              {groupOrderDetails && (
+                <>
+                  <br /><br />
+                  <strong>Group Order Deadline:</strong> {new Date(groupOrderDetails.deadline).toLocaleDateString()}
+                  <br />
+                  <strong>Estimated Delivery:</strong> {(() => {
+                    if (pendingSubmitData) {
+                      const shippingDays = getShippingTimelineInDays(pendingSubmitData.country);
+                      const totalDays = shippingDays + 14; // 14 days production
+                      const estimatedDate = new Date();
+                      estimatedDate.setDate(estimatedDate.getDate() + totalDays);
+                      return estimatedDate.toLocaleDateString();
+                    }
+                    return "Unknown";
+                  })()}
+                </>
+              )}
+              <br /><br />
+              Would you like to proceed with this order anyway?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                setShowDeadlineWarning(false);
+                setPendingSubmitData(null);
+              }}
+            >
+              Cancel
+            </Button>
+            <Button 
+              onClick={async () => {
+                setShowDeadlineWarning(false);
+                if (pendingSubmitData) {
+                  await processCheckout(pendingSubmitData);
+                  setPendingSubmitData(null);
+                }
+              }}
+              className="bg-yellow-600 hover:bg-yellow-700 text-white"
+            >
+              Proceed Anyway
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
