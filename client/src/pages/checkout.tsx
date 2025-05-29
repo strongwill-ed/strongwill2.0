@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useCart } from "@/hooks/use-cart";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -15,6 +16,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { Link, useLocation } from "wouter";
 import { apiPost } from "@/lib/api";
+import type { GroupOrder, GroupOrderItem, Product } from "@shared/schema";
 
 const checkoutSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -43,6 +45,22 @@ export default function Checkout() {
   const { toast } = useToast();
   const [isProcessing, setIsProcessing] = useState(false);
 
+  // Check if this is a group order checkout
+  const urlParams = new URLSearchParams(window.location.search);
+  const groupOrderId = urlParams.get("groupOrderId");
+  const isGroupOrderCheckout = !!groupOrderId;
+
+  // Fetch group order data if this is a group order checkout
+  const { data: groupOrderDetails } = useQuery<GroupOrder & { items: GroupOrderItem[] }>({
+    queryKey: [`/api/group-orders/${groupOrderId}`],
+    enabled: isGroupOrderCheckout,
+  });
+
+  const { data: products = [] } = useQuery<Product[]>({
+    queryKey: ["/api/products"],
+    enabled: isGroupOrderCheckout,
+  });
+
   const form = useForm<CheckoutFormData>({
     resolver: zodResolver(checkoutSchema),
     defaultValues: {
@@ -56,12 +74,24 @@ export default function Checkout() {
   const sameAsBilling = form.watch("sameAsBilling");
 
   const calculateOrderSummary = () => {
-    const subtotal = cartItems.reduce((total, item) => {
-      const price = parseFloat(item.product?.basePrice || "0");
-      return total + (price * (item.quantity || 1));
-    }, 0);
+    let subtotal = 0;
+    let totalQuantity = 0;
 
-    const totalQuantity = cartItems.reduce((total, item) => total + (item.quantity || 1), 0);
+    if (isGroupOrderCheckout && groupOrderDetails) {
+      // Calculate totals for group order
+      const product = products.find(p => p.id === groupOrderDetails.productId);
+      const basePrice = parseFloat(product?.basePrice || "0");
+      
+      totalQuantity = groupOrderDetails.items?.reduce((total, item) => total + (item.quantity || 1), 0) || 0;
+      subtotal = basePrice * totalQuantity;
+    } else {
+      // Regular cart checkout
+      subtotal = cartItems.reduce((total, item) => {
+        const price = parseFloat(item.product?.basePrice || "0");
+        return total + (price * (item.quantity || 1));
+      }, 0);
+      totalQuantity = cartItems.reduce((total, item) => total + (item.quantity || 1), 0);
+    }
     const bulkDiscount = totalQuantity >= 10 ? subtotal * 0.1 : 0;
     
     // Dynamic shipping based on country
@@ -213,7 +243,8 @@ export default function Checkout() {
     }
   };
 
-  if (cartItems.length === 0) {
+  // Don't show empty cart message for group order checkout
+  if (!isGroupOrderCheckout && cartItems.length === 0) {
     return (
       <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white">
         <div className="container mx-auto px-4 py-8">
