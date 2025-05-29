@@ -44,6 +44,7 @@ type CheckoutFormData = z.infer<typeof checkoutSchema>;
 
 export default function Checkout() {
   const { cartItems, clearCart, getCartTotal } = useCart();
+  const { currentCurrency } = useCurrency();
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const [isProcessing, setIsProcessing] = useState(false);

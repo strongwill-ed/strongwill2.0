@@ -7,15 +7,15 @@ export function LanguageSwitcher() {
   const { language, changeLanguage, availableLanguages } = useTranslation();
 
   const languageNames = {
-    en: "English",
-    de: "Deutsch"
+    en: "EN",
+    de: "DE"
   };
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-1">
       <Globe className="h-4 w-4" />
       <Select value={language} onValueChange={changeLanguage}>
-        <SelectTrigger className="w-32">
+        <SelectTrigger className="w-16">
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
