@@ -8,7 +8,7 @@ import {
   insertSeekerProfileSchema, insertSponsorProfileSchema,
   insertSponsorshipAgreementSchema, insertSponsorshipCreditSchema,
   insertSponsorshipMessageSchema, insertPageSchema, insertBlogPostSchema,
-  insertQuoteRequestSchema, insertAdminSettingSchema,
+  insertQuoteRequestSchema, insertAdminSettingSchema, insertProductRecommendationSchema,
   type InsertGroupOrder
 } from "@shared/schema";
 import { z } from "zod";
@@ -1669,6 +1669,88 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     } catch (error) {
       res.status(500).json({ message: "Failed to subscribe to newsletter" });
+    }
+  });
+
+  // Product Recommendations API
+  app.get("/api/products/:id/recommendations", async (req, res) => {
+    try {
+      const productId = parseInt(req.params.id);
+      const recommendations = await storage.getProductRecommendations(productId);
+      
+      // Get the full product details for each recommendation
+      const recommendedProducts = await Promise.all(
+        recommendations.map(async (rec) => {
+          const product = await storage.getProduct(rec.recommendedProductId);
+          return {
+            ...rec,
+            product
+          };
+        })
+      );
+      
+      res.json(recommendedProducts.filter(rec => rec.product));
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch product recommendations" });
+    }
+  });
+
+  app.get("/api/cart/recommendations", async (req, res) => {
+    try {
+      const { cartItemIds } = req.query;
+      if (!cartItemIds) {
+        return res.json([]);
+      }
+      
+      const ids = Array.isArray(cartItemIds) 
+        ? cartItemIds.map(id => parseInt(id as string))
+        : [parseInt(cartItemIds as string)];
+      
+      const recommendations = await storage.getRecommendationsForCartItems(ids);
+      res.json(recommendations);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch cart recommendations" });
+    }
+  });
+
+  app.post("/api/admin/product-recommendations", async (req, res) => {
+    try {
+      const validatedData = insertProductRecommendationSchema.parse(req.body);
+      const recommendation = await storage.createProductRecommendation(validatedData);
+      res.status(201).json(recommendation);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid recommendation data", errors: error.errors });
+      }
+      res.status(500).json({ message: "Failed to create product recommendation" });
+    }
+  });
+
+  app.patch("/api/admin/product-recommendations/:id", async (req, res) => {
+    try {
+      const updates = insertProductRecommendationSchema.partial().parse(req.body);
+      const recommendation = await storage.updateProductRecommendation(parseInt(req.params.id), updates);
+      if (!recommendation) {
+        return res.status(404).json({ message: "Product recommendation not found" });
+      }
+      res.json(recommendation);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid recommendation data", errors: error.errors });
+      }
+      res.status(500).json({ message: "Failed to update product recommendation" });
+    }
+  });
+
+  app.delete("/api/admin/product-recommendations/:id", async (req, res) => {
+    try {
+      const success = await storage.deleteProductRecommendation(parseInt(req.params.id));
+      if (!success) {
+        return res.status(404).json({ message: "Product recommendation not found" });
+      }
+      res.json({ message: "Product recommendation deleted successfully" });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to delete product recommendation" });
     }
   });
 
