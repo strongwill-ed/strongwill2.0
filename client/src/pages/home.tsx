@@ -5,10 +5,51 @@ import type { ProductCategory } from "@shared/schema";
 import { useLocation } from "wouter";
 import { ArrowRight, Check, Users, Palette, ShoppingBag } from "lucide-react";
 import { NewsletterSubscription } from "@/components/newsletter/newsletter-subscription";
+import { useState, useEffect } from "react";
 import heroImage from "@assets/aussie football banner team jersey singlet shorts squad.jpg";
 import year12LeaversImage from "@assets/YEAR-12-FINAL-5.jpg";
 import sportsUniformsImage from "@assets/Sports-Uniforms.jpg";
 import gymTrainingImage from "@assets/Gymwear-Training.jpg";
+
+// Dynamic text rotation component
+function DynamicText() {
+  const words = [
+    "Athletic",
+    "Team", 
+    "Club",
+    "Training",
+    "Squad",
+    "Performance",
+    "Competition",
+    "Custom"
+  ];
+  
+  const [currentWordIndex, setCurrentWordIndex] = useState(0);
+  const [isVisible, setIsVisible] = useState(true);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIsVisible(false);
+      
+      setTimeout(() => {
+        setCurrentWordIndex((prev) => (prev + 1) % words.length);
+        setIsVisible(true);
+      }, 300);
+    }, 2500);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <span 
+      className={`transition-all duration-300 ${
+        isVisible ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform -translate-y-2'
+      }`}
+    >
+      {words[currentWordIndex]}
+    </span>
+  );
+}
 
 export default function Home() {
   const [, setLocation] = useLocation();
@@ -35,7 +76,7 @@ export default function Home() {
         {/* Hero Content */}
         <div className="relative z-10 text-center text-white px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto">
           <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold mb-6 leading-tight tracking-tight" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.8)' }}>
-            Design Your <span className="italic font-black">Perfect</span> Athletic Apparel
+            Design Your <span className="italic font-black">Perfect</span> <DynamicText /> Apparel
           </h1>
           <p className="text-xl md:text-2xl mb-12 max-w-3xl mx-auto font-light leading-relaxed">
             Premium custom sports apparel with our advanced design tool. 
