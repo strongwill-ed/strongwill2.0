@@ -180,7 +180,7 @@ export default function Products() {
               )}
               {selectedCategory !== "all" && (
                 <Badge variant="secondary" className="text-sm">
-                  {categories.find(cat => cat.id.toString() === selectedCategory)?.name}
+                  {getCategoryDisplayName(selectedCategory)}
                 </Badge>
               )}
             </div>
