@@ -21,6 +21,13 @@ import { format } from "date-fns";
 
 const createGroupOrderSchema = insertGroupOrderSchema.extend({
   deadline: z.string().min(1, "Deadline is required"),
+}).omit({ 
+  currentQuantity: true, 
+  status: true, 
+  paymentMode: true, 
+  totalEstimate: true, 
+  organizerEmail: true, 
+  shareableLink: true 
 });
 
 const joinGroupOrderSchema = insertGroupOrderItemSchema.omit({ groupOrderId: true });
@@ -73,6 +80,10 @@ export default function GroupOrders() {
       const groupOrderData = {
         ...rest,
         deadline: new Date(deadline),
+        status: "active",
+        currentQuantity: 0,
+        paymentMode: "individual",
+        totalEstimate: "0.00",
       };
       return apiRequest("POST", "/api/group-orders", groupOrderData);
     },
