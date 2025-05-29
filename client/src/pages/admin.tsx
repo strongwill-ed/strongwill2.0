@@ -25,6 +25,8 @@ import { format } from "date-fns";
 const createProductSchema = insertProductSchema.extend({
   sizes: z.array(z.string()).min(1, "At least one size is required"),
   colors: z.array(z.string()).min(1, "At least one color is required"),
+  salePrice: z.string().optional(),
+  isOnSale: z.boolean().optional(),
 });
 
 const createCategorySchema = insertProductCategorySchema;
@@ -96,6 +98,8 @@ export default function Admin() {
       description: "",
       categoryId: undefined,
       basePrice: "0.00",
+      salePrice: "",
+      isOnSale: false,
       imageUrl: "",
       sizes: [],
       colors: [],

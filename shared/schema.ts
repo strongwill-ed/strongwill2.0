@@ -41,6 +41,8 @@ export const products = pgTable("products", {
   description: text("description"),
   categoryId: integer("category_id").references(() => productCategories.id),
   basePrice: decimal("base_price", { precision: 10, scale: 2 }).notNull(),
+  salePrice: decimal("sale_price", { precision: 10, scale: 2 }),
+  isOnSale: boolean("is_on_sale").default(false),
   imageUrl: text("image_url"),
   sizes: text("sizes").array(),
   colors: text("colors").array(),
