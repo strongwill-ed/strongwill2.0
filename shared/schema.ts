@@ -238,6 +238,15 @@ export const productRecommendations = pgTable("product_recommendations", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+export const newsletterSubscriptions = pgTable("newsletter_subscriptions", {
+  id: serial("id").primaryKey(),
+  email: text("email").notNull().unique(),
+  source: text("source").default("website"), // popup, footer, checkout, etc.
+  isActive: boolean("is_active").default(true),
+  subscribedAt: timestamp("subscribed_at").defaultNow(),
+  unsubscribedAt: timestamp("unsubscribed_at"),
+});
+
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).omit({ id: true, createdAt: true });
 export const insertProductCategorySchema = createInsertSchema(productCategories).omit({ id: true });
@@ -255,6 +264,7 @@ export const insertSponsorshipAgreementSchema = createInsertSchema(sponsorshipAg
 export const insertSponsorshipCreditSchema = createInsertSchema(sponsorshipCredits).omit({ id: true, createdAt: true });
 export const insertSponsorshipMessageSchema = createInsertSchema(sponsorshipMessages).omit({ id: true, createdAt: true });
 export const insertProductRecommendationSchema = createInsertSchema(productRecommendations).omit({ id: true, createdAt: true });
+export const insertNewsletterSubscriptionSchema = createInsertSchema(newsletterSubscriptions).omit({ id: true, subscribedAt: true });
 
 // Types
 export type User = typeof users.$inferSelect;
@@ -289,6 +299,8 @@ export type SponsorshipMessage = typeof sponsorshipMessages.$inferSelect;
 export type InsertSponsorshipMessage = z.infer<typeof insertSponsorshipMessageSchema>;
 export type ProductRecommendation = typeof productRecommendations.$inferSelect;
 export type InsertProductRecommendation = z.infer<typeof insertProductRecommendationSchema>;
+export type NewsletterSubscription = typeof newsletterSubscriptions.$inferSelect;
+export type InsertNewsletterSubscription = z.infer<typeof insertNewsletterSubscriptionSchema>;
 
 // CMS & Admin Tables
 export const pages = pgTable("pages", {

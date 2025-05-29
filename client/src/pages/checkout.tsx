@@ -290,36 +290,46 @@ export default function Checkout() {
     setIsProcessing(true);
     try {
       // Create order with shipping and billing information
-      const orderData = {
-        customerEmail: data.email,
-        billingAddress: {
-          firstName: data.firstName,
-          lastName: data.lastName,
-          address: data.address,
-          city: data.city,
-          state: data.state,
-          zipCode: data.zipCode,
-          country: data.country,
-          phone: data.phone,
-        },
-        shippingAddress: sameAsBilling ? {
-          firstName: data.firstName,
-          lastName: data.lastName,
-          address: data.address,
-          city: data.city,
-          state: data.state,
-          zipCode: data.zipCode,
-          country: data.country,
-          phone: data.phone,
-        } : {
-          firstName: data.firstName,
-          lastName: data.lastName,
-          address: data.shippingAddress || data.address,
-          city: data.shippingCity || data.city,
-          state: data.shippingState || data.state,
-          zipCode: data.shippingZipCode || data.zipCode,
-          country: data.shippingCountry || data.country,
-          phone: data.phone,
+      const orderPayload = {
+        order: {
+          customerEmail: data.email,
+          billingAddress: JSON.stringify({
+            firstName: data.firstName,
+            lastName: data.lastName,
+            address: data.address,
+            city: data.city,
+            state: data.state,
+            zipCode: data.zipCode,
+            country: data.country,
+            phone: data.phone,
+          }),
+          shippingAddress: JSON.stringify(sameAsBilling ? {
+            firstName: data.firstName,
+            lastName: data.lastName,
+            address: data.address,
+            city: data.city,
+            state: data.state,
+            zipCode: data.zipCode,
+            country: data.country,
+            phone: data.phone,
+          } : {
+            firstName: data.firstName,
+            lastName: data.lastName,
+            address: data.shippingAddress || data.address,
+            city: data.shippingCity || data.city,
+            state: data.shippingState || data.state,
+            zipCode: data.shippingZipCode || data.zipCode,
+            country: data.shippingCountry || data.country,
+            phone: data.phone,
+          }),
+          subtotal: subtotal.toFixed(2),
+          discount: bulkDiscount.toFixed(2),
+          shipping: shipping.toFixed(2),
+          tax: tax.toFixed(2),
+          totalAmount: total.toFixed(2),
+          paymentMethod: data.paymentMethod,
+          status: "pending",
+          paymentStatus: "pending"
         },
         items: cartItems.map(item => ({
           productId: item.productId,
@@ -328,18 +338,12 @@ export default function Checkout() {
           size: item.size,
           color: item.color,
           unitPrice: item.product?.basePrice || "0",
-          customizations: item.customizations || {},
-        })),
-        subtotal: subtotal.toFixed(2),
-        discount: bulkDiscount.toFixed(2),
-        shipping: shipping.toFixed(2),
-        tax: tax.toFixed(2),
-        totalAmount: total.toFixed(2),
-        paymentMethod: data.paymentMethod,
+          customizations: JSON.stringify(item.customizations || {}),
+        }))
       };
 
       // Create the order first
-      const response = await apiPost<{ orderId: number; message: string }>("/api/orders", orderData);
+      const response = await apiPost<{ id: number; message: string }>("/api/orders", orderPayload);
 
       // Simulate payment processing for demo purposes
       if (data.paymentMethod === "card") {
@@ -352,7 +356,7 @@ export default function Checkout() {
           
           if (paymentResponse.clientSecret) {
             await apiPost("/api/payments/confirm", {
-              orderId: response.orderId,
+              orderId: response.id,
               paymentIntentId: "demo_payment_" + Date.now()
             });
           }
@@ -363,7 +367,7 @@ export default function Checkout() {
         try {
           // Try PayPal processing, but continue if not configured
           await apiPost("/api/payments/paypal", {
-            orderId: response.orderId,
+            orderId: response.id,
             amount: total
           });
         } catch (paymentError) {
@@ -373,7 +377,7 @@ export default function Checkout() {
 
       toast({
         title: "Order placed successfully!",
-        description: `Order #${response.orderId} has been created. You will receive a confirmation email shortly.`,
+        description: `Order #${response.id} has been created. You will receive a confirmation email shortly.`,
       });
 
       // Trigger confetti animation on successful order
