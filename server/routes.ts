@@ -152,6 +152,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.get("/api/designs/user/:userId", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const designs = await storage.getDesignsByUser(userId);
+      res.json(designs);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch user designs" });
+    }
+  });
+
   app.put("/api/designs/:id", async (req, res) => {
     try {
       const designId = parseInt(req.params.id);
@@ -295,6 +305,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       } else {
         res.status(500).json({ message: "Failed to create order" });
       }
+    }
+  });
+
+  app.get("/api/orders/user/:userId", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const orders = await storage.getOrdersByUser(userId);
+      res.json(orders);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch user orders" });
     }
   });
 

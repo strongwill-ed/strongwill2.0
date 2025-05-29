@@ -27,8 +27,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const checkAuth = async () => {
       try {
         const response = await apiRequest("GET", "/api/auth/me");
-        if (response && typeof response === 'object') {
-          setUser(response as User);
+        const data = await response.json();
+        if (data && typeof data === 'object') {
+          setUser(data as User);
         }
       } catch (error) {
         // User not authenticated
