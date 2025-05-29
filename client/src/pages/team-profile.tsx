@@ -53,7 +53,12 @@ export default function TeamProfile() {
   });
 
   const deleteProfileMutation = useMutation({
-    mutationFn: () => apiRequest("DELETE", `/api/seeker-profiles/${profile?.id}`),
+    mutationFn: () => {
+      if (!profile?.id) {
+        throw new Error("Profile ID not found");
+      }
+      return apiRequest("DELETE", `/api/seeker-profiles/${profile.id}`);
+    },
     onSuccess: () => {
       toast({
         title: "Profile Deleted",
@@ -61,10 +66,10 @@ export default function TeamProfile() {
       });
       setLocation("/sponsorship");
     },
-    onError: () => {
+    onError: (error) => {
       toast({
         title: "Error",
-        description: "Failed to delete profile. Please try again.",
+        description: error instanceof Error ? error.message : "Failed to delete profile. Please try again.",
         variant: "destructive",
       });
     },
@@ -235,7 +240,7 @@ export default function TeamProfile() {
                 <div className="bg-gray-50 p-4 rounded-lg">
                   <h3 className="font-semibold mb-2">Funding Goal</h3>
                   <div className="text-2xl font-bold text-green-600">
-                    ${profile.fundingGoal ? parseFloat(profile.fundingGoal.toString()).toLocaleString() : 'Not specified'}
+                    ${profile.fundingGoal ? parseFloat(profile.fundingGoal).toLocaleString() : 'Not specified'}
                   </div>
                   <p className="text-sm text-gray-600 mt-1">
                     Seeking sponsorship to support team activities and growth

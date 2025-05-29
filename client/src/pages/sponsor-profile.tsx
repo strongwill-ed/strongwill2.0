@@ -56,7 +56,12 @@ export default function SponsorProfile() {
   });
 
   const deleteProfileMutation = useMutation({
-    mutationFn: () => apiRequest("DELETE", `/api/sponsor-profiles/${profile?.id}`),
+    mutationFn: () => {
+      if (!profile?.id) {
+        throw new Error("Profile ID not found");
+      }
+      return apiRequest("DELETE", `/api/sponsor-profiles/${profile.id}`);
+    },
     onSuccess: () => {
       toast({
         title: "Profile Deleted",
@@ -64,10 +69,10 @@ export default function SponsorProfile() {
       });
       setLocation("/sponsorship");
     },
-    onError: () => {
+    onError: (error) => {
       toast({
         title: "Error",
-        description: "Failed to delete profile. Please try again.",
+        description: error instanceof Error ? error.message : "Failed to delete profile. Please try again.",
         variant: "destructive",
       });
     },
@@ -271,7 +276,7 @@ export default function SponsorProfile() {
                   <div className="bg-gray-50 p-4 rounded-lg">
                     <h3 className="font-semibold mb-2">Sponsorship Budget</h3>
                     <div className="text-2xl font-bold text-green-600">
-                      ${profile.sponsorshipBudget ? parseFloat(profile.sponsorshipBudget.toString()).toLocaleString() : 'Contact for details'}
+                      ${profile.sponsorshipBudget ? parseFloat(profile.sponsorshipBudget).toLocaleString() : 'Contact for details'}
                     </div>
                     <p className="text-sm text-gray-600 mt-1">
                       Available for team sponsorships

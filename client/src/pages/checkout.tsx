@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useCart } from "@/hooks/use-cart";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -16,10 +16,12 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { Link, useLocation } from "wouter";
 import { apiPost } from "@/lib/api";
-import { AlertTriangle } from "lucide-react";
+import { apiRequest } from "@/lib/queryClient";
+import { AlertTriangle, CreditCard } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import type { GroupOrder, GroupOrderItem, Product } from "@shared/schema";
+import type { GroupOrder, GroupOrderItem, Product, SeekerProfile, SponsorshipCredit } from "@shared/schema";
+import { useCurrency } from "@/lib/currency";
 
 const checkoutSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -48,6 +50,8 @@ export default function Checkout() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const [isProcessing, setIsProcessing] = useState(false);
+  const { user } = useAuthContext();
+  const [appliedSponsorshipCredit, setAppliedSponsorshipCredit] = useState(0);
   const [showDeadlineWarning, setShowDeadlineWarning] = useState(false);
   const [pendingSubmitData, setPendingSubmitData] = useState<CheckoutFormData | null>(null);
 
