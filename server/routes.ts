@@ -491,7 +491,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/group-orders", async (req, res) => {
     try {
       // Basic validation and processing
-      const { name, productId, deadline, minimumQuantity, organizerUserId, description } = req.body;
+      const { name, productId, deadline, minimumQuantity, organizerUserId, description, orderType } = req.body;
       
       if (!name || !productId || !deadline || !organizerUserId) {
         return res.status(400).json({ message: "Missing required fields" });
@@ -504,6 +504,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         minimumQuantity: minimumQuantity || 10,
         organizerUserId: parseInt(organizerUserId),
         description: description || null,
+        orderType: orderType || "product",
         status: "active",
         currentQuantity: 0,
         paymentMode: "individual",

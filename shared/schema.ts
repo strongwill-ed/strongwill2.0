@@ -91,6 +91,7 @@ export const groupOrders = pgTable("group_orders", {
   minimumQuantity: integer("minimum_quantity").default(10),
   currentQuantity: integer("current_quantity").default(0),
   status: text("status").default("active"), // active, closed, completed
+  orderType: text("order_type").default("product"), // "product" or "custom"
   description: text("description"),
   paymentMode: text("payment_mode").default("individual"), // "organizer" or "individual"
   totalEstimate: decimal("total_estimate", { precision: 10, scale: 2 }).default("0.00"),

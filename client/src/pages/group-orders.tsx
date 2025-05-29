@@ -21,6 +21,7 @@ import { format } from "date-fns";
 
 const createGroupOrderSchema = insertGroupOrderSchema.extend({
   deadline: z.string().min(1, "Deadline is required"),
+  orderType: z.enum(["product", "custom"]).default("product"),
 }).omit({ 
   currentQuantity: true, 
   status: true, 
@@ -63,6 +64,7 @@ export default function GroupOrders() {
       minimumQuantity: 10,
       description: "",
       organizerUserId: 1, // TODO: Get from auth context
+      orderType: "product" as const,
     },
   });
 
@@ -206,28 +208,87 @@ export default function GroupOrders() {
 
                     <FormField
                       control={createGroupOrderForm.control}
-                      name="productId"
+                      name="orderType"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Product</FormLabel>
-                          <Select onValueChange={(value) => field.onChange(parseInt(value))} value={field.value?.toString()}>
+                          <FormLabel>Order Type</FormLabel>
+                          <Select onValueChange={field.onChange} value={field.value}>
                             <FormControl>
                               <SelectTrigger>
-                                <SelectValue placeholder="Select a product" />
+                                <SelectValue placeholder="Select order type" />
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              {products.map((product) => (
-                                <SelectItem key={product.id} value={product.id.toString()}>
-                                  {product.name} - ${product.basePrice}
-                                </SelectItem>
-                              ))}
+                              <SelectItem value="product">Standard Product</SelectItem>
+                              <SelectItem value="custom">Custom Design Product</SelectItem>
                             </SelectContent>
                           </Select>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
+
+                    {createGroupOrderForm.watch("orderType") === "product" && (
+                      <FormField
+                        control={createGroupOrderForm.control}
+                        name="productId"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Product</FormLabel>
+                            <Select onValueChange={(value) => field.onChange(parseInt(value))} value={field.value?.toString()}>
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select a product" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                {products.map((product) => (
+                                  <SelectItem key={product.id} value={product.id.toString()}>
+                                    {product.name} - ${product.basePrice}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    )}
+
+                    {createGroupOrderForm.watch("orderType") === "custom" && (
+                      <>
+                        <FormField
+                          control={createGroupOrderForm.control}
+                          name="productId"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Base Product Template</FormLabel>
+                              <Select onValueChange={(value) => field.onChange(parseInt(value))} value={field.value?.toString()}>
+                                <FormControl>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Select a product template" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  {products.map((product) => (
+                                    <SelectItem key={product.id} value={product.id.toString()}>
+                                      {product.name} - ${product.basePrice}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <div className="p-3 bg-blue-50 border border-blue-200 rounded-md">
+                          <p className="text-sm text-blue-800">
+                            For custom design orders, you can create a design template that members can customize when joining. 
+                            After creating the group order, use the Design Tool to create the base template.
+                          </p>
+                        </div>
+                      </>
+                    )}
 
                     <FormField
                       control={createGroupOrderForm.control}
