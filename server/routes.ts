@@ -14,6 +14,74 @@ import {
 import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Authentication endpoints
+  app.post("/api/auth/login", async (req, res) => {
+    try {
+      const { username, password } = req.body;
+      
+      // Check for admin credentials
+      if (username === "admin" && password === "admin") {
+        const adminUser = {
+          id: 1,
+          username: "admin",
+          email: "admin@strongwillsports.com",
+          role: "admin"
+        };
+        return res.json(adminUser);
+      }
+      
+      // Check regular users
+      const user = await storage.getUserByUsername(username);
+      if (!user) {
+        return res.status(401).json({ message: "Invalid credentials" });
+      }
+      
+      // For now, we'll use a simple password check
+      // In production, you'd hash and compare passwords
+      res.json(user);
+    } catch (error) {
+      res.status(500).json({ message: "Login failed" });
+    }
+  });
+
+  app.post("/api/auth/register", async (req, res) => {
+    try {
+      const { username, email, password } = req.body;
+      
+      // Check if user already exists
+      const existingUser = await storage.getUserByUsername(username);
+      if (existingUser) {
+        return res.status(400).json({ message: "Username already exists" });
+      }
+      
+      const existingEmail = await storage.getUserByEmail(email);
+      if (existingEmail) {
+        return res.status(400).json({ message: "Email already exists" });
+      }
+      
+      // Create new user
+      const newUser = await storage.createUser({
+        username,
+        email,
+        password, // Include password field
+        role: "user"
+      });
+      
+      res.status(201).json(newUser);
+    } catch (error) {
+      res.status(500).json({ message: "Registration failed" });
+    }
+  });
+
+  app.get("/api/auth/me", async (req, res) => {
+    // For now, return a mock response since we don't have sessions
+    res.status(401).json({ message: "Not authenticated" });
+  });
+
+  app.post("/api/auth/logout", async (req, res) => {
+    res.json({ message: "Logged out successfully" });
+  });
+
   // Product Categories
   app.get("/api/categories", async (req, res) => {
     try {

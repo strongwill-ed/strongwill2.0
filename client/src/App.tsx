@@ -20,6 +20,8 @@ import Checkout from "@/pages/checkout";
 import Profile from "@/pages/profile";
 import Settings from "@/pages/settings";
 import Orders from "@/pages/orders";
+import Login from "@/pages/login";
+import Register from "@/pages/register";
 import Header from "@/components/layout/header";
 import Footer from "@/components/layout/footer";
 import CartSidebar from "@/components/cart/cart-sidebar";
@@ -43,6 +45,8 @@ function Router() {
       <Route path="/profile" component={Profile} />
       <Route path="/settings" component={Settings} />
       <Route path="/orders" component={Orders} />
+      <Route path="/login" component={Login} />
+      <Route path="/register" component={Register} />
       <Route component={NotFound} />
     </Switch>
   );
