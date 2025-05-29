@@ -17,6 +17,7 @@ import TeamProfile from "@/pages/team-profile";
 import SponsorProfile from "@/pages/sponsor-profile";
 import SharedTeamProfile from "@/pages/shared-team-profile";
 import SponsorshipAgreement from "@/pages/sponsorship-agreement";
+import SponsorshipOrder from "@/pages/sponsorship-order";
 import Admin from "@/pages/admin";
 import About from "@/pages/about";
 import Contact from "@/pages/contact";
@@ -46,6 +47,7 @@ function Router() {
       <Route path="/sponsor-profile/:id" component={SponsorProfile} />
       <Route path="/shared/:token" component={SharedTeamProfile} />
       <Route path="/sponsorship-agreement/:id" component={SponsorshipAgreement} />
+      <Route path="/sponsorship-order/:orderId" component={SponsorshipOrder} />
       <Route path="/admin" component={Admin} />
       <Route path="/about" component={About} />
       <Route path="/contact" component={Contact} />

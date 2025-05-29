@@ -132,6 +132,7 @@ export default function TeamProfile() {
       description: sponsorshipMessage,
       status: "pending",
       paymentStatus: "pending",
+      proposedBy: "sponsor",
     });
   };
 

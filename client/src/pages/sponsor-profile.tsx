@@ -143,6 +143,7 @@ export default function SponsorProfile() {
       description: sponsorshipMessage,
       status: "pending",
       paymentStatus: "pending",
+      proposedBy: "seeker",
     });
   };
 
