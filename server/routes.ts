@@ -345,7 +345,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/group-orders", async (req, res) => {
     try {
-      const groupOrderData = insertGroupOrderSchema.parse(req.body);
+      // Convert string deadline to Date object
+      const processedData = {
+        ...req.body,
+        deadline: new Date(req.body.deadline)
+      };
+      
+      const groupOrderData = insertGroupOrderSchema.parse(processedData);
       const groupOrder = await storage.createGroupOrder(groupOrderData);
       res.status(201).json(groupOrder);
     } catch (error) {
