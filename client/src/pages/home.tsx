@@ -290,7 +290,7 @@ export default function Home() {
             ))}
           </div>
           
-          <div className="text-center mt-12">
+          <div className="text-center mt-8">
             <Button 
               size="lg" 
               className="btn-primary"
@@ -304,9 +304,9 @@ export default function Home() {
       </section>
 
       {/* Features Section */}
-      <section className="py-16 bg-white">
+      <section className="py-12 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
+          <div className="text-center mb-8">
             <h2 className="text-3xl md:text-4xl font-bold text-black mb-4">Why Choose Strongwill Sports</h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
               We combine premium quality with cutting-edge technology to deliver the best custom apparel experience.
