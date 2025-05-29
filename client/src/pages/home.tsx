@@ -268,9 +268,9 @@ export default function Home() {
       </section>
 
       {/* Group Orders Section */}
-      <section className="py-20 bg-gray-50">
+      <section className="py-12 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
+          <div className="text-center mb-10">
             <h2 className="text-3xl md:text-4xl font-bold text-black mb-4">Team & Group Orders</h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
               Simplify team orders with our group ordering system. Perfect for schools, clubs, and organizations.
@@ -319,9 +319,9 @@ export default function Home() {
       </section>
 
       {/* Features Section */}
-      <section className="py-20 bg-white">
+      <section className="py-12 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
+          <div className="text-center mb-10">
             <h2 className="text-3xl md:text-4xl font-bold text-black mb-4">Why Choose Strongwill Sports</h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
               We combine premium quality with cutting-edge technology to deliver the best custom apparel experience.
@@ -372,7 +372,7 @@ export default function Home() {
       </section>
 
       {/* Newsletter Section */}
-      <section className="py-20 bg-gray-50">
+      <section className="py-10 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <NewsletterSubscription />
         </div>
