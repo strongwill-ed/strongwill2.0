@@ -40,7 +40,6 @@ export default function DesignTool() {
   const isGroupOrderMode = urlParams.get("groupOrder") === "true";
   const groupOrderData = isGroupOrderMode ? {
     name: urlParams.get("name") || "",
-    productId: urlParams.get("productId") || "",
     deadline: urlParams.get("deadline") || "",
     minimumQuantity: parseInt(urlParams.get("minimumQuantity") || "10"),
     description: urlParams.get("description") || "",

@@ -20,16 +20,12 @@ import { z } from "zod";
 import { Plus, Users, Calendar, Package, Share2, Copy, Edit, Trash2, Settings } from "lucide-react";
 import { format } from "date-fns";
 
-const createGroupOrderSchema = insertGroupOrderSchema.extend({
+const createGroupOrderSchema = z.object({
+  name: z.string().min(1, "Group order name is required"),
   deadline: z.string().min(1, "Deadline is required"),
-  orderType: z.enum(["product", "custom"]).default("product"),
-}).omit({ 
-  currentQuantity: true, 
-  status: true, 
-  paymentMode: true, 
-  totalEstimate: true, 
-  organizerEmail: true, 
-  shareableLink: true 
+  minimumQuantity: z.number().min(1, "Minimum quantity must be at least 1"),
+  description: z.string().optional(),
+  organizerUserId: z.number(),
 });
 
 const joinGroupOrderSchema = insertGroupOrderItemSchema.omit({ groupOrderId: true }).extend({
@@ -55,19 +51,17 @@ export default function GroupOrders() {
 
   const { data: groupOrderDetails } = useQuery<GroupOrder & { items: GroupOrderItem[] }>({
     queryKey: ["/api/group-orders", selectedGroupOrder?.id],
-    enabled: !!selectedGroupOrder,
+    enabled: !!selectedGroupOrder && isManageDialogOpen,
   });
 
   const createGroupOrderForm = useForm<z.infer<typeof createGroupOrderSchema>>({
     resolver: zodResolver(createGroupOrderSchema),
     defaultValues: {
       name: "",
-      productId: undefined,
       deadline: "",
       minimumQuantity: 10,
       description: "",
       organizerUserId: user?.id || 1,
-      orderType: "product" as const,
     },
   });
 
@@ -157,21 +151,16 @@ export default function GroupOrders() {
   });
 
   const onCreateSubmit = (data: z.infer<typeof createGroupOrderSchema>) => {
-    if (data.orderType === "custom") {
-      // Redirect to design tool for custom design products
-      const params = new URLSearchParams({
-        groupOrder: 'true',
-        name: data.name,
-        productId: data.productId?.toString() || '',
-        deadline: data.deadline,
-        minimumQuantity: data.minimumQuantity?.toString() || '10',
-        description: data.description || '',
-        organizerUserId: data.organizerUserId?.toString() || ''
-      });
-      window.location.href = `/design-tool?${params.toString()}`;
-    } else {
-      createGroupOrderMutation.mutate(data);
-    }
+    // Always redirect to design tool for custom design products
+    const params = new URLSearchParams({
+      groupOrder: 'true',
+      name: data.name,
+      deadline: data.deadline,
+      minimumQuantity: data.minimumQuantity.toString(),
+      description: data.description || '',
+      organizerUserId: data.organizerUserId.toString()
+    });
+    window.location.href = `/design-tool?${params.toString()}`;
   };
 
   const onJoinSubmit = (data: z.infer<typeof joinGroupOrderSchema>) => {
@@ -228,6 +217,12 @@ export default function GroupOrders() {
                 <DialogHeader>
                   <DialogTitle>Create Group Order</DialogTitle>
                 </DialogHeader>
+                <div className="p-3 bg-blue-50 border border-blue-200 rounded-md mb-4">
+                  <p className="text-sm text-blue-800">
+                    Create a custom design group order. You'll be taken to the Design Tool to create the template and select the product.
+                  </p>
+                </div>
+                
                 <Form {...createGroupOrderForm}>
                   <form onSubmit={createGroupOrderForm.handleSubmit(onCreateSubmit)} className="space-y-4">
                     <FormField
@@ -235,98 +230,14 @@ export default function GroupOrders() {
                       name="name"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Group Name</FormLabel>
+                          <FormLabel>Group Order Name</FormLabel>
                           <FormControl>
-                            <Input placeholder="Team Eagles Wrestling" {...field} />
+                            <Input placeholder="Team Eagles Wrestling 2025" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
-
-                    <FormField
-                      control={createGroupOrderForm.control}
-                      name="orderType"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Order Type</FormLabel>
-                          <Select onValueChange={field.onChange} value={field.value}>
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select order type" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              <SelectItem value="product">Standard Product</SelectItem>
-                              <SelectItem value="custom">Custom Design Product</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    {createGroupOrderForm.watch("orderType") === "product" && (
-                      <FormField
-                        control={createGroupOrderForm.control}
-                        name="productId"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Product</FormLabel>
-                            <Select onValueChange={(value) => field.onChange(parseInt(value))} value={field.value?.toString()}>
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select a product" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                {products.map((product) => (
-                                  <SelectItem key={product.id} value={product.id.toString()}>
-                                    {product.name} - ${product.basePrice}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    )}
-
-                    {createGroupOrderForm.watch("orderType") === "custom" && (
-                      <>
-                        <FormField
-                          control={createGroupOrderForm.control}
-                          name="productId"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Base Product Template</FormLabel>
-                              <Select onValueChange={(value) => field.onChange(parseInt(value))} value={field.value?.toString()}>
-                                <FormControl>
-                                  <SelectTrigger>
-                                    <SelectValue placeholder="Select a product template" />
-                                  </SelectTrigger>
-                                </FormControl>
-                                <SelectContent>
-                                  {products.map((product) => (
-                                    <SelectItem key={product.id} value={product.id.toString()}>
-                                      {product.name} - ${product.basePrice}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <div className="p-3 bg-blue-50 border border-blue-200 rounded-md">
-                          <p className="text-sm text-blue-800">
-                            For custom design orders, you can create a design template that members can customize when joining. 
-                            After creating the group order, use the Design Tool to create the base template.
-                          </p>
-                        </div>
-                      </>
-                    )}
 
                     <FormField
                       control={createGroupOrderForm.control}
