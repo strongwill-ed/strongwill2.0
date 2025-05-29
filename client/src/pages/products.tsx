@@ -219,9 +219,12 @@ export default function Products() {
                 <SelectValue placeholder="Sort by" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="name">Name A-Z</SelectItem>
+                <SelectItem value="popular">Most Popular</SelectItem>
+                <SelectItem value="newest">Newest First</SelectItem>
+                <SelectItem value="rating">Highest Rated</SelectItem>
                 <SelectItem value="price-low">Price: Low to High</SelectItem>
                 <SelectItem value="price-high">Price: High to Low</SelectItem>
+                <SelectItem value="name">Name A-Z</SelectItem>
               </SelectContent>
             </Select>
 
