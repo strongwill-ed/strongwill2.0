@@ -267,6 +267,21 @@ export default function SponsorshipPage() {
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-3">
+                      {profile.logoUrl && (
+                        <div className="text-center">
+                          <label className="text-xs font-medium text-gray-500 block mb-2">Logo for Your Apparel</label>
+                          <div className="p-3 border rounded-lg bg-gray-50">
+                            <img 
+                              src={profile.logoUrl} 
+                              alt={`${profile.companyName} Logo`}
+                              className="h-12 w-auto mx-auto object-contain"
+                              onError={(e) => {
+                                e.currentTarget.style.display = 'none';
+                              }}
+                            />
+                          </div>
+                        </div>
+                      )}
                       <p className="text-sm text-gray-600 line-clamp-3">
                         {profile.description}
                       </p>

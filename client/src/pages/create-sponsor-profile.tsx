@@ -287,10 +287,28 @@ export default function CreateSponsorProfile() {
                     name="logoUrl"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Logo URL</FormLabel>
+                        <FormLabel>Company Logo URL *</FormLabel>
                         <FormControl>
                           <Input placeholder="https://yourcompany.com/logo.png" {...field} />
                         </FormControl>
+                        <p className="text-sm text-gray-500 mt-1">
+                          Teams will see this logo as it would appear on their apparel. Use a high-quality PNG or SVG with transparent background.
+                        </p>
+                        {field.value && (
+                          <div className="mt-2">
+                            <label className="text-sm font-medium text-gray-500">Logo Preview:</label>
+                            <div className="mt-1 p-4 border rounded-lg bg-gray-50">
+                              <img 
+                                src={field.value} 
+                                alt="Company Logo" 
+                                className="h-16 w-auto object-contain"
+                                onError={(e) => {
+                                  e.currentTarget.style.display = 'none';
+                                }}
+                              />
+                            </div>
+                          </div>
+                        )}
                         <FormMessage />
                       </FormItem>
                     )}
