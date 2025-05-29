@@ -167,8 +167,9 @@ export default function Header() {
               <SheetContent side="right" className="w-64">
                 <div className="flex flex-col h-full">
                   <div className="py-6">
-                    <span className="font-logo italic text-xl font-bold text-black">
-                      Strongwillsports
+                    <span className="text-xl text-black italic">
+                      <span className="font-black">STRONGWILL</span>
+                      <span className="font-normal">SPORTS</span>
                     </span>
                   </div>
                   

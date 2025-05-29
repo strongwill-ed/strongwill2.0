@@ -8,8 +8,8 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Brand Section */}
           <div className="space-y-4">
-            <h3 className="text-2xl">
-              <span className="font-black">STRONGWILL</span>{" "}
+            <h3 className="text-2xl italic">
+              <span className="font-black">STRONGWILL</span>
               <span className="font-normal">SPORTS</span>
             </h3>
             <p className="text-gray-300 text-sm">
