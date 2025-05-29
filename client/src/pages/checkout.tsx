@@ -79,18 +79,17 @@ export default function Checkout() {
 
     if (isGroupOrderCheckout && groupOrderDetails) {
       // Calculate totals for group order
-      const product = products.find(p => p.id === groupOrderDetails.productId);
-      const basePrice = parseFloat(product?.basePrice || "0");
-      
-      console.log('Group order calculation:', {
-        productId: groupOrderDetails.productId,
-        product,
-        basePrice,
-        items: groupOrderDetails.items,
-      });
-      
-      totalQuantity = groupOrderDetails.items?.reduce((total, item) => total + (item.quantity || 1), 0) || 0;
-      subtotal = basePrice * totalQuantity;
+      if (groupOrderDetails.productId) {
+        const product = products.find(p => p.id === groupOrderDetails.productId);
+        const basePrice = parseFloat(product?.basePrice || "0");
+        
+        totalQuantity = groupOrderDetails.items?.reduce((total, item) => total + (item.quantity || 1), 0) || 0;
+        subtotal = basePrice * totalQuantity;
+      } else {
+        // For custom group orders without a specific product, use a default price per item
+        totalQuantity = groupOrderDetails.items?.reduce((total, item) => total + (item.quantity || 1), 0) || 0;
+        subtotal = 45.00 * totalQuantity; // Default custom item price
+      }
     } else {
       // Regular cart checkout
       subtotal = cartItems.reduce((total, item) => {
@@ -656,8 +655,15 @@ export default function Checkout() {
                         <p className="font-medium text-sm text-gray-700">Group Order: {groupOrderDetails.name}</p>
                       </div>
                       {groupOrderDetails.items?.map((item, index) => {
-                        const product = products.find(p => p.id === groupOrderDetails.productId);
-                        const itemPrice = parseFloat(product?.basePrice || "0") * (item.quantity || 1);
+                        let product, itemPrice;
+                        if (groupOrderDetails.productId) {
+                          product = products.find(p => p.id === groupOrderDetails.productId);
+                          itemPrice = parseFloat(product?.basePrice || "0") * (item.quantity || 1);
+                        } else {
+                          product = { name: "Custom Design" };
+                          itemPrice = 45.00 * (item.quantity || 1);
+                        }
+                        
                         return (
                           <div key={index} className="flex justify-between text-sm">
                             <div>
