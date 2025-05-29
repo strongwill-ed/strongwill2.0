@@ -64,7 +64,7 @@ export default function DesignTool() {
     queryKey: ["/api/products"],
   });
 
-  const { data: product } = useQuery<Product>({
+  const { data: selectedProductData } = useQuery<Product>({
     queryKey: ["/api/products", selectedProduct],
     enabled: !!selectedProduct,
   });
@@ -409,7 +409,7 @@ export default function DesignTool() {
                       </Select>
                     </div>
 
-                    {product && (
+                    {selectedProductData && (
                       <div className="space-y-4">
                         <div className="flex justify-between items-center">
                           <Label>Order Configuration</Label>
@@ -417,9 +417,9 @@ export default function DesignTool() {
                             size="sm" 
                             variant="outline"
                             onClick={() => {
-                              console.log('Product data:', product);
-                              const defaultSize = product?.sizes?.[0];
-                              const defaultColor = product?.colors?.[0];
+                              console.log('Product data:', selectedProductData);
+                              const defaultSize = selectedProductData?.sizes?.[0];
+                              const defaultColor = selectedProductData?.colors?.[0];
                               console.log('Default size:', defaultSize, 'Default color:', defaultColor);
                               if (defaultSize && defaultColor) {
                                 console.log('Setting quantity for:', defaultSize, defaultColor);
@@ -430,7 +430,7 @@ export default function DesignTool() {
                             }}
                             className="text-xs h-7"
                           >
-                            Quick Add ({product?.sizes?.[0]} {product?.colors?.[0]})
+                            Quick Add ({selectedProductData?.sizes?.[0]} {selectedProductData?.colors?.[0]})
                           </Button>
                         </div>
                         <div className="p-3 bg-blue-50 border border-blue-200 rounded-md">
@@ -439,11 +439,11 @@ export default function DesignTool() {
                           </p>
                         </div>
                         <div className="space-y-3 max-h-60 overflow-y-auto">
-                          {product.sizes?.map((size) => (
+                          {selectedProductData.sizes?.map((size) => (
                             <div key={size} className="space-y-2">
                               <Label className="text-sm font-medium">{size}</Label>
                               <div className="grid grid-cols-2 gap-2">
-                                {product.colors?.map((color) => (
+                                {selectedProductData.colors?.map((color) => (
                                   <div key={`${size}-${color}`} className="flex items-center space-x-2">
                                     <Label className="text-xs min-w-0 flex-1 truncate">{color}</Label>
                                     <Input
@@ -694,7 +694,7 @@ export default function DesignTool() {
               <CardContent>
                 <DesignCanvas
                   ref={canvasRef}
-                  product={product}
+                  product={selectedProductData}
                   elements={designElements}
                   selectedElement={selectedElement}
                   onElementSelect={setSelectedElement}
