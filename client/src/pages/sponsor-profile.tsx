@@ -143,6 +143,8 @@ export default function SponsorProfile() {
   };
 
   const isOwnProfile = user?.id === profile.userId;
+  const isAdmin = user?.username === 'admin';
+  const canDelete = isOwnProfile || isAdmin;
   const canRequest = user && !isOwnProfile && seekerProfile;
 
   return (
@@ -173,15 +175,31 @@ export default function SponsorProfile() {
                     <span className="text-gray-600">{profile.industry}</span>
                   </div>
                 </div>
-                {canRequest && (
-                  <Button
-                    onClick={() => setShowRequestForm(true)}
-                    className="btn-primary"
-                  >
-                    <DollarSign className="h-4 w-4 mr-2" />
-                    Request Sponsorship
-                  </Button>
-                )}
+                <div className="flex gap-2">
+                  {canRequest && (
+                    <Button
+                      onClick={() => setShowRequestForm(true)}
+                      className="btn-primary"
+                    >
+                      <DollarSign className="h-4 w-4 mr-2" />
+                      Request Sponsorship
+                    </Button>
+                  )}
+                  {canDelete && (
+                    <Button
+                      variant="destructive"
+                      onClick={() => {
+                        if (confirm("Are you sure you want to delete this profile? This action cannot be undone.")) {
+                          deleteProfileMutation.mutate();
+                        }
+                      }}
+                      disabled={deleteProfileMutation.isPending}
+                    >
+                      <Trash2 className="h-4 w-4 mr-2" />
+                      {deleteProfileMutation.isPending ? "Deleting..." : "Delete Profile"}
+                    </Button>
+                  )}
+                </div>
               </div>
             </CardHeader>
             <CardContent>

@@ -865,6 +865,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.get("/api/seeker-profiles/user", async (req, res) => {
+    try {
+      if (!req.isAuthenticated()) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+      const profile = await storage.getSeekerProfileByUserId(req.user.id);
+      res.json(profile || null);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch seeker profile" });
+    }
+  });
+
   app.get("/api/seeker-profiles/:id", async (req, res) => {
     try {
       const profile = await storage.getSeekerProfile(parseInt(req.params.id));
@@ -1098,6 +1110,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid agreement data", errors: error.errors });
       }
       res.status(500).json({ message: "Failed to update sponsorship agreement" });
+    }
+  });
+
+  app.patch("/api/sponsorship-agreements/:id/status", async (req, res) => {
+    try {
+      const { status } = req.body;
+      const agreement = await storage.updateSponsorshipAgreement(parseInt(req.params.id), { status });
+      if (!agreement) {
+        return res.status(404).json({ message: "Sponsorship agreement not found" });
+      }
+      res.json(agreement);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to update agreement status" });
     }
   });
 

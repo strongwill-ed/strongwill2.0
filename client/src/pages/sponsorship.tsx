@@ -446,7 +446,7 @@ export default function SponsorshipPage() {
                       <div className="flex items-center space-x-2">
                         <Badge variant="default">{agreement.status}</Badge>
                         <Badge variant="secondary">
-                          ${parseFloat(agreement.totalAmount).toLocaleString()}
+                          ${parseFloat(agreement.amount).toLocaleString()}
                         </Badge>
                       </div>
                     </CardTitle>
