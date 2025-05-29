@@ -85,11 +85,11 @@ export function NewsletterPopup() {
 
         <form onSubmit={handleSubmit} className="space-y-3 mt-6">
           {/* Limited Time Offer */}
-          <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-2 border border-black dark:border-white">
-            <p className="text-black dark:text-white font-semibold text-sm mb-1">⚡ Limited Time Offer</p>
-            <p className="text-gray-600 dark:text-gray-400 text-xs">
+          <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-3 border border-black dark:border-white">
+            <p className="text-black dark:text-white font-semibold text-base mb-2">⚡ Limited Time Offer</p>
+            <p className="text-gray-600 dark:text-gray-400 text-sm">
               Sign up now and receive <span className="text-black dark:text-white font-bold">free shipping</span> on your first order!
-              <span className="text-xs block text-gray-500 dark:text-gray-500">*Terms and conditions apply</span>
+              <span className="text-sm block text-gray-500 dark:text-gray-500 mt-1">*Terms and conditions apply</span>
             </p>
           </div>
           
