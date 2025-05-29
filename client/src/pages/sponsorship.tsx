@@ -455,24 +455,33 @@ export default function SponsorshipPage() {
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
-                        <h4 className="font-medium mb-2">Benefits Provided</h4>
+                        <h4 className="font-medium mb-2">Agreement Details</h4>
                         <p className="text-sm text-gray-600">
-                          {agreement.benefits}
+                          {agreement.description || "Sponsorship partnership agreement"}
                         </p>
+                        <div className="mt-2">
+                          <span className="text-xs text-gray-500">Logo Usage: </span>
+                          <span className="text-xs">{agreement.logoUsageRights}</span>
+                        </div>
                       </div>
                       <div>
-                        <h4 className="font-medium mb-2">Requirements</h4>
-                        <p className="text-sm text-gray-600">
-                          {agreement.requirements}
-                        </p>
-                      </div>
-                      <div>
-                        <h4 className="font-medium mb-2">Terms</h4>
-                        <p className="text-sm text-gray-600">
-                          {agreement.terms}
-                        </p>
+                        <h4 className="font-medium mb-2">Sponsorship Credit</h4>
+                        <div className="text-lg font-bold text-green-600">
+                          ${parseFloat(agreement.amount).toLocaleString()}
+                        </div>
+                        <p className="text-xs text-gray-500">Available for team apparel orders</p>
+                        {agreement.status === 'pending' && (
+                          <div className="mt-3 flex gap-2">
+                            <Button size="sm" variant="default">
+                              Accept Partnership
+                            </Button>
+                            <Button size="sm" variant="outline">
+                              Negotiate Terms
+                            </Button>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </CardContent>

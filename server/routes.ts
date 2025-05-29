@@ -1136,6 +1136,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.post("/api/sponsorship-credits/apply", async (req, res) => {
+    try {
+      if (!req.isAuthenticated()) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+
+      const { seekerId, orderAmount } = req.body;
+      const credits = await storage.getSponsorshipCredits(seekerId);
+      
+      // Calculate total available credits
+      const totalCredits = credits.reduce((sum, credit) => 
+        sum + parseFloat(credit.remainingAmount), 0
+      );
+
+      const creditToApply = Math.min(totalCredits, parseFloat(orderAmount));
+      
+      res.json({
+        availableCredits: totalCredits,
+        appliedCredit: creditToApply,
+        remainingOrderAmount: parseFloat(orderAmount) - creditToApply
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to calculate sponsorship credits" });
+    }
+  });
+
   // Get sponsorship credits for current user (authenticated route)
   app.get("/api/user/sponsorship-credits", async (req, res) => {
     if (!req.isAuthenticated()) {
