@@ -767,6 +767,14 @@ export class DatabaseStorage implements IStorage {
     return updatedProfile || undefined;
   }
 
+  async deleteSeekerProfile(id: number): Promise<boolean> {
+    await this.ensureInitialized();
+    const result = await db
+      .delete(seekerProfiles)
+      .where(eq(seekerProfiles.id, id));
+    return (result.rowCount || 0) > 0;
+  }
+
   // Sponsor Profiles
   async getSponsorProfiles(): Promise<SponsorProfile[]> {
     await this.ensureInitialized();
@@ -802,6 +810,14 @@ export class DatabaseStorage implements IStorage {
       .where(eq(sponsorProfiles.id, id))
       .returning();
     return updatedProfile || undefined;
+  }
+
+  async deleteSponsorProfile(id: number): Promise<boolean> {
+    await this.ensureInitialized();
+    const result = await db
+      .delete(sponsorProfiles)
+      .where(eq(sponsorProfiles.id, id));
+    return (result.rowCount || 0) > 0;
   }
 
   // Sponsorship Agreements
