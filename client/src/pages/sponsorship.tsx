@@ -237,7 +237,7 @@ export default function SponsorshipPage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {seekerProfiles.map((profile: SeekerProfile) => (
+              {filteredSeekerProfiles.map((profile: SeekerProfile) => (
                 <Card key={profile.id} className="hover:shadow-lg transition-shadow">
                   <CardHeader>
                     <CardTitle className="flex items-center justify-between">
@@ -321,7 +321,7 @@ export default function SponsorshipPage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {sponsorProfiles.map((profile: SponsorProfile) => (
+              {filteredSponsorProfiles.map((profile: SponsorProfile) => (
                 <Card key={profile.id} className="hover:shadow-lg transition-shadow">
                   <CardHeader>
                     <CardTitle className="flex items-center justify-between">
