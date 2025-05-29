@@ -49,6 +49,7 @@ export default function DesignTool() {
   const [orderItems, setOrderItems] = useState<{[key: string]: number}>({});
   const [addToGroupOrder, setAddToGroupOrder] = useState(false);
   const [selectedGroupOrder, setSelectedGroupOrder] = useState<number | null>(null);
+  const [nickname, setNickname] = useState("");
   
   // Text tool state
   const [textContent, setTextContent] = useState("");
@@ -259,6 +260,7 @@ export default function DesignTool() {
             color,
             participantName: "Current User", // TODO: Get from auth context
             participantEmail: "user@example.com", // TODO: Get from auth context
+            nickname: nickname.trim() || null,
             customizations: JSON.stringify({
               elements: designElements,
               designName,
@@ -445,23 +447,39 @@ export default function DesignTool() {
                           </div>
                           
                           {addToGroupOrder && (
-                            <div>
-                              <Label htmlFor="group-order-select">Select Group Order</Label>
-                              <Select 
-                                value={selectedGroupOrder?.toString() || ""} 
-                                onValueChange={(value) => setSelectedGroupOrder(parseInt(value))}
-                              >
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Choose a group order" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {groupOrders.filter((order: any) => order.status === 'active').map((order: any) => (
-                                    <SelectItem key={order.id} value={order.id.toString()}>
-                                      {order.name} (Due: {new Date(order.deadline).toLocaleDateString()})
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
+                            <div className="space-y-3">
+                              <div>
+                                <Label htmlFor="group-order-select">Select Group Order</Label>
+                                <Select 
+                                  value={selectedGroupOrder?.toString() || ""} 
+                                  onValueChange={(value) => setSelectedGroupOrder(parseInt(value))}
+                                >
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Choose a group order" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    {groupOrders.filter((order: any) => order.status === 'active').map((order: any) => (
+                                      <SelectItem key={order.id} value={order.id.toString()}>
+                                        {order.name} (Due: {new Date(order.deadline).toLocaleDateString()})
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                              
+                              <div>
+                                <Label htmlFor="nickname-input">Nickname (Optional)</Label>
+                                <Input
+                                  id="nickname-input"
+                                  value={nickname}
+                                  onChange={(e) => setNickname(e.target.value)}
+                                  placeholder="Enter team nickname (e.g., Captain, Striker)"
+                                  maxLength={50}
+                                />
+                                <p className="text-xs text-gray-500 mt-1">
+                                  This will help identify you in the team order
+                                </p>
+                              </div>
                             </div>
                           )}
                         </div>
