@@ -407,37 +407,6 @@ export default function DesignTool() {
                     {selectedProductData && (
                       <div className="space-y-4">
                         <Label>Order Configuration</Label>
-                        <div className="p-3 bg-blue-50 border border-blue-200 rounded-md">
-                          <p className="text-xs text-blue-800">
-                            Enter quantities for each size/color combination you want to order.
-                          </p>
-                        </div>
-                        <div className="space-y-3 max-h-60 overflow-y-auto">
-                          {selectedProductData.sizes?.map((size) => (
-                            <div key={size} className="space-y-2">
-                              <Label className="text-sm font-medium">{size}</Label>
-                              <div className="grid grid-cols-2 gap-2">
-                                {selectedProductData.colors?.map((color) => (
-                                  <div key={`${size}-${color}`} className="flex items-center space-x-2">
-                                    <Label className="text-xs min-w-0 flex-1 truncate">{color}</Label>
-                                    <Input
-                                      type="number"
-                                      min="0"
-                                      max="50"
-                                      value={orderItems[`${size}-${color}`] || 0}
-                                      onChange={(e) => updateOrderQuantity(size, color, parseInt(e.target.value) || 0)}
-                                      className="w-16 h-8 text-xs"
-                                      placeholder="0"
-                                    />
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                        <div className="text-sm text-gray-600 font-medium">
-                          Total items: {getTotalItems()}
-                        </div>
                         
                         <div className="space-y-3 pt-4 border-t">
                           <Label>Order Type</Label>
@@ -453,8 +422,51 @@ export default function DesignTool() {
                               Add to existing group order
                             </Label>
                           </div>
-                          
-                          {addToGroupOrder && (
+                        </div>
+
+                        {!addToGroupOrder && (
+                          <>
+                            <div className="p-3 bg-blue-50 border border-blue-200 rounded-md">
+                              <p className="text-xs text-blue-800">
+                                Enter quantities for each size/color combination you want to order.
+                              </p>
+                            </div>
+                            <div className="space-y-3 max-h-60 overflow-y-auto">
+                              {selectedProductData.sizes?.map((size) => (
+                                <div key={size} className="space-y-2">
+                                  <Label className="text-sm font-medium">{size}</Label>
+                                  <div className="grid grid-cols-2 gap-2">
+                                    {selectedProductData.colors?.map((color) => (
+                                      <div key={`${size}-${color}`} className="flex items-center space-x-2">
+                                        <Label className="text-xs min-w-0 flex-1 truncate">{color}</Label>
+                                        <Input
+                                          type="number"
+                                          min="0"
+                                          max="50"
+                                          value={orderItems[`${size}-${color}`] || 0}
+                                          onChange={(e) => updateOrderQuantity(size, color, parseInt(e.target.value) || 0)}
+                                          className="w-16 h-8 text-xs"
+                                          placeholder="0"
+                                        />
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                            <div className="text-sm text-gray-600 font-medium">
+                              Total items: {getTotalItems()}
+                            </div>
+                          </>
+                        )}
+
+                        {addToGroupOrder && (
+                          <>
+                            <div className="p-3 bg-green-50 border border-green-200 rounded-md">
+                              <p className="text-xs text-green-800">
+                                For group orders, members will select their own sizes and colors when joining. No quantity selection needed here.
+                              </p>
+                            </div>
                             <div className="space-y-3">
                               <div>
                                 <Label htmlFor="group-order-select">Select Group Order</Label>
@@ -489,8 +501,8 @@ export default function DesignTool() {
                                 </p>
                               </div>
                             </div>
-                          )}
-                        </div>
+                          </>
+                        )}
                       </div>
                     )}
                   </TabsContent>
