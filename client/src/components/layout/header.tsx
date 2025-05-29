@@ -10,7 +10,7 @@ export default function Header() {
   const { cartItems, toggleCart } = useCart();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  const cartItemCount = cartItems.reduce((total, item) => total + item.quantity, 0);
+  const cartItemCount = cartItems.reduce((total, item) => total + (item.quantity || 1), 0);
 
   const navigation = [
     { name: "Home", href: "/" },

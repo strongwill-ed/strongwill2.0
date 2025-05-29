@@ -40,7 +40,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       // Update quantity of existing item
       setCartItems(prev => prev.map((cartItem, index) => 
         index === existingItemIndex
-          ? { ...cartItem, quantity: cartItem.quantity + item.quantity }
+          ? { ...cartItem, quantity: (cartItem.quantity || 0) + (item.quantity || 1) }
           : cartItem
       ));
       

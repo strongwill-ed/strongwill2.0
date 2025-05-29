@@ -48,10 +48,12 @@ export default function Products() {
 
   // Filter and sort products
   const filteredProducts = products
-    .filter(product => 
-      product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      product.description?.toLowerCase().includes(searchQuery.toLowerCase())
-    )
+    .filter(product => {
+      const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                           (product.description && product.description.toLowerCase().includes(searchQuery.toLowerCase()));
+      const matchesCategory = selectedCategory === "all" || product.categoryId?.toString() === selectedCategory;
+      return matchesSearch && matchesCategory;
+    })
     .sort((a, b) => {
       switch (sortBy) {
         case "price-low":
