@@ -66,7 +66,7 @@ export default function Profile() {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <div className="w-16 h-16 bg-black text-white rounded-full flex items-center justify-center text-xl font-bold">
-                {user.username.charAt(0).toUpperCase()}
+                {user.username ? user.username.charAt(0).toUpperCase() : 'U'}
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-gray-900">{user.username}</h1>
