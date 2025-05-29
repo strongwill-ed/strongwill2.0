@@ -11,7 +11,7 @@ import year12LeaversImage from "@assets/YEAR-12-FINAL-5.jpg";
 import sportsUniformsImage from "@assets/Sports-Uniforms.jpg";
 import gymTrainingImage from "@assets/Gymwear-Training.jpg";
 
-// Dynamic text rotation component with scroll-up animation
+// Dynamic text rotation component
 function DynamicText() {
   const words = [
     "Athletic",
@@ -25,28 +25,28 @@ function DynamicText() {
   ];
   
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
+  const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentWordIndex((prev) => (prev + 1) % words.length);
+      setIsVisible(false);
+      
+      setTimeout(() => {
+        setCurrentWordIndex((prev) => (prev + 1) % words.length);
+        setIsVisible(true);
+      }, 300);
     }, 2500);
 
     return () => clearInterval(interval);
   }, []);
 
   return (
-    <span className="relative inline-block overflow-hidden min-w-[200px]" style={{ height: '1.2em' }}>
-      {words.map((word, index) => (
-        <span
-          key={word}
-          className="absolute left-0 top-0 w-full transition-transform duration-500 ease-in-out"
-          style={{
-            transform: `translateY(${(index - currentWordIndex) * 100}%)`,
-          }}
-        >
-          {word}
-        </span>
-      ))}
+    <span 
+      className={`transition-all duration-300 ${
+        isVisible ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform -translate-y-2'
+      }`}
+    >
+      {words[currentWordIndex]}
     </span>
   );
 }
