@@ -1,9 +1,10 @@
 import { createContext, useContext, useState, useCallback, ReactNode } from "react";
 import { useToast } from "@/hooks/use-toast";
-import type { InsertCartItem } from "@shared/schema";
+import type { InsertCartItem, Product } from "@shared/schema";
 
 interface CartItem extends InsertCartItem {
   id: number;
+  product?: Product;
 }
 
 interface CartContextType {
