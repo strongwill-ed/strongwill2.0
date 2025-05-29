@@ -877,10 +877,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.get("/api/seeker-profiles/share/:token", async (req, res) => {
+    try {
+      const profile = await storage.getSeekerProfileByToken(req.params.token);
+      if (!profile) {
+        return res.status(404).json({ message: "Shared profile not found" });
+      }
+      res.json(profile);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch shared profile" });
+    }
+  });
+
   app.post("/api/seeker-profiles", async (req, res) => {
     try {
       const validatedData = insertSeekerProfileSchema.parse(req.body);
-      const profile = await storage.createSeekerProfile(validatedData);
+      // Generate unique shareable token
+      const shareableToken = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+      const profileData = { ...validatedData, shareableToken };
+      const profile = await storage.createSeekerProfile(profileData);
       res.status(201).json(profile);
     } catch (error) {
       console.error("Error creating seeker profile:", error);

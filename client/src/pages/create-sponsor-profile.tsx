@@ -246,6 +246,9 @@ export default function CreateSponsorProfile() {
                             {...field} 
                           />
                         </FormControl>
+                        <p className="text-sm text-gray-500 mt-1">
+                          Typical budgets: Local teams $500-2,000 • Regional $2,000-10,000 • National $10,000+ • Set total annual budget available
+                        </p>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -307,6 +310,9 @@ export default function CreateSponsorProfile() {
                           {...field}
                         />
                       </FormControl>
+                      <p className="text-sm text-gray-500 mt-1">
+                        Include: Company mission & values • What you offer teams • Brand exposure needs • Target demographics • Community involvement goals • Why you support sports
+                      </p>
                       <FormMessage />
                     </FormItem>
                   )}

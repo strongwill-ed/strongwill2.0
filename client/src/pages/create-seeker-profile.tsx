@@ -271,6 +271,9 @@ export default function CreateSeekerProfile() {
                             {...field} 
                           />
                         </FormControl>
+                        <p className="text-sm text-gray-500 mt-1">
+                          Typical amounts: Youth teams $500-2,000 • High school $1,000-5,000 • Club/Adult $2,000-10,000+
+                        </p>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -304,7 +307,33 @@ export default function CreateSeekerProfile() {
                           {...field}
                         />
                       </FormControl>
+                      <p className="text-sm text-gray-500 mt-1">
+                        Include: Team history & achievements • Competition level • Number of members • What sponsorship will fund • Community impact • Your team's unique story
+                      </p>
                       <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="isAnonymous"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                      <div className="space-y-0.5">
+                        <FormLabel className="text-base">
+                          Anonymous Profile
+                        </FormLabel>
+                        <div className="text-sm text-gray-500">
+                          Hide your team name from public view. Only other details will be visible to potential sponsors.
+                        </div>
+                      </div>
+                      <FormControl>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
                     </FormItem>
                   )}
                 />
