@@ -184,202 +184,175 @@ export class DatabaseStorage implements IStorage {
   }
 
   private async seedData() {
-    // Seed categories - organized by purchase intent and price points
-    const [singletCategory, uniformCategory, trainwearCategory, accessoriesCategory, premiumCategory, starterCategory] = await db
+    // Seed categories - focused on key sports with optimized imagery
+    const [rugbyCategory, soccerCategory, basketballCategory, varsityCategory, tennisCategory, accessoriesCategory] = await db
       .insert(productCategories)
       .values([
-        { name: "Wrestling Singlets", description: "Premium competition and training singlets", imageUrl: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400" },
-        { name: "Team Uniforms", description: "Complete uniform solutions for teams", imageUrl: "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=400" },
-        { name: "Training Essentials", description: "Performance training and practice wear", imageUrl: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400" },
-        { name: "Sports Accessories", description: "Essential accessories and gear", imageUrl: "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=400" },
-        { name: "Elite Collection", description: "Premium competition-grade apparel", imageUrl: "https://images.unsplash.com/photo-1544966503-7cc5ac882d5f?w=400" },
-        { name: "Starter Pack", description: "Affordable entry-level options", imageUrl: "https://images.unsplash.com/photo-1506629905607-89fa8ac8c5ba?w=400" }
+        { name: "Rugby Gear", description: "Built tough for rugby's demands - jerseys, shorts, and protective gear", imageUrl: "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=600&h=400&fit=crop&auto=format" },
+        { name: "Soccer Uniforms", description: "Complete soccer kits and training apparel for clubs and teams", imageUrl: "https://images.unsplash.com/photo-1579952363873-27d3bfad9c0d?w=600&h=400&fit=crop&auto=format" },
+        { name: "Basketball Apparel", description: "Performance basketball uniforms and practice gear", imageUrl: "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=600&h=400&fit=crop&auto=format" },
+        { name: "High School Varsity", description: "Classic varsity jackets, letterman gear, and school spirit wear", imageUrl: "https://images.unsplash.com/photo-1509909756405-be0199881695?w=600&h=400&fit=crop&auto=format" },
+        { name: "Tennis Wear", description: "Professional tennis apparel for court performance", imageUrl: "https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?w=600&h=400&fit=crop&auto=format" },
+        { name: "Sports Accessories", description: "Essential gear and accessories for all sports", imageUrl: "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=600&h=400&fit=crop&auto=format" }
       ])
       .returning();
 
-    // Seed products - optimized for e-commerce conversion with strategic pricing
+    // Seed products - sport-specific lineup with optimized imagery
     await db
       .insert(products)
       .values([
-        // STARTER PACK - Entry-level pricing
+        // RUGBY GEAR
         {
-          name: "Basic Training Singlet",
-          description: "Engineered with moisture-wicking fabric technology and flatlock seams for unrestricted movement. The perfect foundation for developing athletes seeking reliable performance without compromise.",
-          basePrice: "34.99",
-          imageUrl: "https://images.unsplash.com/photo-1544966503-7cc5ac882d5f?w=400",
-          categoryId: starterCategory.id,
-          sizes: ["XS", "S", "M", "L", "XL"],
-          colors: ["Navy", "Black"],
+          name: "Pro Rugby Jersey",
+          description: "Built for the intensity of rugby with reinforced seams, moisture-wicking fabric, and ergonomic fit. Features tear-resistant construction and traditional collar design.",
+          basePrice: "89.99",
+          imageUrl: "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=600&h=600&fit=crop&auto=format",
+          categoryId: rugbyCategory.id,
+          sizes: ["XS", "S", "M", "L", "XL", "XXL"],
+          colors: ["Navy", "Forest Green", "Maroon", "Black", "White"],
           isActive: true,
         },
         {
-          name: "Essential Training Tee",
-          description: "Built with advanced Dri-FIT technology featuring ultra-lightweight polyester that moves sweat away from your skin for faster evaporation. Strategic mesh ventilation zones enhance breathability during high-intensity training.",
-          basePrice: "19.99",
-          imageUrl: "https://images.unsplash.com/photo-1583743814966-8936f37f6e3a?w=400",
-          categoryId: starterCategory.id,
+          name: "Rugby Training Shorts",
+          description: "Durable rugby shorts with reinforced stitching and stretch panels for maximum mobility during scrums and tackles. Quick-dry fabric with secure pocket design.",
+          basePrice: "54.99",
+          imageUrl: "https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?w=600&h=600&fit=crop&auto=format",
+          categoryId: rugbyCategory.id,
           sizes: ["S", "M", "L", "XL", "XXL"],
           colors: ["Black", "Navy", "Gray"],
           isActive: true,
         },
 
-        // WRESTLING SINGLETS - Core category
+        // SOCCER UNIFORMS
         {
-          name: "Competition Pro Singlet",
-          description: "Precision-engineered with CloudTec compression technology and four-way stretch fabric. Features anti-microbial treatment, reinforced stress points, and tournament-approved construction for elite performance under pressure.",
-          basePrice: "89.99",
-          imageUrl: "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=400",
-          categoryId: singletCategory.id,
-          sizes: ["XS", "S", "M", "L", "XL", "XXL"],
-          colors: ["Navy", "Black", "Red", "Royal Blue"],
-          isActive: true,
-        },
-        {
-          name: "Classic Wrestling Singlet",
-          description: "Crafted with Arc'teryx-inspired precision using high-performance compression fabric and seamless construction. Features moisture-management technology and ergonomic design for optimal mobility and endurance in competition.", 
-          basePrice: "64.99",
-          imageUrl: "https://images.unsplash.com/photo-1595078475328-1ab05d0a6a0e?w=400",
-          categoryId: singletCategory.id,
-          sizes: ["XS", "S", "M", "L", "XL", "XXL"],
-          colors: ["Navy", "Black", "Red", "White"],
-          isActive: true,
-        },
-        {
-          name: "Youth Competition Singlet", 
-          description: "Engineered for developing champions with ASICS GEL technology integration and youth-specific ergonomics. Features adaptive fit technology that grows with young athletes while maintaining professional-grade performance standards.",
-          basePrice: "49.99",
-          imageUrl: "https://images.unsplash.com/photo-1544966503-7cc5ac882d5f?w=400",
-          categoryId: singletCategory.id,
-          sizes: ["XS", "S", "M", "L"],
-          colors: ["Navy", "Black", "Red"],
-          isActive: true,
-        },
-
-        // TEAM UNIFORMS - Higher AOV bundles
-        {
-          name: "Basketball Team Package",
-          description: "Elite performance system featuring Nike Dri-FIT ADV technology in reversible jersey construction. Includes compression shorts with targeted ventilation zones and premium warm-up shirt with thermal regulation properties.",
-          basePrice: "94.99",
-          imageUrl: "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=400",
-          categoryId: uniformCategory.id,
-          sizes: ["S", "M", "L", "XL", "XXL"],
-          colors: ["White/Navy", "Red/White", "Black/Gold"],
-          isActive: true,
-        },
-        {
-          name: "Soccer Team Kit",
-          description: "Professional kit: jersey + shorts + socks + training top",
-          basePrice: "84.99",
-          imageUrl: "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=400",
-          categoryId: uniformCategory.id,
-          sizes: ["S", "M", "L", "XL", "XXL"],
-          colors: ["Blue/White", "Red/Black", "Green/Gold"],
-          isActive: true,
-        },
-        {
-          name: "Volleyball Uniform Set",
-          description: "Complete uniform: jersey + shorts + knee pads",
+          name: "Elite Soccer Jersey",
+          description: "Professional-grade soccer jersey with advanced moisture-wicking technology and lightweight design. Features club-quality construction and authentic styling.",
           basePrice: "74.99",
-          imageUrl: "https://images.unsplash.com/photo-1612872087720-bb876e2e67d1?w=400",
-          categoryId: uniformCategory.id,
-          sizes: ["XS", "S", "M", "L", "XL"],
-          colors: ["Navy/White", "Red/White", "Black/Silver"],
+          imageUrl: "https://images.unsplash.com/photo-1579952363873-27d3bfad9c0d?w=600&h=600&fit=crop&auto=format",
+          categoryId: soccerCategory.id,
+          sizes: ["XS", "S", "M", "L", "XL", "XXL"],
+          colors: ["Royal Blue", "Red", "White", "Black", "Forest Green"],
+          isActive: true,
+        },
+        {
+          name: "Soccer Training Shorts",
+          description: "Lightweight soccer shorts with stretch fabric and secure fit. Designed for optimal ball control and field performance.",
+          basePrice: "39.99",
+          imageUrl: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600&h=600&fit=crop&auto=format",
+          categoryId: soccerCategory.id,
+          sizes: ["XS", "S", "M", "L", "XL", "XXL"],
+          colors: ["Black", "Navy", "White", "Royal Blue"],
           isActive: true,
         },
 
-        // TRAINING ESSENTIALS - Mid-tier
+        // BASKETBALL APPAREL
         {
-          name: "Performance Training Shirt",
-          description: "Engineered with On Running's CloudTec cushioning principles and ultra-breathable mesh construction. Features Polygiene StayFresh technology for permanent odor control and adaptive thermal regulation for peak performance.",
-          basePrice: "39.99",
-          imageUrl: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400",
-          categoryId: trainwearCategory.id,
+          name: "Pro Basketball Jersey",
+          description: "Authentic basketball jersey with premium mesh construction and moisture management technology. Built for peak court performance.",
+          basePrice: "79.99",
+          imageUrl: "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=600&h=600&fit=crop&auto=format",
+          categoryId: basketballCategory.id,
           sizes: ["S", "M", "L", "XL", "XXL"],
-          colors: ["Black", "Navy", "Gray", "Red", "White"],
+          colors: ["White", "Navy", "Red", "Black", "Gold"],
           isActive: true,
         },
         {
-          name: "Athletic Training Shorts",
-          description: "Performance shorts with compression liner and side pockets",
-          basePrice: "44.99",
-          imageUrl: "https://images.unsplash.com/photo-1594736797933-d0601ba2fe65?w=400",
-          categoryId: trainwearCategory.id,
+          name: "Basketball Shorts",
+          description: "Performance basketball shorts with side panels and secure waistband. Features quick-dry fabric and professional styling.",
+          basePrice: "49.99",
+          imageUrl: "https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?w=600&h=600&fit=crop&auto=format",
+          categoryId: basketballCategory.id,
           sizes: ["S", "M", "L", "XL", "XXL"],
-          colors: ["Black", "Navy", "Gray", "Red"],
+          colors: ["Black", "Navy", "White", "Red"],
+          isActive: true,
+        },
+
+        // HIGH SCHOOL VARSITY
+        {
+          name: "Classic Varsity Jacket",
+          description: "Traditional letterman jacket with wool body and leather sleeves. Features embroidered school letters and premium construction.",
+          basePrice: "149.99",
+          imageUrl: "https://images.unsplash.com/photo-1509909756405-be0199881695?w=600&h=600&fit=crop&auto=format",
+          categoryId: varsityCategory.id,
+          sizes: ["S", "M", "L", "XL", "XXL"],
+          colors: ["Navy/White", "Black/Gold", "Maroon/Gray", "Green/White"],
           isActive: true,
         },
         {
-          name: "Team Warm-Up Hoodie",
-          description: "Premium fleece hoodie for pre-game and travel",
+          name: "School Spirit Hoodie",
+          description: "Premium school spirit hoodie with soft fleece lining and custom embroidery options. Perfect for showing team pride.",
+          basePrice: "64.99",
+          imageUrl: "https://images.unsplash.com/photo-1556821840-3a9fbc5c9d09?w=600&h=600&fit=crop&auto=format",
+          categoryId: varsityCategory.id,
+          sizes: ["S", "M", "L", "XL", "XXL"],
+          colors: ["Navy", "Gray", "Black", "Maroon"],
+          isActive: true,
+        },
+
+        // TENNIS WEAR
+        {
+          name: "Tennis Performance Polo",
+          description: "Professional tennis polo with UV protection and moisture-wicking technology. Classic collar design with modern performance features.",
           basePrice: "69.99",
-          imageUrl: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=400",
-          categoryId: trainwearCategory.id,
-          sizes: ["S", "M", "L", "XL", "XXL"],
-          colors: ["Black", "Navy", "Gray", "Red"],
+          imageUrl: "https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?w=600&h=600&fit=crop&auto=format",
+          categoryId: tennisCategory.id,
+          sizes: ["XS", "S", "M", "L", "XL"],
+          colors: ["White", "Navy", "Black", "Light Blue"],
           isActive: true,
         },
         {
-          name: "Coach Polo Shirt",
-          description: "Professional embroidered polo for coaching staff",
-          basePrice: "54.99",
-          imageUrl: "https://images.unsplash.com/photo-1586790170083-2f9ceadc732d?w=400",
-          categoryId: trainwearCategory.id,
+          name: "Tennis Court Shorts",
+          description: "Lightweight tennis shorts with built-in compression and ball pocket design. Engineered for court agility and comfort.",
+          basePrice: "44.99",
+          imageUrl: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600&h=600&fit=crop&auto=format",
+          categoryId: tennisCategory.id,
+          sizes: ["XS", "S", "M", "L", "XL"],
+          colors: ["White", "Navy", "Black"],
+          isActive: true,
+        },
+
+        // SPORTS ACCESSORIES
+        {
+          name: "Sport Water Bottle",
+          description: "Insulated stainless steel water bottle with team logo customization. Keeps drinks cold for 24 hours or hot for 12 hours.",
+          basePrice: "24.99",
+          imageUrl: "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=600&h=600&fit=crop&auto=format",
+          categoryId: accessoriesCategory.id,
+          sizes: ["One Size"],
+          colors: ["Black", "Navy", "White", "Red"],
+          isActive: true,
+        },
+        {
+          name: "Athletic Headband",
+          description: "Moisture-wicking headband with non-slip grip. Perfect for all sports and training activities.",
+          basePrice: "12.99",
+          imageUrl: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600&h=600&fit=crop&auto=format",
+          categoryId: accessoriesCategory.id,
+          sizes: ["One Size"],
+          colors: ["Black", "White", "Navy", "Red"],
+          isActive: true,
+        },
+        {
+          name: "Team Duffle Bag",
+          description: "Spacious team duffle bag with multiple compartments and custom embroidery options. Perfect for travel and equipment storage.",
+          basePrice: "89.99",
+          imageUrl: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=600&h=600&fit=crop&auto=format",
+          categoryId: accessoriesCategory.id,
+          sizes: ["One Size"],
+          colors: ["Black", "Navy", "Red", "Gray"],
+          isActive: true,
+        },
+        {
+          name: "Performance Socks Pack",
+          description: "3-pack of athletic socks with cushioned sole and arch support. Moisture-wicking fabric keeps feet dry during intense activity.",
+          basePrice: "19.99",
+          imageUrl: "https://images.unsplash.com/photo-1586790170083-2f9ceadc732d?w=600&h=600&fit=crop&auto=format",
+          categoryId: accessoriesCategory.id,
           sizes: ["S", "M", "L", "XL", "XXL"],
           colors: ["Navy", "Black", "White", "Red"],
           isActive: true,
-        },
-
-        // ELITE COLLECTION - Premium pricing
-        {
-          name: "Elite Competition Singlet",
-          description: "Pinnacle of athletic engineering featuring Arc'teryx-grade materials with Thermoregulation Pro technology. Constructed with titanium-infused compression fibers and biomechanical precision mapping for unparalleled competitive advantage.",
-          basePrice: "124.99",
-          imageUrl: "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=400",
-          categoryId: premiumCategory.id,
-          sizes: ["XS", "S", "M", "L", "XL", "XXL"],
-          colors: ["Black", "Navy", "Red"],
-          isActive: true,
-        },
-        {
-          name: "Pro Team Warm-Up Set",
-          description: "Championship-grade thermal regulation system with Nike Tech Fleece construction and adaptive climate control. Features wind-resistant outer shell with moisture-wicking interior and articulated design for unrestricted movement during pre-competition preparation.",
-          basePrice: "149.99",
-          imageUrl: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=400",
-          categoryId: premiumCategory.id,
-          sizes: ["S", "M", "L", "XL", "XXL"],
-          colors: ["Black/Gold", "Navy/Silver", "Red/White"],
-          isActive: true,
-        },
-
-        // SPORTS ACCESSORIES - Impulse buys
-        {
-          name: "Wrestling Headgear",
-          description: "Competition-approved protective headgear",
-          basePrice: "39.99",
-          imageUrl: "https://images.unsplash.com/photo-1506629905607-89fa8ac8c5ba?w=400",
-          categoryId: accessoriesCategory.id,
-          sizes: ["One Size"],
-          colors: ["Black", "Navy", "Red"],
-          isActive: true,
-        },
-        {
-          name: "Team Water Bottle",
-          description: "32oz insulated bottle with custom logo space",
-          basePrice: "24.99",
-          imageUrl: "https://images.unsplash.com/photo-1523362628745-0c100150b504?w=400",
-          categoryId: accessoriesCategory.id,
-          sizes: ["32oz"],
-          colors: ["Black", "Navy", "Red", "White"],
-          isActive: true,
-        },
-        {
-          name: "Athletic Equipment Bag",
-          description: "Large capacity gym bag with separate shoe compartment",
-          basePrice: "59.99",
-          imageUrl: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400",
-          categoryId: accessoriesCategory.id,
-          sizes: ["Large"],
-          colors: ["Black", "Navy"],
+        }
+      ]);
           isActive: true,
         },
         {
