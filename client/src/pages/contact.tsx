@@ -288,46 +288,46 @@ export default function Contact() {
           <h2 className="text-2xl font-bold text-black text-center mb-8">Other Ways to Get Support</h2>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Card className="text-center">
-              <CardContent className="p-6">
+            <Card className="text-center h-full">
+              <CardContent className="p-6 h-full flex flex-col">
                 <div className="w-12 h-12 bg-black rounded-full flex items-center justify-center mx-auto mb-4">
                   <MessageSquare className="h-6 w-6 text-white" />
                 </div>
                 <h3 className="font-semibold text-black mb-2">Live Chat</h3>
-                <p className="text-gray-600 text-sm mb-4">
+                <p className="text-gray-600 text-sm mb-4 flex-grow">
                   Get instant help from our support team during business hours.
                 </p>
-                <Button variant="outline" className="btn-secondary">
+                <Button variant="outline" className="btn-secondary mt-auto">
                   Start Chat
                 </Button>
               </CardContent>
             </Card>
 
-            <Card className="text-center">
-              <CardContent className="p-6">
+            <Card className="text-center h-full">
+              <CardContent className="p-6 h-full flex flex-col">
                 <div className="w-12 h-12 bg-black rounded-full flex items-center justify-center mx-auto mb-4">
                   <HelpCircle className="h-6 w-6 text-white" />
                 </div>
                 <h3 className="font-semibold text-black mb-2">Knowledge Base</h3>
-                <p className="text-gray-600 text-sm mb-4">
+                <p className="text-gray-600 text-sm mb-4 flex-grow">
                   Browse our comprehensive FAQ and help articles.
                 </p>
-                <Button variant="outline" className="btn-secondary">
+                <Button variant="outline" className="btn-secondary mt-auto">
                   Browse FAQ
                 </Button>
               </CardContent>
             </Card>
 
-            <Card className="text-center">
-              <CardContent className="p-6">
+            <Card className="text-center h-full">
+              <CardContent className="p-6 h-full flex flex-col">
                 <div className="w-12 h-12 bg-black rounded-full flex items-center justify-center mx-auto mb-4">
                   <Phone className="h-6 w-6 text-white" />
                 </div>
                 <h3 className="font-semibold text-black mb-2">Phone Support</h3>
-                <p className="text-gray-600 text-sm mb-4">
+                <p className="text-gray-600 text-sm mb-4 flex-grow">
                   Speak directly with our experts for complex inquiries.
                 </p>
-                <Button variant="outline" className="btn-secondary">
+                <Button variant="outline" className="btn-secondary mt-auto">
                   Call Now
                 </Button>
               </CardContent>

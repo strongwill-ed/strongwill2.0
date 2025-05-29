@@ -47,7 +47,6 @@ export default function AddToCartModal({ product, isOpen, onClose }: AddToCartMo
       size: selectedSize,
       color: selectedColor,
       customizations: JSON.stringify({}),
-      product: product,
     });
 
     toast({
