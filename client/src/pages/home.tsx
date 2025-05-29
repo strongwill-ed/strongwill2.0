@@ -11,7 +11,7 @@ import year12LeaversImage from "@assets/YEAR-12-FINAL-5.jpg";
 import sportsUniformsImage from "@assets/Sports-Uniforms.jpg";
 import gymTrainingImage from "@assets/Gymwear-Training.jpg";
 
-// Dynamic text rotation component
+// Dynamic text rotation component with scroll-up animation
 function DynamicText() {
   const words = [
     "Athletic",
@@ -25,28 +25,39 @@ function DynamicText() {
   ];
   
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
-  const [isVisible, setIsVisible] = useState(true);
+  const [nextWordIndex, setNextWordIndex] = useState(1);
+  const [isAnimating, setIsAnimating] = useState(false);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setIsVisible(false);
+      setIsAnimating(true);
       
       setTimeout(() => {
-        setCurrentWordIndex((prev) => (prev + 1) % words.length);
-        setIsVisible(true);
-      }, 300);
+        setCurrentWordIndex(nextWordIndex);
+        setNextWordIndex((nextWordIndex + 1) % words.length);
+        setIsAnimating(false);
+      }, 600);
     }, 2500);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [nextWordIndex]);
 
   return (
-    <span 
-      className={`transition-all duration-300 ${
-        isVisible ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform -translate-y-2'
-      }`}
-    >
-      {words[currentWordIndex]}
+    <span className="relative inline-block overflow-hidden h-[1.2em]">
+      <span 
+        className={`absolute inset-0 transition-transform duration-600 ease-in-out ${
+          isAnimating ? 'transform -translate-y-full' : 'transform translate-y-0'
+        }`}
+      >
+        {words[currentWordIndex]}
+      </span>
+      <span 
+        className={`absolute inset-0 transition-transform duration-600 ease-in-out ${
+          isAnimating ? 'transform translate-y-0' : 'transform translate-y-full'
+        }`}
+      >
+        {words[nextWordIndex]}
+      </span>
     </span>
   );
 }
