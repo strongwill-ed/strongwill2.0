@@ -531,10 +531,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/group-orders", async (req, res) => {
     try {
       // Basic validation and processing
-      const { name, productId, deadline, minimumQuantity, organizerUserId, description, orderType } = req.body;
+      const { name, productId, deadline, minimumQuantity, organizerUserId, organizerEmail, description, orderType } = req.body;
       
-      if (!name || !deadline || !organizerUserId) {
+      if (!name || !deadline || !organizerEmail) {
         return res.status(400).json({ message: "Missing required fields" });
+      }
+      
+      // Check if user with this email already exists
+      const existingUser = await storage.getUserByEmail(organizerEmail);
+      
+      if (existingUser && !organizerUserId) {
+        // User exists but not logged in - suggest login
+        return res.status(409).json({ 
+          message: "An account with this email already exists. Please login to continue.",
+          shouldLogin: true,
+          email: organizerEmail
+        });
+      }
+      
+      let finalOrganizerUserId = organizerUserId;
+      
+      // If no user ID provided but email doesn't exist, we'll create order with email only
+      // The user can create an account later
+      if (!finalOrganizerUserId && !existingUser) {
+        finalOrganizerUserId = null;
+      } else if (existingUser) {
+        finalOrganizerUserId = existingUser.id;
       }
       
       const groupOrderData = {
@@ -542,14 +564,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         productId: productId ? parseInt(productId) : null,
         deadline: new Date(deadline),
         minimumQuantity: minimumQuantity || 10,
-        organizerUserId: parseInt(organizerUserId),
+        organizerUserId: finalOrganizerUserId,
+        organizerEmail,
         description: description || null,
         orderType: orderType || "custom",
         status: "active",
         currentQuantity: 0,
         paymentMode: "individual",
         totalEstimate: "0.00",
-        organizerEmail: null,
         shareableLink: null,
         designId: null
       } as InsertGroupOrder;

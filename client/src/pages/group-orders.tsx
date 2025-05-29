@@ -25,7 +25,8 @@ const createGroupOrderSchema = z.object({
   deadline: z.string().min(1, "Deadline is required"),
   minimumQuantity: z.number().min(1, "Minimum quantity must be at least 1"),
   description: z.string().optional(),
-  organizerUserId: z.number(),
+  organizerEmail: z.string().email("Valid email is required"),
+  organizerUserId: z.number().optional(),
 });
 
 const joinGroupOrderSchema = insertGroupOrderItemSchema.omit({ groupOrderId: true }).extend({
@@ -72,7 +73,8 @@ export default function GroupOrders() {
       deadline: "",
       minimumQuantity: 10,
       description: "",
-      organizerUserId: user?.id || 1,
+      organizerEmail: user?.email || "",
+      organizerUserId: user?.id,
     },
   });
 
@@ -109,7 +111,26 @@ export default function GroupOrders() {
         paymentMode: "individual",
         totalEstimate: "0.00",
       };
-      return apiRequest("POST", "/api/group-orders", groupOrderData);
+      
+      const response = await fetch("/api/group-orders", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(groupOrderData),
+      });
+      
+      const result = await response.json();
+      
+      if (!response.ok) {
+        if (response.status === 409 && result.shouldLogin) {
+          // Email exists, suggest login
+          throw new Error(`ACCOUNT_EXISTS:${result.email}`);
+        }
+        throw new Error(result.message || "Failed to create group order");
+      }
+      
+      return result;
     },
     onSuccess: () => {
       toast({
@@ -120,12 +141,25 @@ export default function GroupOrders() {
       setIsCreateDialogOpen(false);
       createGroupOrderForm.reset();
     },
-    onError: () => {
-      toast({
-        title: "Error",
-        description: "Failed to create group order",
-        variant: "destructive",
-      });
+    onError: (error: Error) => {
+      if (error.message.startsWith("ACCOUNT_EXISTS:")) {
+        const email = error.message.split(":")[1];
+        toast({
+          title: "Account Already Exists",
+          description: `An account with email ${email} already exists. Please login to continue.`,
+          variant: "destructive",
+        });
+        // Redirect to login after showing the toast
+        setTimeout(() => {
+          window.location.href = `/login?email=${email}&redirect=/group-orders`;
+        }, 2000);
+      } else {
+        toast({
+          title: "Error",
+          description: error.message || "Failed to create group order",
+          variant: "destructive",
+        });
+      }
     },
   });
 
@@ -324,6 +358,23 @@ export default function GroupOrders() {
                           <FormControl>
                             <Input placeholder="Team Eagles Wrestling 2025" {...field} />
                           </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={createGroupOrderForm.control}
+                      name="organizerEmail"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Your Email Address</FormLabel>
+                          <FormControl>
+                            <Input type="email" placeholder="organizer@example.com" {...field} />
+                          </FormControl>
+                          <FormDescription>
+                            {user ? "This will be used for order management" : "If you have an existing account, you'll be prompted to login"}
+                          </FormDescription>
                           <FormMessage />
                         </FormItem>
                       )}

@@ -24,14 +24,15 @@ export default function Login() {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   
-  // Get redirect parameter from URL
+  // Get redirect and email parameters from URL
   const urlParams = new URLSearchParams(window.location.search);
   const redirectTo = urlParams.get('redirect') || '/sponsorship';
+  const emailParam = urlParams.get('email') || '';
 
   const form = useForm<LoginForm>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      username: "",
+      username: emailParam,
       password: "",
     },
   });
