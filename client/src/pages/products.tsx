@@ -5,11 +5,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 import ProductCard from "@/components/product/product-card";
 import AddToCartModal from "@/components/product/add-to-cart-modal";
 import SEOHead from "@/components/seo/seo-head";
 import type { Product, ProductCategory } from "@shared/schema";
-import { Search, Filter } from "lucide-react";
+import { Search, Filter, Grid3X3, List, SlidersHorizontal } from "lucide-react";
 
 export default function Products() {
   const [, setLocation] = useLocation();
@@ -18,6 +19,9 @@ export default function Products() {
   const [sortBy, setSortBy] = useState("name");
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isCartModalOpen, setIsCartModalOpen] = useState(false);
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 200]);
+  const [showFilters, setShowFilters] = useState(false);
 
   // Get category from URL params
   const urlParams = new URLSearchParams(window.location.search);
@@ -52,7 +56,8 @@ export default function Products() {
       const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                            (product.description && product.description.toLowerCase().includes(searchQuery.toLowerCase()));
       const matchesCategory = selectedCategory === "all" || product.categoryId?.toString() === selectedCategory;
-      return matchesSearch && matchesCategory;
+      const matchesPrice = parseFloat(product.basePrice) >= priceRange[0] && parseFloat(product.basePrice) <= priceRange[1];
+      return matchesSearch && matchesCategory && matchesPrice;
     })
     .sort((a, b) => {
       switch (sortBy) {
@@ -60,6 +65,12 @@ export default function Products() {
           return parseFloat(a.basePrice) - parseFloat(b.basePrice);
         case "price-high":
           return parseFloat(b.basePrice) - parseFloat(a.basePrice);
+        case "newest":
+          return b.id - a.id; // Assuming higher ID = newer
+        case "rating":
+          return Math.random() - 0.5; // Mock rating sort
+        case "popular":
+          return Math.random() - 0.5; // Mock popularity sort
         case "name":
         default:
           return a.name.localeCompare(b.name);
@@ -119,9 +130,63 @@ export default function Products() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Filters */}
+        {/* Enhanced Header with Results Count and View Controls */}
+        <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <h2 className="text-lg font-semibold text-gray-900">
+                {filteredProducts.length} Products
+              </h2>
+              {searchQuery && (
+                <Badge variant="secondary" className="text-sm">
+                  Search: "{searchQuery}"
+                </Badge>
+              )}
+              {selectedCategory !== "all" && (
+                <Badge variant="secondary" className="text-sm">
+                  {categories.find(cat => cat.id.toString() === selectedCategory)?.name}
+                </Badge>
+              )}
+            </div>
+            
+            <div className="flex items-center gap-3">
+              {/* View Mode Toggle */}
+              <div className="flex bg-gray-100 rounded-lg p-1">
+                <Button
+                  variant={viewMode === "grid" ? "default" : "ghost"}
+                  size="sm"
+                  onClick={() => setViewMode("grid")}
+                  className="h-8 px-3"
+                >
+                  <Grid3X3 className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant={viewMode === "list" ? "default" : "ghost"}
+                  size="sm"
+                  onClick={() => setViewMode("list")}
+                  className="h-8 px-3"
+                >
+                  <List className="h-4 w-4" />
+                </Button>
+              </div>
+              
+              {/* Advanced Filters Toggle */}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowFilters(!showFilters)}
+                className="flex items-center gap-2"
+              >
+                <SlidersHorizontal className="h-4 w-4" />
+                Filters
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        {/* Main Filters */}
         <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
             {/* Search */}
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
