@@ -17,7 +17,7 @@ import { insertGroupOrderSchema, insertGroupOrderItemSchema } from "@shared/sche
 import type { GroupOrder, Product, GroupOrderItem } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
 import { z } from "zod";
-import { Plus, Users, Calendar, Package, Share2, Copy, Edit, Trash2, Settings } from "lucide-react";
+import { Plus, Users, Calendar, Package, Share2, Copy, Edit, Trash2, Settings, ShoppingCart } from "lucide-react";
 import { format } from "date-fns";
 
 const createGroupOrderSchema = z.object({
@@ -428,18 +428,32 @@ export default function GroupOrders() {
                         {user && groupOrder.organizerUserId === user.id ? (
                           // Owner controls
                           <>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => {
-                                setSelectedGroupOrder(groupOrder);
-                                setIsManageDialogOpen(true);
-                              }}
-                              className="flex-1"
-                            >
-                              <Settings className="h-4 w-4 mr-1" />
-                              Manage
-                            </Button>
+                            {(groupOrder.currentQuantity || 0) >= (groupOrder.minimumQuantity || 0) && groupOrder.status === "active" ? (
+                              <Button
+                                size="sm"
+                                onClick={() => {
+                                  // Redirect to checkout for the group order
+                                  window.location.href = `/checkout?groupOrderId=${groupOrder.id}`;
+                                }}
+                                className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+                              >
+                                <ShoppingCart className="h-4 w-4 mr-1" />
+                                Checkout Group Order
+                              </Button>
+                            ) : (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => {
+                                  setSelectedGroupOrder(groupOrder);
+                                  setIsManageDialogOpen(true);
+                                }}
+                                className="flex-1"
+                              >
+                                <Settings className="h-4 w-4 mr-1" />
+                                Manage
+                              </Button>
+                            )}
                             <Button
                               variant="outline"
                               size="sm"
