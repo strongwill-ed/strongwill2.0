@@ -406,7 +406,28 @@ export default function DesignTool() {
 
                     {product && (
                       <div className="space-y-4">
-                        <Label>Order Configuration</Label>
+                        <div className="flex justify-between items-center">
+                          <Label>Order Configuration</Label>
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            onClick={() => {
+                              const defaultSize = product.sizes?.[0];
+                              const defaultColor = product.colors?.[0];
+                              if (defaultSize && defaultColor) {
+                                updateOrderQuantity(defaultSize, defaultColor, 1);
+                              }
+                            }}
+                            className="text-xs h-7"
+                          >
+                            Quick Add
+                          </Button>
+                        </div>
+                        <div className="p-3 bg-blue-50 border border-blue-200 rounded-md">
+                          <p className="text-xs text-blue-800">
+                            Enter quantities for each size/color combination you want to order. Use "Quick Add" to add one item quickly.
+                          </p>
+                        </div>
                         <div className="space-y-3 max-h-60 overflow-y-auto">
                           {product.sizes?.map((size) => (
                             <div key={size} className="space-y-2">
@@ -422,6 +443,7 @@ export default function DesignTool() {
                                       value={orderItems[`${size}-${color}`] || 0}
                                       onChange={(e) => updateOrderQuantity(size, color, parseInt(e.target.value) || 0)}
                                       className="w-16 h-8 text-xs"
+                                      placeholder="0"
                                     />
                                   </div>
                                 ))}
@@ -429,7 +451,7 @@ export default function DesignTool() {
                             </div>
                           ))}
                         </div>
-                        <div className="text-sm text-gray-600">
+                        <div className="text-sm text-gray-600 font-medium">
                           Total items: {getTotalItems()}
                         </div>
                         
