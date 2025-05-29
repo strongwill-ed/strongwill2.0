@@ -17,6 +17,17 @@ import { insertSeekerProfileSchema } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
 import { z } from "zod";
 
+const COUNTRIES = [
+  "Australia", "New Zealand", "United Kingdom", "Canada", "Germany", "Netherlands",
+  "United States", "France", "Italy", "Spain", "Japan", "South Korea", "China",
+  "Brazil", "Argentina", "Mexico", "South Africa", "India", "Sweden", "Norway",
+  "Denmark", "Finland", "Belgium", "Austria", "Switzerland", "Ireland", "Portugal",
+  "Poland", "Czech Republic", "Hungary", "Greece", "Turkey", "Russia", "Ukraine",
+  "Israel", "Egypt", "Morocco", "Nigeria", "Kenya", "Ghana", "Thailand", "Vietnam",
+  "Singapore", "Malaysia", "Philippines", "Indonesia", "Pakistan", "Bangladesh",
+  "Sri Lanka", "Nepal", "Myanmar", "Cambodia", "Laos", "Mongolia", "Kazakhstan"
+].sort();
+
 const formSchema = insertSeekerProfileSchema.extend({
   fundingGoal: z.string().min(1, "Funding goal is required"),
   isAnonymous: z.boolean().default(false),
@@ -70,6 +81,7 @@ export default function CreateSeekerProfile() {
       organizationType: "",
       sportType: "",
       location: "",
+      country: "",
       contactName: "",
       contactPhone: "",
       description: "",
@@ -235,8 +247,33 @@ export default function CreateSeekerProfile() {
                       <FormItem>
                         <FormLabel>Location</FormLabel>
                         <FormControl>
-                          <Input placeholder="City, State/Province, Country" {...field} />
+                          <Input placeholder="City, State/Province" {...field} />
                         </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="country"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Country *</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select your country" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {COUNTRIES.map((country) => (
+                              <SelectItem key={country} value={country}>
+                                {country}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                         <FormMessage />
                       </FormItem>
                     )}

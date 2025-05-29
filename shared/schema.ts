@@ -135,6 +135,7 @@ export const seekerProfiles = pgTable("seeker_profiles", {
   organizationType: text("organization_type").notNull(), // school, club, team
   sportType: text("sport_type").notNull(),
   location: text("location"),
+  country: text("country"),
   contactName: text("contact_name").notNull(),
   contactPhone: text("contact_phone"),
   description: text("description"),
@@ -160,6 +161,8 @@ export const sponsorProfiles = pgTable("sponsor_profiles", {
   targetAudience: text("target_audience"),
   logoUrl: text("logo_url"),
   website: text("website"),
+  location: text("location"),
+  country: text("country"),
   socialMedia: json("social_media"), // { facebook, instagram, twitter }
   preferredSports: text("preferred_sports").array(),
   isActive: boolean("is_active").default(true),
