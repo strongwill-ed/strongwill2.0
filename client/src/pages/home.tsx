@@ -373,7 +373,7 @@ export default function Home() {
               {
                 title: "Global Shipping",
                 description: "Fast, reliable shipping worldwide with tracking and insurance included on all orders.",
-                icon: "🚚"
+                icon: "🚀"
               }
             ].map((feature, index) => (
               <Card key={index} className="p-6 text-center card-hover">

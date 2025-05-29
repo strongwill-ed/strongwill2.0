@@ -6,7 +6,7 @@ import { Separator } from "@/components/ui/separator";
 import { useCart } from "@/hooks/use-cart";
 import { useCurrency } from "@/lib/currency";
 import { useLocation } from "wouter";
-import { Minus, Plus, X, ShoppingBag, Truck, Shield, ArrowRight } from "lucide-react";
+import { Minus, Plus, X, ShoppingBag, Rocket, Shield, ArrowRight } from "lucide-react";
 
 export default function CartSidebar() {
   const { cartItems, isCartOpen, toggleCart, removeFromCart, updateQuantity, getCartTotal } = useCart();
@@ -69,7 +69,7 @@ export default function CartSidebar() {
             <span className="text-sm text-green-700">Secure Checkout</span>
           </div>
           <div className="flex items-center gap-2">
-            <Truck className="w-4 h-4 text-green-600" />
+            <Rocket className="w-4 h-4 text-green-600" />
             <span className="text-sm text-green-700">Fast Shipping</span>
           </div>
         </div>
