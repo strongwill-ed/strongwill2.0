@@ -14,22 +14,8 @@ import gymTrainingImage from "@assets/Gymwear-Training.jpg";
 
 // Dynamic text rotation component
 function DynamicText() {
-  const words = [
-    "Athletic",
-    "Team",
-    "Graduation",
-    "Club",
-    "Training",
-    "Squad",
-    "Performance",
-    "Competition",
-    "Class",
-    "Custom",
-    "Class",
-    "Celebration",
-    "Winners",
-    "League"
-  ];
+  const { t } = useTranslation();
+  const words = t('home.dynamicWords') as string[];
   
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const [isVisible, setIsVisible] = useState(true);
@@ -45,7 +31,7 @@ function DynamicText() {
     }, 2500);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [words.length]);
 
   return (
     <span 
