@@ -8,7 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/components/auth/auth-provider";
 import { apiRequest } from "@/lib/queryClient";
 import type { SeekerProfile, SponsorProfile } from "@shared/schema";
-import { ArrowLeft, Users, Globe, Phone, Mail, DollarSign, Trash2 } from "lucide-react";
+import { ArrowLeft, Users, Globe, Phone, Mail, DollarSign, Trash2, Share2, Copy } from "lucide-react";
 import { useState } from "react";
 
 export default function TeamProfile() {
@@ -18,6 +18,7 @@ export default function TeamProfile() {
   const queryClient = useQueryClient();
   const { user } = useAuth();
   const [showSponsorForm, setShowSponsorForm] = useState(false);
+  const [showShareOptions, setShowShareOptions] = useState(false);
   const [sponsorshipMessage, setSponsorshipMessage] = useState("");
 
   const profileId = params?.id ? parseInt(params.id) : null;
@@ -169,7 +170,7 @@ export default function TeamProfile() {
                     <span className="text-gray-600">{profile.organizationType}</span>
                   </div>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-2 flex-wrap">
                   {canSponsor && (
                     <Button
                       onClick={() => setShowSponsorForm(true)}
@@ -177,6 +178,16 @@ export default function TeamProfile() {
                     >
                       <DollarSign className="h-4 w-4 mr-2" />
                       Offer Partnership
+                    </Button>
+                  )}
+                  {isOwnProfile && (
+                    <Button
+                      variant="outline"
+                      onClick={() => setShowShareOptions(true)}
+                      className="border-blue-600 text-blue-600 hover:bg-blue-50"
+                    >
+                      <Share2 className="h-4 w-4 mr-2" />
+                      Share Profile
                     </Button>
                   )}
                   {canDelete && (
