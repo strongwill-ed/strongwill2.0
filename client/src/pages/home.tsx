@@ -79,9 +79,9 @@ export default function Home() {
             </p>
           </div>
           
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Left Column - Sports Uniforms and Gym & Training */}
-            <div className="space-y-4">
+            <div className="space-y-6">
               {/* Sports Uniforms */}
               <Card 
                 className="card-hover cursor-pointer overflow-hidden"
@@ -105,11 +105,11 @@ export default function Home() {
                 className="card-hover cursor-pointer overflow-hidden"
                 onClick={() => setLocation("/products?category=gym")}
               >
-                <div className="aspect-[2/1] overflow-hidden">
+                <div className="aspect-[2/1] overflow-hidden bg-gray-100">
                   <img 
                     src={gymTrainingImage}
                     alt="Gym & Training" 
-                    className="w-full h-full object-contain hover:scale-105 transition-transform duration-300"
+                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
                   />
                 </div>
                 <CardContent className="p-6">
