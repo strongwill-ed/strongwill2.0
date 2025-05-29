@@ -12,23 +12,39 @@ import year12LeaversImage from "@assets/YEAR-12-FINAL-5.jpg";
 import sportsUniformsImage from "@assets/Sports-Uniforms.jpg";
 import gymTrainingImage from "@assets/Gymwear-Training.jpg";
 
-// Dynamic text rotation component
+/**
+ * Dynamic Text Rotation Component
+ * 
+ * Displays rotating words in the hero section to showcase different
+ * types of apparel and target audiences. Cycles through 14 predefined
+ * words every 2.5 seconds with smooth fade transitions.
+ * 
+ * Features:
+ * - Fade in/out animation with 300ms transition
+ * - Randomized word order for variety
+ * - No duplicate words in rotation
+ * - Responsive to viewport changes
+ * 
+ * @returns JSX element with animated text
+ */
 function DynamicText() {
+  // Curated list of words representing different sports categories and audiences
+  // Words are strategically chosen to appeal to various customer segments
   const words = [
-    "Champions",
-    "Athletic",
-    "Performance",
-    "Team",
-    "Custom",
-    "Training",
-    "Competition",
-    "Squad",
-    "League",
-    "Class",
-    "Winners",
-    "Graduation",
-    "Club",
-    "Celebration"
+    "Champions",    // Competitive athletes
+    "Athletic",     // General sports
+    "Performance",  // High-performance gear
+    "Team",         // Team sports
+    "Custom",       // Personalization focus
+    "Training",     // Practice/workout gear
+    "Competition",  // Tournament apparel
+    "Squad",        // Group/team identity
+    "League",       // Organized sports
+    "Class",        // School/graduation
+    "Winners",      // Achievement-focused
+    "Graduation",   // Educational milestones
+    "Club",         // Community organizations
+    "Celebration"   // Special events
   ];
   
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
