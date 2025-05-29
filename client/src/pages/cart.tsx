@@ -19,7 +19,7 @@ export default function Cart() {
   const calculateSubtotal = () => {
     return cartItems.reduce((total, item) => {
       const price = parseFloat(item.product?.basePrice || "0");
-      return total + (price * item.quantity);
+      return total + (price * (item.quantity || 1));
     }, 0);
   };
 
@@ -31,7 +31,7 @@ export default function Cart() {
   };
 
   const subtotal = calculateSubtotal();
-  const totalQuantity = cartItems.reduce((total, item) => total + item.quantity, 0);
+  const totalQuantity = cartItems.reduce((total, item) => total + (item.quantity || 1), 0);
   const bulkDiscount = calculateBulkDiscount(subtotal, totalQuantity);
   const shipping = 15.00; // Flat rate shipping
   const total = subtotal - bulkDiscount + shipping;

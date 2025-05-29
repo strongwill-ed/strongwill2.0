@@ -48,8 +48,8 @@ export default function Checkout() {
     defaultValues: {
       sameAsBilling: true,
       paymentMethod: "card",
-      country: "US",
-      shippingCountry: "US",
+      country: "AU",
+      shippingCountry: "AU",
     },
   });
 
@@ -58,13 +58,44 @@ export default function Checkout() {
   const calculateOrderSummary = () => {
     const subtotal = cartItems.reduce((total, item) => {
       const price = parseFloat(item.product?.basePrice || "0");
-      return total + (price * item.quantity);
+      return total + (price * (item.quantity || 1));
     }, 0);
 
-    const totalQuantity = cartItems.reduce((total, item) => total + item.quantity, 0);
+    const totalQuantity = cartItems.reduce((total, item) => total + (item.quantity || 1), 0);
     const bulkDiscount = totalQuantity >= 10 ? subtotal * 0.1 : 0;
-    const shipping = 15.00;
-    const tax = (subtotal - bulkDiscount) * 0.08; // 8% tax
+    
+    // Dynamic shipping based on country
+    const selectedCountry = form.watch("country");
+    const getShippingRate = (country: string) => {
+      // Priority markets - lower shipping rates
+      const priorityMarkets = ["AU", "NZ", "GB", "CA", "DE", "NL"];
+      if (priorityMarkets.includes(country)) {
+        return 12.00;
+      }
+      
+      // EU countries
+      const euCountries = ["AT", "BE", "DK", "FI", "FR", "IE", "IT", "LU", "ES", "SE", "PT", "GR", "CY", "MT"];
+      if (euCountries.includes(country)) {
+        return 18.00;
+      }
+      
+      // North America
+      if (["US", "MX"].includes(country)) {
+        return 15.00;
+      }
+      
+      // Asia Pacific
+      const apacCountries = ["JP", "SG", "HK", "KR", "TH", "MY", "PH", "ID", "VN", "CN", "TW"];
+      if (apacCountries.includes(country)) {
+        return 25.00;
+      }
+      
+      // Rest of world
+      return 35.00;
+    };
+
+    const shipping = getShippingRate(selectedCountry);
+    const tax = (subtotal - bulkDiscount) * 0.1; // 10% GST for AU/NZ, VAT for EU
     const total = subtotal - bulkDiscount + shipping + tax;
 
     return { subtotal, bulkDiscount, shipping, tax, total, totalQuantity };
@@ -339,10 +370,77 @@ export default function Checkout() {
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent>
-                                <SelectItem value="US">United States</SelectItem>
-                                <SelectItem value="CA">Canada</SelectItem>
-                                <SelectItem value="AU">Australia</SelectItem>
-                                <SelectItem value="UK">United Kingdom</SelectItem>
+                                {/* Priority Markets */}
+                                <SelectItem value="AU">🇦🇺 Australia</SelectItem>
+                                <SelectItem value="NZ">🇳🇿 New Zealand</SelectItem>
+                                <SelectItem value="GB">🇬🇧 United Kingdom</SelectItem>
+                                <SelectItem value="CA">🇨🇦 Canada</SelectItem>
+                                <SelectItem value="DE">🇩🇪 Germany</SelectItem>
+                                <SelectItem value="NL">🇳🇱 Netherlands</SelectItem>
+                                
+                                {/* Other Countries */}
+                                <SelectItem value="US">🇺🇸 United States</SelectItem>
+                                <SelectItem value="AT">🇦🇹 Austria</SelectItem>
+                                <SelectItem value="BE">🇧🇪 Belgium</SelectItem>
+                                <SelectItem value="DK">🇩🇰 Denmark</SelectItem>
+                                <SelectItem value="FI">🇫🇮 Finland</SelectItem>
+                                <SelectItem value="FR">🇫🇷 France</SelectItem>
+                                <SelectItem value="IE">🇮🇪 Ireland</SelectItem>
+                                <SelectItem value="IT">🇮🇹 Italy</SelectItem>
+                                <SelectItem value="JP">🇯🇵 Japan</SelectItem>
+                                <SelectItem value="NO">🇳🇴 Norway</SelectItem>
+                                <SelectItem value="ES">🇪🇸 Spain</SelectItem>
+                                <SelectItem value="SE">🇸🇪 Sweden</SelectItem>
+                                <SelectItem value="CH">🇨🇭 Switzerland</SelectItem>
+                                <SelectItem value="SG">🇸🇬 Singapore</SelectItem>
+                                <SelectItem value="HK">🇭🇰 Hong Kong</SelectItem>
+                                <SelectItem value="KR">🇰🇷 South Korea</SelectItem>
+                                <SelectItem value="MX">🇲🇽 Mexico</SelectItem>
+                                <SelectItem value="BR">🇧🇷 Brazil</SelectItem>
+                                <SelectItem value="AR">🇦🇷 Argentina</SelectItem>
+                                <SelectItem value="CL">🇨🇱 Chile</SelectItem>
+                                <SelectItem value="ZA">🇿🇦 South Africa</SelectItem>
+                                <SelectItem value="IN">🇮🇳 India</SelectItem>
+                                <SelectItem value="TH">🇹🇭 Thailand</SelectItem>
+                                <SelectItem value="MY">🇲🇾 Malaysia</SelectItem>
+                                <SelectItem value="PH">🇵🇭 Philippines</SelectItem>
+                                <SelectItem value="ID">🇮🇩 Indonesia</SelectItem>
+                                <SelectItem value="VN">🇻🇳 Vietnam</SelectItem>
+                                <SelectItem value="CN">🇨🇳 China</SelectItem>
+                                <SelectItem value="TW">🇹🇼 Taiwan</SelectItem>
+                                <SelectItem value="AE">🇦🇪 United Arab Emirates</SelectItem>
+                                <SelectItem value="SA">🇸🇦 Saudi Arabia</SelectItem>
+                                <SelectItem value="IL">🇮🇱 Israel</SelectItem>
+                                <SelectItem value="TR">🇹🇷 Turkey</SelectItem>
+                                <SelectItem value="EG">🇪🇬 Egypt</SelectItem>
+                                <SelectItem value="NG">🇳🇬 Nigeria</SelectItem>
+                                <SelectItem value="KE">🇰🇪 Kenya</SelectItem>
+                                <SelectItem value="GH">🇬🇭 Ghana</SelectItem>
+                                <SelectItem value="MA">🇲🇦 Morocco</SelectItem>
+                                <SelectItem value="TN">🇹🇳 Tunisia</SelectItem>
+                                <SelectItem value="PL">🇵🇱 Poland</SelectItem>
+                                <SelectItem value="CZ">🇨🇿 Czech Republic</SelectItem>
+                                <SelectItem value="HU">🇭🇺 Hungary</SelectItem>
+                                <SelectItem value="SK">🇸🇰 Slovakia</SelectItem>
+                                <SelectItem value="SI">🇸🇮 Slovenia</SelectItem>
+                                <SelectItem value="HR">🇭🇷 Croatia</SelectItem>
+                                <SelectItem value="RS">🇷🇸 Serbia</SelectItem>
+                                <SelectItem value="BG">🇧🇬 Bulgaria</SelectItem>
+                                <SelectItem value="RO">🇷🇴 Romania</SelectItem>
+                                <SelectItem value="LT">🇱🇹 Lithuania</SelectItem>
+                                <SelectItem value="LV">🇱🇻 Latvia</SelectItem>
+                                <SelectItem value="EE">🇪🇪 Estonia</SelectItem>
+                                <SelectItem value="GR">🇬🇷 Greece</SelectItem>
+                                <SelectItem value="PT">🇵🇹 Portugal</SelectItem>
+                                <SelectItem value="MT">🇲🇹 Malta</SelectItem>
+                                <SelectItem value="CY">🇨🇾 Cyprus</SelectItem>
+                                <SelectItem value="IS">🇮🇸 Iceland</SelectItem>
+                                <SelectItem value="LU">🇱🇺 Luxembourg</SelectItem>
+                                <SelectItem value="LI">🇱🇮 Liechtenstein</SelectItem>
+                                <SelectItem value="MC">🇲🇨 Monaco</SelectItem>
+                                <SelectItem value="SM">🇸🇲 San Marino</SelectItem>
+                                <SelectItem value="VA">🇻🇦 Vatican City</SelectItem>
+                                <SelectItem value="AD">🇦🇩 Andorra</SelectItem>
                               </SelectContent>
                             </Select>
                             <FormMessage />
