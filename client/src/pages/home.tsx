@@ -35,10 +35,9 @@ function DynamicText() {
 
   return (
     <span 
-      className={`inline-block transition-all duration-300 ${
+      className={`transition-all duration-300 ${
         isVisible ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform -translate-y-2'
       }`}
-      style={{ minWidth: '280px', textAlign: 'center' }}
     >
       {words[currentWordIndex]}
     </span>
@@ -71,8 +70,8 @@ export default function Home() {
         {/* Hero Content */}
         <div className="relative z-10 text-center text-white px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto">
           <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold mb-6 leading-tight tracking-tight" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.8)' }}>
-            {t('home.heroTitle')} <span className="italic font-black">Perfect</span><br />
-            <DynamicText /> {t('home.apparel')}
+            <div>{t('home.heroTitle')} <span className="italic font-black">Perfect</span></div>
+            <div><DynamicText /> {t('home.apparel')}</div>
           </h1>
           <p className="text-xl md:text-2xl mb-12 max-w-3xl mx-auto font-light leading-relaxed">
             {t('home.heroSubtitle')}
