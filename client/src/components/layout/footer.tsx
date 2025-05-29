@@ -1,7 +1,7 @@
 import { Link } from "wouter";
 import { NewsletterSubscription } from "@/components/newsletter/newsletter-subscription";
 import { Facebook, Instagram, Linkedin } from "lucide-react";
-import { SiTiktok } from "react-icons/si";
+import { SiTiktok, SiOnlyfans } from "react-icons/si";
 
 export function Footer() {
   return (
@@ -53,6 +53,15 @@ export function Footer() {
                 aria-label="Follow us on LinkedIn"
               >
                 <Linkedin className="h-5 w-5" />
+              </a>
+              <a
+                href="https://onlyfans.com/strongwillsports"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-300 hover:text-white transition-colors"
+                aria-label="Follow us on OnlyFans"
+              >
+                <SiOnlyfans className="h-5 w-5" />
               </a>
             </div>
           </div>
