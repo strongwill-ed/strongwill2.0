@@ -138,29 +138,47 @@ export default function GroupOrders() {
         title: "Success",
         description: "Member removed from group order",
       });
+      // Refresh all group orders and the specific group order details
       queryClient.invalidateQueries({ queryKey: ["/api/group-orders"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/group-orders", selectedGroupOrder?.id] });
+      if (selectedGroupOrder) {
+        queryClient.invalidateQueries({ queryKey: [`/api/group-orders/${selectedGroupOrder.id}`] });
+      }
     },
-    onError: () => {
+    onError: (error: any) => {
       toast({
         title: "Error",
-        description: "Failed to remove member from group order",
+        description: error?.message || "Failed to remove member from group order",
         variant: "destructive",
       });
     },
   });
 
-  const onCreateSubmit = (data: z.infer<typeof createGroupOrderSchema>) => {
-    // Always redirect to design tool for custom design products
-    const params = new URLSearchParams({
-      groupOrder: 'true',
-      name: data.name,
-      deadline: data.deadline,
-      minimumQuantity: data.minimumQuantity.toString(),
-      description: data.description || '',
-      organizerUserId: data.organizerUserId.toString()
-    });
-    window.location.href = `/design-tool?${params.toString()}`;
+  const onCreateSubmit = async (data: z.infer<typeof createGroupOrderSchema>) => {
+    try {
+      // Create the group order first
+      const response = await apiRequest("POST", "/api/group-orders", data);
+      const newGroupOrder = await response.json();
+      
+      // Then redirect to design tool with the new group order ID
+      const params = new URLSearchParams({
+        groupOrderId: newGroupOrder.id.toString(),
+        groupOrderName: data.name,
+        returnTo: 'group-orders'
+      });
+      
+      toast({
+        title: "Group Order Created",
+        description: "Redirecting to design tool to create your design...",
+      });
+      
+      window.location.href = `/design-tool?${params.toString()}`;
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to create group order",
+        variant: "destructive",
+      });
+    }
   };
 
   const onJoinSubmit = (data: z.infer<typeof joinGroupOrderSchema>) => {
