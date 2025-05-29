@@ -155,62 +155,159 @@ export const translations = {
     }
   },
 
-  es: {
+  de: {
     // Navigation
     nav: {
-      home: "Inicio",
-      products: "Productos",
-      design: "Diseño",
-      groupOrders: "Pedidos Grupales",
-      sponsorship: "Patrocinio",
-      about: "Acerca de",
-      contact: "Contacto",
-      cart: "Carrito",
-      login: "Iniciar Sesión",
-      signup: "Registrarse",
-      logout: "Cerrar Sesión",
+      home: "Startseite",
+      products: "Produkte",
+      design: "Design",
+      groupOrders: "Gruppenbestellungen",
+      sponsorship: "Sponsoring",
+      about: "Über uns",
+      contact: "Kontakt",
+      cart: "Warenkorb",
+      login: "Anmelden",
+      signup: "Registrieren",
+      logout: "Abmelden",
       admin: "Admin"
     },
-
+    
     // Common
     common: {
-      loading: "Cargando...",
-      search: "Buscar",
-      filter: "Filtrar",
-      clear: "Limpiar",
-      save: "Guardar",
-      cancel: "Cancelar",
-      edit: "Editar",
-      delete: "Eliminar",
-      add: "Agregar",
-      remove: "Quitar",
-      price: "Precio",
-      quantity: "Cantidad",
-      total: "Total",
-      subtotal: "Subtotal",
-      continue: "Continuar",
-      back: "Atrás",
-      next: "Siguiente",
-      finish: "Finalizar"
+      loading: "Lädt...",
+      search: "Suchen",
+      filter: "Filter",
+      clear: "Löschen",
+      save: "Speichern",
+      cancel: "Abbrechen",
+      edit: "Bearbeiten",
+      delete: "Löschen",
+      add: "Hinzufügen",
+      remove: "Entfernen",
+      price: "Preis",
+      quantity: "Menge",
+      total: "Gesamt",
+      subtotal: "Zwischensumme",
+      continue: "Weiter",
+      back: "Zurück",
+      next: "Nächste",
+      finish: "Fertig"
     },
 
     // Products
     products: {
-      title: "Productos",
-      subtitle: "Explora nuestra colección completa de ropa deportiva personalizada premium",
-      categories: "Categorías",
-      sortBy: "Ordenar por",
-      searchPlaceholder: "Buscar productos...",
-      noResults: "No se encontraron productos",
-      noResultsDesc: "Intenta ajustar tus criterios de búsqueda o explorar todas las categorías",
-      showAll: "Mostrar Todos los Productos",
-      addToCart: "Agregar al Carrito",
-      customize: "Personalizar",
-      viewDetails: "Ver Detalles",
-      inStock: "En Stock",
-      outOfStock: "Agotado",
-      sizes: "Tallas",
-      colors: "Colores"
+      title: "Produkte",
+      subtitle: "Entdecken Sie unsere komplette Kollektion hochwertiger maßgeschneiderter Sportbekleidung",
+      categories: "Kategorien",
+      sortBy: "Sortieren nach",
+      searchPlaceholder: "Produkte suchen...",
+      noResults: "Keine Produkte gefunden",
+      noResultsDesc: "Versuchen Sie, Ihre Suchkriterien anzupassen oder alle Kategorien zu durchsuchen",
+      showAll: "Alle Produkte anzeigen",
+      addToCart: "In den Warenkorb",
+      customize: "Anpassen",
+      viewDetails: "Details anzeigen",
+      inStock: "Auf Lager",
+      outOfStock: "Ausverkauft",
+      sizes: "Größen",
+      colors: "Farben"
+    },
+
+    // Design Tool
+    design: {
+      title: "Design-Tool",
+      subtitle: "Erstellen Sie individuelle Designs für Ihre Sportbekleidung",
+      selectProduct: "Wählen Sie ein Produkt aus, um mit dem Design zu beginnen",
+      canvas: "Leinwand",
+      elements: "Elemente",
+      text: "Text",
+      shapes: "Formen",
+      images: "Bilder",
+      colors: "Farben",
+      fonts: "Schriftarten",
+      layers: "Ebenen",
+      save: "Design speichern",
+      preview: "Vorschau",
+      download: "Herunterladen"
+    },
+
+    // Cart & Checkout
+    cart: {
+      title: "Warenkorb",
+      empty: "Ihr Warenkorb ist leer",
+      emptyDesc: "Beginnen Sie mit dem Einkaufen, um Artikel zu Ihrem Warenkorb hinzuzufügen",
+      startShopping: "Einkaufen beginnen",
+      checkout: "Zur Kasse",
+      removeItem: "Artikel entfernen",
+      updateQuantity: "Menge aktualisieren"
+    },
+
+    checkout: {
+      title: "Kasse",
+      shipping: "Versandinformationen",
+      payment: "Zahlungsinformationen",
+      review: "Bestellung überprüfen",
+      complete: "Bestellung abschließen",
+      processing: "Verarbeitung...",
+      success: "Bestellung erfolgreich aufgegeben!",
+      error: "Fehler beim Verarbeiten Ihrer Bestellung"
+    },
+
+    // Group Orders
+    groupOrders: {
+      title: "Gruppenbestellungen",
+      subtitle: "Koordinieren Sie Teambestellungen mit Leichtigkeit",
+      create: "Gruppenbestellung erstellen",
+      join: "An Gruppenbestellung teilnehmen",
+      manage: "Bestellungen verwalten",
+      deadline: "Bestellfrist",
+      minimumQuantity: "Mindestmenge",
+      currentParticipants: "Aktuelle Teilnehmer"
+    },
+
+    // Sponsorship
+    sponsorship: {
+      title: "Sponsoring-Plattform",
+      subtitle: "Teams mit Sponsoren verbinden",
+      seekers: "Teams, die Sponsoring suchen",
+      sponsors: "Verfügbare Sponsoren",
+      createProfile: "Profil erstellen",
+      viewProfile: "Profil anzeigen",
+      sendMessage: "Nachricht senden",
+      makeOffer: "Angebot machen"
+    },
+
+    // Admin
+    admin: {
+      title: "Admin-Panel",
+      dashboard: "Dashboard",
+      products: "Produkte",
+      categories: "Kategorien",
+      orders: "Bestellungen",
+      users: "Benutzer",
+      settings: "Einstellungen",
+      analytics: "Analysen"
+    },
+
+    // Forms
+    forms: {
+      required: "Dieses Feld ist erforderlich",
+      email: "Bitte geben Sie eine gültige E-Mail-Adresse ein",
+      password: "Passwort muss mindestens 8 Zeichen lang sein",
+      confirmPassword: "Passwörter stimmen nicht überein",
+      phone: "Bitte geben Sie eine gültige Telefonnummer ein"
+    },
+
+    // Footer
+    footer: {
+      company: "Unternehmen",
+      products: "Produkte",
+      support: "Support",
+      legal: "Rechtliches",
+      newsletter: "Newsletter",
+      newsletterDesc: "Abonnieren Sie, um Updates zu neuen Produkten und Angeboten zu erhalten",
+      subscribe: "Abonnieren",
+      allRightsReserved: "Alle Rechte vorbehalten"
     }
   }
 };
