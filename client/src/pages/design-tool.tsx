@@ -194,14 +194,35 @@ export default function DesignTool() {
   };
 
   const exportDesign = () => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvasRef.current) {
+      toast({
+        title: "Error",
+        description: "Canvas not ready for export",
+        variant: "destructive",
+      });
+      return;
+    }
     
-    // Create download link
-    const link = document.createElement('a');
-    link.download = `${designName || 'design'}.png`;
-    link.href = canvas.toDataURL();
-    link.click();
+    try {
+      // Create download link
+      const link = document.createElement('a');
+      link.download = `${designName || 'design'}.png`;
+      link.href = canvasRef.current.toDataURL('image/png');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      toast({
+        title: "Success",
+        description: "Design exported successfully!",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to export design",
+        variant: "destructive",
+      });
+    }
   };
 
   return (

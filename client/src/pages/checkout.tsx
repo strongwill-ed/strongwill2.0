@@ -50,13 +50,6 @@ export default function Checkout() {
       paymentMethod: "card",
       country: "AU",
       shippingCountry: "AU",
-      city: "Sydney",
-      state: "New South Wales",
-      zipCode: "2000",
-      phone: "+61",
-      shippingCity: "Sydney",
-      shippingState: "New South Wales", 
-      shippingZipCode: "2000",
     },
   });
 
