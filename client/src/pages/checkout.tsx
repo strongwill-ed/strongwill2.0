@@ -27,8 +27,8 @@ const checkoutSchema = z.object({
   lastName: z.string().min(2, "Last name must be at least 2 characters"),
   address: z.string().min(5, "Address is required"),
   city: z.string().min(2, "City is required"),
-  state: z.string().min(2, "State is required"),
-  zipCode: z.string().min(5, "ZIP code is required"),
+  state: z.string().min(1, "State/Province/Region is required"),
+  zipCode: z.string().min(2, "Postal code is required"),
   country: z.string().min(2, "Country is required"),
   phone: z.string().min(10, "Phone number is required"),
   sameAsBilling: z.boolean().default(true),
@@ -443,9 +443,9 @@ export default function Checkout() {
                         name="state"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>State</FormLabel>
+                            <FormLabel>State/Province/Region</FormLabel>
                             <FormControl>
-                              <Input placeholder="NSW" {...field} />
+                              <Input placeholder="e.g. NSW, Ontario, Bavaria" {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -459,9 +459,9 @@ export default function Checkout() {
                         name="zipCode"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>ZIP Code</FormLabel>
+                            <FormLabel>Postal Code</FormLabel>
                             <FormControl>
-                              <Input placeholder="2000" {...field} />
+                              <Input placeholder="e.g. 2000, SW1A 1AA, 10001" {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -635,9 +635,9 @@ export default function Checkout() {
                             name="shippingState"
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel>State</FormLabel>
+                                <FormLabel>State/Province/Region</FormLabel>
                                 <FormControl>
-                                  <Input placeholder="NY" {...field} />
+                                  <Input placeholder="e.g. NY, Ontario, Bavaria" {...field} />
                                 </FormControl>
                                 <FormMessage />
                               </FormItem>
