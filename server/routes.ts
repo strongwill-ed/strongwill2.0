@@ -458,11 +458,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/group-orders", async (req, res) => {
     try {
       // Check if user is authenticated
-      if (!req.session?.userId) {
+      if (!(req as any).session?.userId) {
         return res.status(401).json({ message: "Authentication required" });
       }
 
-      const user = await storage.getUser(req.session.userId);
+      const user = await storage.getUser((req as any).session.userId);
       if (!user) {
         return res.status(401).json({ message: "User not found" });
       }
@@ -481,11 +481,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Add creator information for admin view
         const groupOrdersWithCreators = await Promise.all(
           groupOrders.map(async (groupOrder) => {
-            const creator = await storage.getUser(groupOrder.organizerUserId);
+            if (groupOrder.organizerUserId) {
+              const creator = await storage.getUser(groupOrder.organizerUserId);
+              return {
+                ...groupOrder,
+                creatorUsername: creator?.username || 'Unknown',
+                creatorEmail: creator?.email || 'Unknown'
+              };
+            }
             return {
               ...groupOrder,
-              creatorUsername: creator?.username || 'Unknown',
-              creatorEmail: creator?.email || 'Unknown'
+              creatorUsername: 'Unknown',
+              creatorEmail: 'Unknown'
             };
           })
         );

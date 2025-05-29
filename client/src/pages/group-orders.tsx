@@ -472,6 +472,11 @@ export default function GroupOrders() {
                     {product && (
                       <p className="text-sm text-gray-600">{product.name}</p>
                     )}
+                    {user?.role === 'admin' && (groupOrder as any).creatorUsername && (
+                      <p className="text-xs text-gray-500">
+                        Created by: {(groupOrder as any).creatorUsername} ({(groupOrder as any).creatorEmail})
+                      </p>
+                    )}
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">

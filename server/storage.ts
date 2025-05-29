@@ -1,6 +1,6 @@
 import { users, productCategories, products, designs, cartItems, orders, orderItems, groupOrders, groupOrderItems, refunds, seekerProfiles, sponsorProfiles, sponsorshipAgreements, sponsorshipCredits, sponsorshipMessages, pages, blogPosts, quoteRequests, adminSettings, type User, type ProductCategory, type Product, type Design, type CartItem, type Order, type OrderItem, type GroupOrder, type GroupOrderItem, type Refund, type SeekerProfile, type SponsorProfile, type SponsorshipAgreement, type SponsorshipCredit, type SponsorshipMessage, type InsertUser, type InsertProductCategory, type InsertProduct, type InsertDesign, type InsertCartItem, type InsertOrder, type InsertOrderItem, type InsertGroupOrder, type InsertGroupOrderItem, type InsertRefund, type InsertSeekerProfile, type InsertSponsorProfile, type InsertSponsorshipAgreement, type InsertSponsorshipCredit, type InsertSponsorshipMessage, type Page, type InsertPage, type BlogPost, type InsertBlogPost, type QuoteRequest, type InsertQuoteRequest, type AdminSetting, type InsertAdminSetting } from "@shared/schema";
 import { db } from "./db";
-import { eq, count, sum } from "drizzle-orm";
+import { eq, count, sum, and } from "drizzle-orm";
 
 export interface IStorage {
   // Users
@@ -54,6 +54,8 @@ export interface IStorage {
   // Group Orders
   getGroupOrders(): Promise<GroupOrder[]>;
   getActiveGroupOrders(): Promise<GroupOrder[]>;
+  getGroupOrdersByUser(userId: number): Promise<GroupOrder[]>;
+  getActiveGroupOrdersByUser(userId: number): Promise<GroupOrder[]>;
   getGroupOrder(id: number): Promise<GroupOrder | undefined>;
   createGroupOrder(groupOrder: InsertGroupOrder): Promise<GroupOrder>;
   updateGroupOrder(id: number, updates: Partial<InsertGroupOrder>): Promise<GroupOrder | undefined>;
@@ -648,6 +650,18 @@ export class DatabaseStorage implements IStorage {
   async getActiveGroupOrders(): Promise<GroupOrder[]> {
     await this.ensureInitialized();
     return await db.select().from(groupOrders).where(eq(groupOrders.status, "active"));
+  }
+
+  async getGroupOrdersByUser(userId: number): Promise<GroupOrder[]> {
+    await this.ensureInitialized();
+    return await db.select().from(groupOrders).where(eq(groupOrders.organizerUserId, userId));
+  }
+
+  async getActiveGroupOrdersByUser(userId: number): Promise<GroupOrder[]> {
+    await this.ensureInitialized();
+    return await db.select().from(groupOrders).where(
+      and(eq(groupOrders.organizerUserId, userId), eq(groupOrders.status, "active"))
+    );
   }
 
   async getGroupOrder(id: number): Promise<GroupOrder | undefined> {
