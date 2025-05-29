@@ -172,15 +172,10 @@ export default function DesignTool() {
 
   const updateOrderQuantity = (size: string, color: string, quantity: number) => {
     const key = `${size}-${color}`;
-    console.log('updateOrderQuantity called:', { size, color, quantity, key });
-    setOrderItems(prev => {
-      const newItems = {
-        ...prev,
-        [key]: quantity
-      };
-      console.log('Order items updated:', newItems);
-      return newItems;
-    });
+    setOrderItems(prev => ({
+      ...prev,
+      [key]: quantity
+    }));
   };
 
   const getTotalItems = () => {
@@ -411,31 +406,10 @@ export default function DesignTool() {
 
                     {selectedProductData && (
                       <div className="space-y-4">
-                        <div className="flex justify-between items-center">
-                          <Label>Order Configuration</Label>
-                          <Button 
-                            size="sm" 
-                            variant="outline"
-                            onClick={() => {
-                              console.log('Product data:', selectedProductData);
-                              const defaultSize = selectedProductData?.sizes?.[0];
-                              const defaultColor = selectedProductData?.colors?.[0];
-                              console.log('Default size:', defaultSize, 'Default color:', defaultColor);
-                              if (defaultSize && defaultColor) {
-                                console.log('Setting quantity for:', defaultSize, defaultColor);
-                                updateOrderQuantity(defaultSize, defaultColor, 1);
-                              } else {
-                                console.log('Missing size or color data');
-                              }
-                            }}
-                            className="text-xs h-7"
-                          >
-                            Quick Add ({selectedProductData?.sizes?.[0]} {selectedProductData?.colors?.[0]})
-                          </Button>
-                        </div>
+                        <Label>Order Configuration</Label>
                         <div className="p-3 bg-blue-50 border border-blue-200 rounded-md">
                           <p className="text-xs text-blue-800">
-                            Enter quantities for each size/color combination you want to order. Use "Quick Add" to add one item quickly.
+                            Enter quantities for each size/color combination you want to order.
                           </p>
                         </div>
                         <div className="space-y-3 max-h-60 overflow-y-auto">
