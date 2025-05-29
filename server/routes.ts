@@ -1210,6 +1210,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Newsletter subscription endpoint
+  app.post("/api/newsletter/subscribe", async (req, res) => {
+    try {
+      const { email } = req.body;
+      
+      if (!email || !email.includes("@")) {
+        return res.status(400).json({ message: "Please provide a valid email address" });
+      }
+      
+      // Log the subscription
+      console.log(`Newsletter subscription: ${email}`);
+      
+      res.json({ 
+        message: "Successfully subscribed to newsletter",
+        email: email
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to subscribe to newsletter" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
