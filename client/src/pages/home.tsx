@@ -21,7 +21,12 @@ function DynamicText() {
     "Squad",
     "Performance",
     "Competition",
-    "Custom"
+    "Custom",
+    "Class",
+    "Graduation",
+    "Celebration",
+    "Winners",
+    "League"
   ];
   
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
