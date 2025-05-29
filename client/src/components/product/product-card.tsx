@@ -161,12 +161,21 @@ export default function ProductCard({ product, onDesignClick, onAddToCart }: Pro
         
         <div className="flex justify-between items-center mb-4">
           <div className="flex items-center gap-2">
-            <span className="text-xl font-bold text-black">
-              {formatPrice(parseFloat(product.basePrice))}
-            </span>
-            {Math.random() > 0.8 && (
-              <span className="text-sm text-gray-500 line-through">
-                {formatPrice(parseFloat(product.basePrice) * 1.2)}
+            {product.isOnSale && product.salePrice ? (
+              <>
+                <span className="text-xl font-bold text-red-600">
+                  {formatPrice(parseFloat(product.salePrice))}
+                </span>
+                <span className="text-sm text-gray-500 line-through">
+                  {formatPrice(parseFloat(product.basePrice))}
+                </span>
+                <Badge variant="destructive" className="text-xs">
+                  SALE
+                </Badge>
+              </>
+            ) : (
+              <span className="text-xl font-bold text-black">
+                {formatPrice(parseFloat(product.basePrice))}
               </span>
             )}
           </div>

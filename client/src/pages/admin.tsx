@@ -547,6 +547,55 @@ export default function Admin() {
                           />
                         </div>
 
+                        <div className="grid grid-cols-3 gap-4 items-end">
+                          <FormField
+                            control={createProductForm.control}
+                            name="isOnSale"
+                            render={({ field }) => (
+                              <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                                <FormControl>
+                                  <input
+                                    type="checkbox"
+                                    checked={field.value}
+                                    onChange={field.onChange}
+                                    className="h-4 w-4"
+                                  />
+                                </FormControl>
+                                <FormLabel className="text-sm font-medium">
+                                  On Sale
+                                </FormLabel>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          <FormField
+                            control={createProductForm.control}
+                            name="salePrice"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Sale Price</FormLabel>
+                                <FormControl>
+                                  <Input 
+                                    placeholder="35.00" 
+                                    {...field} 
+                                    disabled={!createProductForm.watch("isOnSale")}
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          
+                          <div className="text-sm text-gray-600">
+                            {createProductForm.watch("isOnSale") && createProductForm.watch("salePrice") && createProductForm.watch("basePrice") && (
+                              <span className="text-green-600 font-medium">
+                                Save ${(parseFloat(createProductForm.watch("basePrice")) - parseFloat(createProductForm.watch("salePrice"))).toFixed(2)}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+
                         <FormField
                           control={createProductForm.control}
                           name="description"

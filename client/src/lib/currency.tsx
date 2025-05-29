@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
-export type Currency = 'AUD' | 'EUR' | 'USD';
+export type Currency = 'AUD' | 'EUR' | 'USD' | 'CAD';
 
 interface CurrencyConfig {
   code: Currency;
@@ -12,7 +12,8 @@ interface CurrencyConfig {
 const currencyConfigs: Record<Currency, CurrencyConfig> = {
   AUD: { code: 'AUD', symbol: 'A$', name: 'Australian Dollar', rate: 1.0 },
   EUR: { code: 'EUR', symbol: '€', name: 'Euro', rate: 0.61 }, // Approximate rate
-  USD: { code: 'USD', symbol: '$', name: 'US Dollar', rate: 0.66 } // Approximate rate
+  USD: { code: 'USD', symbol: '$', name: 'US Dollar', rate: 0.66 }, // Approximate rate
+  CAD: { code: 'CAD', symbol: 'C$', name: 'Canadian Dollar', rate: 0.89 } // Approximate rate
 };
 
 interface CurrencyContextType {
