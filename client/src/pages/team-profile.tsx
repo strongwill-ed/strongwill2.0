@@ -107,11 +107,10 @@ export default function TeamProfile() {
 
   const handleSponsorshipOffer = () => {
     if (!sponsorProfile) {
-      toast({
-        title: "Sponsor Profile Required",
-        description: "You need to create a sponsor profile first.",
-        variant: "destructive",
-      });
+      const createProfile = confirm("You need a sponsor profile to make offers. Would you like to create one now?");
+      if (createProfile) {
+        setLocation("/create-sponsor-profile");
+      }
       return;
     }
 
@@ -139,7 +138,7 @@ export default function TeamProfile() {
   const isOwnProfile = user && profile && user.id === profile.userId;
   const isAdmin = user && user.username === 'admin';
   const canDelete = (isOwnProfile || isAdmin) && user;
-  const canSponsor = user && !isOwnProfile && sponsorProfile;
+  const canSponsor = user && !isOwnProfile;
 
   return (
     <div className="min-h-screen bg-gray-50 py-12">
