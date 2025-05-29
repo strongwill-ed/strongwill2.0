@@ -401,6 +401,88 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Orders API
+  app.post("/api/orders", async (req, res) => {
+    try {
+      const {
+        customerEmail,
+        billingAddress,
+        shippingAddress,
+        items,
+        subtotal,
+        discount,
+        shipping,
+        tax,
+        totalAmount,
+        paymentMethod
+      } = req.body;
+
+      if (!customerEmail || !items || !totalAmount) {
+        return res.status(400).json({ message: "Missing required fields" });
+      }
+
+      // Create the order
+      const orderData = {
+        customerEmail,
+        subtotal,
+        discount: discount || "0.00",
+        shipping: shipping || "0.00", 
+        tax: tax || "0.00",
+        totalAmount,
+        paymentMethod: paymentMethod || "card",
+        paymentStatus: "pending",
+        status: "pending",
+        billingAddress: JSON.stringify(billingAddress),
+        shippingAddress: JSON.stringify(shippingAddress),
+        userId: null // For guest checkout
+      };
+
+      const order = await storage.createOrder(orderData);
+
+      // Add order items
+      for (const item of items) {
+        await storage.addOrderItem({
+          orderId: order.id,
+          productId: item.productId,
+          designId: item.designId || null,
+          quantity: item.quantity,
+          size: item.size,
+          color: item.color,
+          unitPrice: item.unitPrice,
+          customizations: JSON.stringify(item.customizations || {})
+        });
+      }
+
+      res.status(201).json({ 
+        orderId: order.id,
+        message: "Order created successfully"
+      });
+    } catch (error) {
+      console.error('Order creation error:', error);
+      res.status(500).json({ message: "Failed to create order" });
+    }
+  });
+
+  app.put("/api/orders/:id/status", async (req, res) => {
+    try {
+      const orderId = parseInt(req.params.id);
+      const { status } = req.body;
+
+      if (!status) {
+        return res.status(400).json({ message: "Status is required" });
+      }
+
+      const updatedOrder = await storage.updateOrderStatus(orderId, status);
+      if (!updatedOrder) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+
+      res.json(updatedOrder);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to update order status" });
+    }
+  });
+
   // Admin stats
   app.get("/api/admin/stats", async (req, res) => {
     try {

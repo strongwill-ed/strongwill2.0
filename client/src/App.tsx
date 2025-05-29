@@ -11,6 +11,8 @@ import GroupOrders from "@/pages/group-orders";
 import Admin from "@/pages/admin";
 import About from "@/pages/about";
 import Contact from "@/pages/contact";
+import Cart from "@/pages/cart";
+import Checkout from "@/pages/checkout";
 import Header from "@/components/layout/header";
 import Footer from "@/components/layout/footer";
 import CartSidebar from "@/components/cart/cart-sidebar";
@@ -26,6 +28,8 @@ function Router() {
       <Route path="/admin" component={Admin} />
       <Route path="/about" component={About} />
       <Route path="/contact" component={Contact} />
+      <Route path="/cart" component={Cart} />
+      <Route path="/checkout" component={Checkout} />
       <Route component={NotFound} />
     </Switch>
   );
