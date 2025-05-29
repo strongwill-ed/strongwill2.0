@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Badge } from "@/components/ui/badge";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/components/auth/auth-provider";
 import { useForm } from "react-hook-form";
@@ -17,7 +18,7 @@ import { insertGroupOrderSchema, insertGroupOrderItemSchema } from "@shared/sche
 import type { GroupOrder, Product, GroupOrderItem } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
 import { z } from "zod";
-import { Plus, Users, Calendar, Package, Share2, Copy, Edit, Trash2, Settings, ShoppingCart } from "lucide-react";
+import { Plus, Users, Calendar, Package, Share, Copy, Edit, Trash2, Settings, ShoppingCart, Mail, ExternalLink } from "lucide-react";
 import { format } from "date-fns";
 
 const createGroupOrderSchema = z.object({
@@ -297,13 +298,41 @@ export default function GroupOrders() {
     setIsEditMemberDialogOpen(true);
   };
 
+  const getShareLink = (groupOrderId: number) => {
+    return `${window.location.origin}/group-orders?join=${groupOrderId}`;
+  };
+
   const copyShareLink = (groupOrderId: number) => {
-    const link = `${window.location.origin}/group-orders?join=${groupOrderId}`;
+    const link = getShareLink(groupOrderId);
     navigator.clipboard.writeText(link);
     toast({
       title: "Link copied!",
       description: "Share this link with your team members",
     });
+  };
+
+  const shareViaEmail = (groupOrderId: number, groupOrderName: string) => {
+    const link = getShareLink(groupOrderId);
+    const subject = `Join our group order: ${groupOrderName}`;
+    const body = `Hi! You're invited to join our group order "${groupOrderName}" (ID: ${groupOrderId}).\n\nClick here to join: ${link}\n\nThanks!`;
+    window.open(`mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`);
+  };
+
+  const shareViaWhatsApp = (groupOrderId: number, groupOrderName: string) => {
+    const link = getShareLink(groupOrderId);
+    const text = `Join our group order "${groupOrderName}" (ID: ${groupOrderId}): ${link}`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`);
+  };
+
+  const shareViaFacebook = (groupOrderId: number) => {
+    const link = getShareLink(groupOrderId);
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(link)}`);
+  };
+
+  const shareViaTwitter = (groupOrderId: number, groupOrderName: string) => {
+    const link = getShareLink(groupOrderId);
+    const text = `Join our group order: ${groupOrderName}`;
+    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(link)}`);
   };
 
   const getStatusColor = (status: string) => {
@@ -520,7 +549,10 @@ export default function GroupOrders() {
                 <Card key={groupOrder.id} className="card-hover">
                   <CardHeader>
                     <div className="flex justify-between items-start">
-                      <CardTitle className="text-lg">{groupOrder.name}</CardTitle>
+                      <div>
+                        <CardTitle className="text-lg">{groupOrder.name}</CardTitle>
+                        <p className="text-sm text-gray-500 font-mono">ID: {groupOrder.id}</p>
+                      </div>
                       <Badge className={getStatusColor(groupOrder.status || "active")}>
                         {groupOrder.status || "active"}
                       </Badge>
@@ -587,13 +619,35 @@ export default function GroupOrders() {
                                 Manage
                               </Button>
                             )}
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => copyShareLink(groupOrder.id)}
-                            >
-                              <Copy className="h-4 w-4" />
-                            </Button>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="outline" size="sm">
+                                  <Share className="h-4 w-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent>
+                                <DropdownMenuItem onClick={() => copyShareLink(groupOrder.id)}>
+                                  <Copy className="h-4 w-4 mr-2" />
+                                  Copy Link
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => shareViaEmail(groupOrder.id, groupOrder.name)}>
+                                  <Mail className="h-4 w-4 mr-2" />
+                                  Email
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => shareViaWhatsApp(groupOrder.id, groupOrder.name)}>
+                                  <ExternalLink className="h-4 w-4 mr-2" />
+                                  WhatsApp
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => shareViaFacebook(groupOrder.id)}>
+                                  <ExternalLink className="h-4 w-4 mr-2" />
+                                  Facebook
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => shareViaTwitter(groupOrder.id, groupOrder.name)}>
+                                  <ExternalLink className="h-4 w-4 mr-2" />
+                                  Twitter
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
                           </>
                         ) : (
                           // Join controls for non-owners
@@ -609,13 +663,35 @@ export default function GroupOrders() {
                             >
                               Join Order
                             </Button>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => copyShareLink(groupOrder.id)}
-                            >
-                              <Copy className="h-4 w-4" />
-                            </Button>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="outline" size="sm">
+                                  <Share className="h-4 w-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent>
+                                <DropdownMenuItem onClick={() => copyShareLink(groupOrder.id)}>
+                                  <Copy className="h-4 w-4 mr-2" />
+                                  Copy Link
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => shareViaEmail(groupOrder.id, groupOrder.name)}>
+                                  <Mail className="h-4 w-4 mr-2" />
+                                  Email
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => shareViaWhatsApp(groupOrder.id, groupOrder.name)}>
+                                  <ExternalLink className="h-4 w-4 mr-2" />
+                                  WhatsApp
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => shareViaFacebook(groupOrder.id)}>
+                                  <ExternalLink className="h-4 w-4 mr-2" />
+                                  Facebook
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => shareViaTwitter(groupOrder.id, groupOrder.name)}>
+                                  <ExternalLink className="h-4 w-4 mr-2" />
+                                  Twitter
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
                           </>
                         )}
                       </div>
