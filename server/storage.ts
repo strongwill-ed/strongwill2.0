@@ -163,9 +163,9 @@ export class DatabaseStorage implements IStorage {
       const existingCategories = await db.select().from(productCategories);
       const existingProducts = await db.select().from(products);
       
-      // Force reseed if we have fewer than 20 products (our new expanded catalog)
+      // Force reseed if we have fewer than 22 products (our new expanded catalog)
       // or if products don't have updated image URLs
-      const needsUpdate = existingProducts.length < 20 || 
+      const needsUpdate = existingProducts.length < 22 || 
         existingProducts.some(p => !p.imageUrl || p.imageUrl.includes('placeholder'));
       
       if (existingCategories.length === 0 || needsUpdate) {
@@ -191,24 +191,94 @@ export class DatabaseStorage implements IStorage {
   }
 
   private async seedData() {
-    // Seed categories - focused on key sports with optimized imagery
-    const [rugbyCategory, soccerCategory, basketballCategory, varsityCategory, tennisCategory, accessoriesCategory] = await db
+    // Seed categories - comprehensive sports uniforms collection
+    const [aflCategory, basketballCategory, esportsCategory, rugbyCategory, soccerCategory, touchFootballCategory, oztagCategory, volleyballCategory, varsityCategory, accessoriesCategory] = await db
       .insert(productCategories)
       .values([
-        { name: "Rugby Gear", description: "Built tough for rugby's demands - jerseys, shorts, and protective gear", imageUrl: "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=600&h=400&fit=crop&auto=format" },
+        { name: "AFL Uniforms", description: "Professional AFL jerseys, shorts, and training gear built for Australian Football League standards", imageUrl: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=600&h=400&fit=crop&auto=format" },
+        { name: "Basketball Uniforms", description: "High-performance basketball uniforms and practice gear for teams and clubs", imageUrl: "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=600&h=400&fit=crop&auto=format" },
+        { name: "eSports Jerseys", description: "Gaming team jerseys and apparel for competitive eSports organizations", imageUrl: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=600&h=400&fit=crop&auto=format" },
+        { name: "Rugby Uniforms", description: "Built tough for rugby's demands - jerseys, shorts, and protective gear", imageUrl: "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=600&h=400&fit=crop&auto=format" },
         { name: "Soccer Uniforms", description: "Complete soccer kits and training apparel for clubs and teams", imageUrl: "https://images.unsplash.com/photo-1579952363873-27d3bfad9c0d?w=600&h=400&fit=crop&auto=format" },
-        { name: "Basketball Apparel", description: "Performance basketball uniforms and practice gear", imageUrl: "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=600&h=400&fit=crop&auto=format" },
+        { name: "Touch Football Uniforms", description: "Lightweight touch football jerseys and shorts for recreational and competitive play", imageUrl: "https://images.unsplash.com/photo-1566577739301-c1bce11a4915?w=600&h=400&fit=crop&auto=format" },
+        { name: "Oztag Uniforms", description: "Official Oztag playing strips and team apparel for tag rugby competitions", imageUrl: "https://images.unsplash.com/photo-1558618047-5c6c53b04fdf?w=600&h=400&fit=crop&auto=format" },
+        { name: "Volleyball Uniforms", description: "Performance volleyball uniforms designed for indoor and beach volleyball", imageUrl: "https://images.unsplash.com/photo-1612872087720-bb876e2e67d1?w=600&h=400&fit=crop&auto=format" },
         { name: "High School Varsity", description: "Classic varsity jackets, letterman gear, and school spirit wear", imageUrl: "https://images.unsplash.com/photo-1509909756405-be0199881695?w=600&h=400&fit=crop&auto=format" },
-        { name: "Tennis Wear", description: "Professional tennis apparel for court performance", imageUrl: "https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?w=600&h=400&fit=crop&auto=format" },
         { name: "Sports Accessories", description: "Essential gear and accessories for all sports", imageUrl: "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=600&h=400&fit=crop&auto=format" }
       ])
       .returning();
 
-    // Seed products - sport-specific lineup with optimized imagery
+    // Seed products - comprehensive sports uniforms collection
     await db
       .insert(products)
       .values([
-        // RUGBY GEAR
+        // AFL UNIFORMS
+        {
+          name: "AFL Team Jersey",
+          description: "Official AFL-style jersey with moisture-wicking technology and reinforced construction. Built for Australian Football League standards with traditional V-neck design.",
+          basePrice: "94.99",
+          imageUrl: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=600&h=600&fit=crop&auto=format",
+          categoryId: aflCategory.id,
+          sizes: ["XS", "S", "M", "L", "XL", "XXL", "3XL"],
+          colors: ["Navy", "Maroon", "Royal Blue", "Black", "White", "Gold"],
+          isActive: true,
+        },
+        {
+          name: "AFL Training Shorts",
+          description: "Performance AFL shorts with stretch panels and secure fit. Features quick-dry fabric and professional team styling for training and match play.",
+          basePrice: "59.99",
+          imageUrl: "https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?w=600&h=600&fit=crop&auto=format",
+          categoryId: aflCategory.id,
+          sizes: ["S", "M", "L", "XL", "XXL", "3XL"],
+          colors: ["Black", "Navy", "Maroon", "White"],
+          isActive: true,
+        },
+
+        // BASKETBALL UNIFORMS
+        {
+          name: "Pro Basketball Jersey",
+          description: "Authentic basketball jersey with premium mesh construction and moisture management technology. Built for peak court performance with professional styling.",
+          basePrice: "79.99",
+          imageUrl: "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=600&h=600&fit=crop&auto=format",
+          categoryId: basketballCategory.id,
+          sizes: ["S", "M", "L", "XL", "XXL"],
+          colors: ["White", "Navy", "Red", "Black", "Gold", "Purple"],
+          isActive: true,
+        },
+        {
+          name: "Basketball Shorts",
+          description: "Performance basketball shorts with side panels and secure waistband. Features quick-dry fabric and professional styling for game and practice.",
+          basePrice: "49.99",
+          imageUrl: "https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?w=600&h=600&fit=crop&auto=format",
+          categoryId: basketballCategory.id,
+          sizes: ["S", "M", "L", "XL", "XXL"],
+          colors: ["Black", "Navy", "White", "Red", "Gold"],
+          isActive: true,
+        },
+
+        // ESPORTS JERSEYS
+        {
+          name: "Gaming Team Jersey",
+          description: "Professional eSports jersey with breathable fabric and modern fit. Perfect for gaming tournaments and team branding with customizable designs.",
+          basePrice: "69.99",
+          imageUrl: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=600&h=600&fit=crop&auto=format",
+          categoryId: esportsCategory.id,
+          sizes: ["XS", "S", "M", "L", "XL", "XXL"],
+          colors: ["Black", "White", "Neon Green", "Electric Blue", "Red", "Purple"],
+          isActive: true,
+        },
+        {
+          name: "eSports Hoodie",
+          description: "Gaming team hoodie with premium cotton blend and modern design. Features kangaroo pocket and adjustable hood for comfortable streaming sessions.",
+          basePrice: "84.99",
+          imageUrl: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=600&h=600&fit=crop&auto=format",
+          categoryId: esportsCategory.id,
+          sizes: ["S", "M", "L", "XL", "XXL"],
+          colors: ["Black", "Gray", "Navy", "White"],
+          isActive: true,
+        },
+
+        // RUGBY UNIFORMS
         {
           name: "Pro Rugby Jersey",
           description: "Built for the intensity of rugby with reinforced seams, moisture-wicking fabric, and ergonomic fit. Features tear-resistant construction and traditional collar design.",
@@ -226,7 +296,7 @@ export class DatabaseStorage implements IStorage {
           imageUrl: "https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?w=600&h=600&fit=crop&auto=format",
           categoryId: rugbyCategory.id,
           sizes: ["S", "M", "L", "XL", "XXL"],
-          colors: ["Black", "Navy", "Gray"],
+          colors: ["Black", "Navy", "Gray", "Maroon"],
           isActive: true,
         },
 
@@ -238,12 +308,12 @@ export class DatabaseStorage implements IStorage {
           imageUrl: "https://images.unsplash.com/photo-1579952363873-27d3bfad9c0d?w=600&h=600&fit=crop&auto=format",
           categoryId: soccerCategory.id,
           sizes: ["XS", "S", "M", "L", "XL", "XXL"],
-          colors: ["Royal Blue", "Red", "White", "Black", "Forest Green"],
+          colors: ["Royal Blue", "Red", "White", "Black", "Forest Green", "Yellow"],
           isActive: true,
         },
         {
           name: "Soccer Training Shorts",
-          description: "Lightweight soccer shorts with stretch fabric and secure fit. Designed for optimal ball control and field performance.",
+          description: "Lightweight soccer shorts with stretch fabric and secure fit. Designed for optimal ball control and field performance with moisture management.",
           basePrice: "39.99",
           imageUrl: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600&h=600&fit=crop&auto=format",
           categoryId: soccerCategory.id,
@@ -252,24 +322,68 @@ export class DatabaseStorage implements IStorage {
           isActive: true,
         },
 
-        // BASKETBALL APPAREL
+        // TOUCH FOOTBALL UNIFORMS
         {
-          name: "Pro Basketball Jersey",
-          description: "Authentic basketball jersey with premium mesh construction and moisture management technology. Built for peak court performance.",
-          basePrice: "79.99",
-          imageUrl: "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=600&h=600&fit=crop&auto=format",
-          categoryId: basketballCategory.id,
-          sizes: ["S", "M", "L", "XL", "XXL"],
-          colors: ["White", "Navy", "Red", "Black", "Gold"],
+          name: "Touch Football Jersey",
+          description: "Lightweight touch football jersey with breathable mesh panels and comfortable fit. Perfect for recreational and competitive touch football leagues.",
+          basePrice: "64.99",
+          imageUrl: "https://images.unsplash.com/photo-1566577739301-c1bce11a4915?w=600&h=600&fit=crop&auto=format",
+          categoryId: touchFootballCategory.id,
+          sizes: ["XS", "S", "M", "L", "XL", "XXL"],
+          colors: ["Sky Blue", "Green", "Orange", "Purple", "Yellow", "Red"],
           isActive: true,
         },
         {
-          name: "Basketball Shorts",
-          description: "Performance basketball shorts with side panels and secure waistband. Features quick-dry fabric and professional styling.",
+          name: "Touch Football Shorts",
+          description: "Comfortable touch football shorts with elastic waistband and moisture-wicking fabric. Designed for agility and comfort during fast-paced games.",
+          basePrice: "44.99",
+          imageUrl: "https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?w=600&h=600&fit=crop&auto=format",
+          categoryId: touchFootballCategory.id,
+          sizes: ["S", "M", "L", "XL", "XXL"],
+          colors: ["Black", "Navy", "Gray", "White"],
+          isActive: true,
+        },
+
+        // OZTAG UNIFORMS
+        {
+          name: "Oztag Playing Strip",
+          description: "Official Oztag jersey with lightweight construction and vibrant colors. Features moisture-wicking technology and comfortable fit for tag rugby competitions.",
+          basePrice: "69.99",
+          imageUrl: "https://images.unsplash.com/photo-1558618047-5c6c53b04fdf?w=600&h=600&fit=crop&auto=format",
+          categoryId: oztagCategory.id,
+          sizes: ["XS", "S", "M", "L", "XL", "XXL"],
+          colors: ["Bright Green", "Orange", "Pink", "Yellow", "Purple", "Turquoise"],
+          isActive: true,
+        },
+        {
+          name: "Oztag Shorts",
+          description: "Performance Oztag shorts with secure fit and quick-dry fabric. Designed for comfort and mobility during tag rugby matches.",
           basePrice: "49.99",
           imageUrl: "https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?w=600&h=600&fit=crop&auto=format",
-          categoryId: basketballCategory.id,
+          categoryId: oztagCategory.id,
           sizes: ["S", "M", "L", "XL", "XXL"],
+          colors: ["Black", "Navy", "White", "Gray"],
+          isActive: true,
+        },
+
+        // VOLLEYBALL UNIFORMS
+        {
+          name: "Volleyball Jersey",
+          description: "Performance volleyball jersey with stretch fabric and athletic fit. Designed for indoor and beach volleyball with moisture management technology.",
+          basePrice: "67.99",
+          imageUrl: "https://images.unsplash.com/photo-1612872087720-bb876e2e67d1?w=600&h=600&fit=crop&auto=format",
+          categoryId: volleyballCategory.id,
+          sizes: ["XS", "S", "M", "L", "XL", "XXL"],
+          colors: ["White", "Navy", "Red", "Black", "Coral", "Teal"],
+          isActive: true,
+        },
+        {
+          name: "Volleyball Shorts",
+          description: "Athletic volleyball shorts with compression fit and four-way stretch. Perfect for competitive play with professional styling and comfort.",
+          basePrice: "42.99",
+          imageUrl: "https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?w=600&h=600&fit=crop&auto=format",
+          categoryId: volleyballCategory.id,
+          sizes: ["XS", "S", "M", "L", "XL", "XXL"],
           colors: ["Black", "Navy", "White", "Red"],
           isActive: true,
         },
@@ -296,27 +410,7 @@ export class DatabaseStorage implements IStorage {
           isActive: true,
         },
 
-        // TENNIS WEAR
-        {
-          name: "Tennis Performance Polo",
-          description: "Professional tennis polo with UV protection and moisture-wicking technology. Classic collar design with modern performance features.",
-          basePrice: "69.99",
-          imageUrl: "https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?w=600&h=600&fit=crop&auto=format",
-          categoryId: tennisCategory.id,
-          sizes: ["XS", "S", "M", "L", "XL"],
-          colors: ["White", "Navy", "Black", "Light Blue"],
-          isActive: true,
-        },
-        {
-          name: "Tennis Court Shorts",
-          description: "Lightweight tennis shorts with built-in compression and ball pocket design. Engineered for court agility and comfort.",
-          basePrice: "44.99",
-          imageUrl: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600&h=600&fit=crop&auto=format",
-          categoryId: tennisCategory.id,
-          sizes: ["XS", "S", "M", "L", "XL"],
-          colors: ["White", "Navy", "Black"],
-          isActive: true,
-        },
+
 
         // SPORTS ACCESSORIES
         {
