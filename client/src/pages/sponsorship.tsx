@@ -4,12 +4,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { Users, Building2, Handshake, MessageSquare, DollarSign, Calendar } from "lucide-react";
 import type { SeekerProfile, SponsorProfile, SponsorshipAgreement } from "@shared/schema";
 
 export default function SponsorshipPage() {
   const [activeTab, setActiveTab] = useState("overview");
+  const [, setLocation] = useLocation();
 
   const { data: seekerProfiles = [] } = useQuery({
     queryKey: ["/api/seeker-profiles"],
@@ -277,7 +278,11 @@ export default function SponsorshipPage() {
                           {profile.preferredSports?.join(", ")}
                         </span>
                       </div>
-                      <Button variant="outline" className="w-full">
+                      <Button 
+                        variant="outline" 
+                        className="w-full"
+                        onClick={() => setLocation(`/sponsor-profile/${profile.id}`)}
+                      >
                         View Profile
                       </Button>
                     </div>
