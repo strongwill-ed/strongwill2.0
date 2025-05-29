@@ -1,15 +1,17 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Link, useLocation } from "wouter";
-import { Users, Building2, Handshake, MessageSquare, DollarSign, Calendar } from "lucide-react";
+import { Users, Building2, Handshake, MessageSquare, DollarSign, Calendar, Filter } from "lucide-react";
 import type { SeekerProfile, SponsorProfile, SponsorshipAgreement } from "@shared/schema";
 
 export default function SponsorshipPage() {
   const [activeTab, setActiveTab] = useState("overview");
+  const [countryFilter, setCountryFilter] = useState("all");
   const [, setLocation] = useLocation();
 
   const { data: seekerProfiles = [] } = useQuery({
@@ -28,6 +30,25 @@ export default function SponsorshipPage() {
     (agreement: SponsorshipAgreement) => agreement.status === "active"
   );
 
+  // Get unique countries from both profiles
+  const allCountries = useMemo(() => {
+    const seekerCountries = seekerProfiles.map((profile: SeekerProfile) => profile.location).filter(Boolean);
+    const sponsorCountries = sponsorProfiles.map((profile: SponsorProfile) => profile.location).filter(Boolean);
+    const uniqueCountries = Array.from(new Set([...seekerCountries, ...sponsorCountries]));
+    return uniqueCountries.sort();
+  }, [seekerProfiles, sponsorProfiles]);
+
+  // Filter profiles by country
+  const filteredSeekerProfiles = useMemo(() => {
+    if (countryFilter === "all") return seekerProfiles;
+    return seekerProfiles.filter((profile: SeekerProfile) => profile.location === countryFilter);
+  }, [seekerProfiles, countryFilter]);
+
+  const filteredSponsorProfiles = useMemo(() => {
+    if (countryFilter === "all") return sponsorProfiles;
+    return sponsorProfiles.filter((profile: SponsorProfile) => profile.location === countryFilter);
+  }, [sponsorProfiles, countryFilter]);
+
   const totalSponsorshipValue = activeAgreements.reduce(
     (total: number, agreement: SponsorshipAgreement) => 
       total + parseFloat(agreement.amount), 0
@@ -45,6 +66,39 @@ export default function SponsorshipPage() {
             Connect teams seeking sponsorship with businesses ready to support athletic excellence.
             Build partnerships that drive success both on and off the field.
           </p>
+        </div>
+
+        {/* Filter Controls */}
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <Filter className="h-4 w-4 text-gray-500" />
+              <span className="text-sm font-medium">Filter by Country:</span>
+            </div>
+            <Select value={countryFilter} onValueChange={setCountryFilter}>
+              <SelectTrigger className="w-48">
+                <SelectValue placeholder="All Countries" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Countries</SelectItem>
+                {allCountries.map((country) => (
+                  <SelectItem key={country} value={country}>
+                    {country}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          {countryFilter !== "all" && (
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={() => setCountryFilter("all")}
+              className="text-gray-500 hover:text-gray-700"
+            >
+              Clear Filter
+            </Button>
+          )}
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -218,7 +272,7 @@ export default function SponsorshipPage() {
                       </p>
                       <div className="flex items-center justify-between text-sm">
                         <span className="font-medium">
-                          Goal: ${profile.fundingGoal ? parseFloat(profile.fundingGoal).toLocaleString() : 'Not specified'}
+                          Goal: ${profile.fundingGoal ? parseFloat(profile.fundingGoal.toString()).toLocaleString() : 'Not specified'}
                         </span>
                         <span className="text-gray-500">
                           {profile.organizationType}
@@ -302,7 +356,7 @@ export default function SponsorshipPage() {
                       </p>
                       <div className="flex items-center justify-between text-sm">
                         <span className="font-medium">
-                          Budget: ${parseFloat(profile.sponsorshipBudget).toLocaleString()}
+                          Budget: ${profile.sponsorshipBudget ? parseFloat(profile.sponsorshipBudget.toString()).toLocaleString() : 'Contact for details'}
                         </span>
                         <span className="text-gray-500">
                           {profile.preferredSports?.join(", ")}
