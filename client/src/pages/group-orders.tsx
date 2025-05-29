@@ -551,7 +551,7 @@ export default function GroupOrders() {
                     <div className="flex justify-between items-start">
                       <div>
                         <CardTitle className="text-lg">{groupOrder.name}</CardTitle>
-                        <p className="text-sm text-gray-500 font-mono">ID: {groupOrder.id}</p>
+                        <p className="text-sm text-gray-500 font-mono">Group Order ID: {groupOrder.id}</p>
                       </div>
                       <Badge className={getStatusColor(groupOrder.status || "active")}>
                         {groupOrder.status || "active"}
