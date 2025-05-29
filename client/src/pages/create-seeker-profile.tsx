@@ -82,7 +82,7 @@ export default function CreateSeekerProfile() {
     mutationFn: (data: any) => {
       const profileData = {
         ...data,
-        fundingGoal: parseFloat(data.fundingGoal),
+        fundingGoal: data.fundingGoal, // Keep as string for decimal field
       };
       return apiRequest("POST", "/api/seeker-profiles", profileData);
     },

@@ -98,7 +98,7 @@ export default function CreateSponsorProfile() {
     mutationFn: (data: any) => {
       const profileData = {
         ...data,
-        sponsorshipBudget: parseFloat(data.sponsorshipBudget),
+        sponsorshipBudget: data.sponsorshipBudget, // Keep as string for decimal field
       };
       return apiRequest("POST", "/api/sponsor-profiles", profileData);
     },
