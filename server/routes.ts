@@ -4,7 +4,7 @@ import { storage } from "./storage";
 import { 
   insertProductCategorySchema, insertProductSchema, insertDesignSchema, 
   insertCartItemSchema, insertOrderSchema, insertOrderItemSchema,
-  insertGroupOrderSchema, insertGroupOrderItemSchema,
+  insertGroupOrderSchema, insertGroupOrderItemSchema, insertRefundSchema,
   insertSeekerProfileSchema, insertSponsorProfileSchema,
   insertSponsorshipAgreementSchema, insertSponsorshipCreditSchema,
   insertSponsorshipMessageSchema, insertPageSchema, insertBlogPostSchema,
@@ -311,6 +311,58 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(order);
     } catch (error) {
       res.status(500).json({ message: "Failed to update order status" });
+    }
+  });
+
+  // Refunds
+  app.get("/api/refunds", async (req, res) => {
+    try {
+      const { orderId } = req.query;
+      let refunds;
+      
+      if (orderId) {
+        refunds = await storage.getRefundsByOrder(parseInt(orderId as string));
+      } else {
+        refunds = await storage.getRefunds();
+      }
+      
+      res.json(refunds);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch refunds" });
+    }
+  });
+
+  app.post("/api/refunds", async (req, res) => {
+    try {
+      const refundData = insertRefundSchema.parse(req.body);
+      const refund = await storage.createRefund(refundData);
+      res.status(201).json(refund);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ message: "Invalid refund data", errors: error.errors });
+      } else {
+        res.status(500).json({ message: "Failed to create refund" });
+      }
+    }
+  });
+
+  app.put("/api/refunds/:id", async (req, res) => {
+    try {
+      const refundId = parseInt(req.params.id);
+      const updates = insertRefundSchema.partial().parse(req.body);
+      const refund = await storage.updateRefund(refundId, updates);
+      
+      if (!refund) {
+        return res.status(404).json({ message: "Refund not found" });
+      }
+      
+      res.json(refund);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ message: "Invalid refund data", errors: error.errors });
+      } else {
+        res.status(500).json({ message: "Failed to update refund" });
+      }
     }
   });
 

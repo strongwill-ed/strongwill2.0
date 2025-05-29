@@ -44,6 +44,13 @@ export interface IStorage {
   getOrderItems(orderId: number): Promise<OrderItem[]>;
   addOrderItem(item: InsertOrderItem): Promise<OrderItem>;
 
+  // Refunds
+  getRefunds(): Promise<Refund[]>;
+  getRefund(id: number): Promise<Refund | undefined>;
+  getRefundsByOrder(orderId: number): Promise<Refund[]>;
+  createRefund(refund: InsertRefund): Promise<Refund>;
+  updateRefund(id: number, updates: Partial<InsertRefund>): Promise<Refund | undefined>;
+
   // Group Orders
   getGroupOrders(): Promise<GroupOrder[]>;
   getActiveGroupOrders(): Promise<GroupOrder[]>;
@@ -593,6 +600,42 @@ export class DatabaseStorage implements IStorage {
       .values(item)
       .returning();
     return newItem;
+  }
+
+  // Refunds
+  async getRefunds(): Promise<Refund[]> {
+    await this.ensureInitialized();
+    return await db.select().from(refunds);
+  }
+
+  async getRefund(id: number): Promise<Refund | undefined> {
+    await this.ensureInitialized();
+    const [refund] = await db.select().from(refunds).where(eq(refunds.id, id));
+    return refund || undefined;
+  }
+
+  async getRefundsByOrder(orderId: number): Promise<Refund[]> {
+    await this.ensureInitialized();
+    return await db.select().from(refunds).where(eq(refunds.orderId, orderId));
+  }
+
+  async createRefund(refund: InsertRefund): Promise<Refund> {
+    await this.ensureInitialized();
+    const [newRefund] = await db
+      .insert(refunds)
+      .values(refund)
+      .returning();
+    return newRefund;
+  }
+
+  async updateRefund(id: number, updates: Partial<InsertRefund>): Promise<Refund | undefined> {
+    await this.ensureInitialized();
+    const [updatedRefund] = await db
+      .update(refunds)
+      .set(updates)
+      .where(eq(refunds.id, id))
+      .returning();
+    return updatedRefund || undefined;
   }
 
   async getGroupOrders(): Promise<GroupOrder[]> {

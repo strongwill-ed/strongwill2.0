@@ -15,7 +15,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { insertProductSchema, insertProductCategorySchema } from "@shared/schema";
-import type { Product, ProductCategory, Order, GroupOrder } from "@shared/schema";
+import type { Product, ProductCategory, Order, GroupOrder, Refund } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
 import { z } from "zod";
 import { Plus, Package, ShoppingBag, Users, DollarSign, TrendingUp, Eye, Edit } from "lucide-react";
@@ -55,6 +55,10 @@ export default function Admin() {
 
   const { data: groupOrders = [] } = useQuery<GroupOrder[]>({
     queryKey: ["/api/group-orders"],
+  });
+
+  const { data: refunds = [] } = useQuery<Refund[]>({
+    queryKey: ["/api/refunds"],
   });
 
   // Forms
