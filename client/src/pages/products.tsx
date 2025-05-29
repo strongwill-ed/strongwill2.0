@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,7 @@ import AddToCartModal from "@/components/product/add-to-cart-modal";
 import SEOHead from "@/components/seo/seo-head";
 import type { Product, ProductCategory } from "@shared/schema";
 import { Search, Filter, Grid3X3, List, SlidersHorizontal } from "lucide-react";
+import { sortProductsByRelevance, trackProductView, trackSearch } from "@/lib/personalization";
 
 export default function Products() {
   const [, setLocation] = useLocation();
@@ -68,6 +69,13 @@ export default function Products() {
     return 'sports';
   };
 
+  // Track search queries for personalization
+  useEffect(() => {
+    if (searchQuery.trim()) {
+      trackSearch(searchQuery);
+    }
+  }, [searchQuery]);
+
   // Filter and sort products
   const filteredProducts = products
     .filter(product => {
@@ -96,9 +104,9 @@ export default function Products() {
         case "newest":
           return b.id - a.id; // Assuming higher ID = newer
         case "rating":
-          return Math.random() - 0.5; // Mock rating sort
+          return Math.random() - 0.5; // Placeholder rating sort
         case "popular":
-          return Math.random() - 0.5; // Mock popularity sort
+          return sortProductsByRelevance([a, b]).indexOf(a) - sortProductsByRelevance([a, b]).indexOf(b);
         case "name":
         default:
           return a.name.localeCompare(b.name);

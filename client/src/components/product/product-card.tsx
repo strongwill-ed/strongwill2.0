@@ -5,6 +5,7 @@ import type { Product } from "@shared/schema";
 import { Palette, ShoppingCart, Heart, Star, Eye } from "lucide-react";
 import { useCurrency } from "@/lib/currency";
 import { useState } from "react";
+import { trackProductView } from "@/lib/personalization";
 
 /**
  * Props interface for the ProductCard component
@@ -195,7 +196,10 @@ export default function ProductCard({ product, onDesignClick, onAddToCart }: Pro
         
         <div className="flex gap-2">
           <Button
-            onClick={onDesignClick}
+            onClick={() => {
+              trackProductView(product.id, product.categoryId || undefined);
+              onDesignClick?.();
+            }}
             className="flex-1 btn-primary group"
             size="sm"
           >
