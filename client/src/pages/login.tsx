@@ -39,7 +39,7 @@ export default function Login() {
       const user = await response.json();
       
       if (response.ok) {
-        await login(user);
+        await login(data.username, data.password);
         toast({
           title: "Welcome back!",
           description: "You have successfully logged in.",

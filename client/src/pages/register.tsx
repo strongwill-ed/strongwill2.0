@@ -47,7 +47,7 @@ export default function Register() {
       const user = await response.json();
       
       if (response.ok) {
-        await login(user);
+        await login(registerData.username, registerData.password);
         toast({
           title: "Welcome to Strongwill Sports!",
           description: "Your account has been created successfully.",

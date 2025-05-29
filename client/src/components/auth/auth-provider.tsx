@@ -47,8 +47,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       username,
       password,
     });
-    if (response && typeof response === 'object' && 'user' in response) {
-      setUser(response.user as User);
+    const data = await response.json();
+    if (response.ok && data) {
+      setUser(data as User);
     }
   };
 
@@ -58,8 +59,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       email,
       password,
     });
-    if (response && typeof response === 'object' && 'user' in response) {
-      setUser(response.user as User);
+    const data = await response.json();
+    if (response.ok && data) {
+      setUser(data as User);
     }
   };
 
