@@ -100,10 +100,7 @@ export default function CreateSponsorProfile() {
         ...data,
         sponsorshipBudget: parseFloat(data.sponsorshipBudget),
       };
-      return apiRequest("/api/sponsor-profiles", {
-        method: "POST",
-        body: JSON.stringify(profileData),
-      });
+      return apiRequest("POST", "/api/sponsor-profiles", profileData);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/sponsor-profiles"] });

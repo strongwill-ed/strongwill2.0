@@ -79,22 +79,12 @@ export default function CreateSeekerProfile() {
   });
 
   const createProfileMutation = useMutation({
-    mutationFn: async (data: any) => {
+    mutationFn: (data: any) => {
       const profileData = {
         ...data,
         fundingGoal: parseFloat(data.fundingGoal),
       };
-      const response = await fetch("/api/seeker-profiles", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(profileData),
-      });
-      if (!response.ok) {
-        throw new Error("Failed to create profile");
-      }
-      return response.json();
+      return apiRequest("POST", "/api/seeker-profiles", profileData);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/seeker-profiles"] });
