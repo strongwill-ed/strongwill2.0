@@ -42,6 +42,7 @@ export const translations = {
     home: {
       heroTitle: "Design Your",
       heroSubtitle: "Premium custom sports apparel with our advanced design tool. Perfect for teams, clubs, and individual athletes who demand excellence.",
+      apparel: "Apparel",
       startDesigning: "Start Designing",
       browseProducts: "Browse Products",
       features: {
@@ -217,8 +218,9 @@ export const translations = {
 
     // Homepage
     home: {
-      heroTitle: "Gestalten Sie Ihre",
+      heroTitle: "Gestalten Sie",
       heroSubtitle: "Premium maßgeschneiderte Sportbekleidung mit unserem fortschrittlichen Design-Tool. Perfekt für Teams, Vereine und Einzelsportler, die Exzellenz fordern.",
+      apparel: "Bekleidung",
       startDesigning: "Design Beginnen",
       browseProducts: "Produkte Durchsuchen",
       features: {
