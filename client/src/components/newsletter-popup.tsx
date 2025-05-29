@@ -72,24 +72,24 @@ export function NewsletterPopup() {
         </button>
         
         <DialogHeader className="text-center">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-black dark:bg-white">
-            <Mail className="h-6 w-6 text-white dark:text-black" />
+          <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-black dark:bg-white">
+            <Mail className="h-5 w-5 text-white dark:text-black" />
           </div>
-          <DialogTitle className="text-2xl font-bold text-black dark:text-white">
+          <DialogTitle className="text-xl font-bold text-black dark:text-white">
             Join Team Strongwill
           </DialogTitle>
-          <p className="text-gray-600 dark:text-gray-400 mt-2">
-            Get exclusive access to new products, team discounts, and insider updates from the world of custom sports apparel.
+          <p className="text-gray-600 dark:text-gray-400 mt-1 text-sm">
+            Get exclusive access to new products, team discounts, and insider updates.
           </p>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-3 mt-6">
+        <form onSubmit={handleSubmit} className="space-y-3 mt-4">
           {/* Limited Time Offer */}
-          <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-3 border border-black dark:border-white">
-            <p className="text-black dark:text-white font-semibold text-base mb-2">⚡ Limited Time Offer</p>
-            <p className="text-gray-600 dark:text-gray-400 text-sm">
+          <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-2 border border-black dark:border-white">
+            <p className="text-black dark:text-white font-semibold text-sm mb-1">⚡ Limited Time Offer</p>
+            <p className="text-gray-600 dark:text-gray-400 text-xs">
               Sign up now and receive <span className="text-black dark:text-white font-bold">free shipping</span> on your first order!
-              <span className="text-sm block text-gray-500 dark:text-gray-500 mt-1">*Terms and conditions apply</span>
+              <span className="text-xs block text-gray-500 dark:text-gray-500">*Terms and conditions apply</span>
             </p>
           </div>
           
