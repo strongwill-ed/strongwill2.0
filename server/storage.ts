@@ -52,6 +52,40 @@ export interface IStorage {
   updateGroupOrder(id: number, updates: Partial<InsertGroupOrder>): Promise<GroupOrder | undefined>;
   getGroupOrderItems(groupOrderId: number): Promise<GroupOrderItem[]>;
   addGroupOrderItem(item: InsertGroupOrderItem): Promise<GroupOrderItem>;
+
+  // Sponsorship Platform
+  // Seeker Profiles
+  getSeekerProfiles(): Promise<SeekerProfile[]>;
+  getSeekerProfile(id: number): Promise<SeekerProfile | undefined>;
+  getSeekerProfileByUserId(userId: number): Promise<SeekerProfile | undefined>;
+  createSeekerProfile(profile: InsertSeekerProfile): Promise<SeekerProfile>;
+  updateSeekerProfile(id: number, updates: Partial<InsertSeekerProfile>): Promise<SeekerProfile | undefined>;
+
+  // Sponsor Profiles
+  getSponsorProfiles(): Promise<SponsorProfile[]>;
+  getSponsorProfile(id: number): Promise<SponsorProfile | undefined>;
+  getSponsorProfileByUserId(userId: number): Promise<SponsorProfile | undefined>;
+  createSponsorProfile(profile: InsertSponsorProfile): Promise<SponsorProfile>;
+  updateSponsorProfile(id: number, updates: Partial<InsertSponsorProfile>): Promise<SponsorProfile | undefined>;
+
+  // Sponsorship Agreements
+  getSponsorshipAgreements(): Promise<SponsorshipAgreement[]>;
+  getSponsorshipAgreement(id: number): Promise<SponsorshipAgreement | undefined>;
+  getAgreementsBySeeker(seekerId: number): Promise<SponsorshipAgreement[]>;
+  getAgreementsBySponsor(sponsorId: number): Promise<SponsorshipAgreement[]>;
+  createSponsorshipAgreement(agreement: InsertSponsorshipAgreement): Promise<SponsorshipAgreement>;
+  updateSponsorshipAgreement(id: number, updates: Partial<InsertSponsorshipAgreement>): Promise<SponsorshipAgreement | undefined>;
+
+  // Sponsorship Credits
+  getSponsorshipCredits(seekerId: number): Promise<SponsorshipCredit[]>;
+  createSponsorshipCredit(credit: InsertSponsorshipCredit): Promise<SponsorshipCredit>;
+  updateCreditBalance(id: number, remainingAmount: string): Promise<SponsorshipCredit | undefined>;
+
+  // Sponsorship Messages
+  getMessages(userId: number): Promise<SponsorshipMessage[]>;
+  getConversation(userId1: number, userId2: number): Promise<SponsorshipMessage[]>;
+  sendMessage(message: InsertSponsorshipMessage): Promise<SponsorshipMessage>;
+  markMessageAsRead(messageId: number): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
