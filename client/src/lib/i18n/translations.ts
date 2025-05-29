@@ -40,7 +40,7 @@ export const translations = {
 
     // Homepage
     home: {
-      heroTitle: "Design Your Perfect",
+      heroTitle: "Design Your",
       heroSubtitle: "Premium custom sports apparel with our advanced design tool. Perfect for teams, clubs, and individual athletes who demand excellence.",
       startDesigning: "Start Designing",
       browseProducts: "Browse Products",
@@ -217,7 +217,7 @@ export const translations = {
 
     // Homepage
     home: {
-      heroTitle: "Gestalten Sie Ihre Perfekte",
+      heroTitle: "Gestalten Sie Ihre",
       heroSubtitle: "Premium maßgeschneiderte Sportbekleidung mit unserem fortschrittlichen Design-Tool. Perfekt für Teams, Vereine und Einzelsportler, die Exzellenz fordern.",
       startDesigning: "Design Beginnen",
       browseProducts: "Produkte Durchsuchen",
