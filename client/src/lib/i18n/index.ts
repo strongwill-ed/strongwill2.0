@@ -24,6 +24,7 @@ i18n
       escapeValue: false, // React already escapes values
     },
     
+    lng: 'en', // Set English as the default language
     detection: {
       order: ['localStorage', 'navigator', 'htmlTag'],
       caches: ['localStorage'],

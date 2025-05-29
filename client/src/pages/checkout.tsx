@@ -281,7 +281,7 @@ export default function Checkout() {
         try {
           const paymentResponse = await apiPost<{ clientSecret: string }>("/api/payments/create-intent", {
             amount: total,
-            currency: "usd"
+            currency: currentCurrency.toLowerCase()
           });
           
           if (paymentResponse.clientSecret) {
