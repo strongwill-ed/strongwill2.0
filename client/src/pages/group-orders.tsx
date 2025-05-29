@@ -484,8 +484,8 @@ export default function GroupOrders() {
 
                 {/* Order Members */}
                 <div>
-                  <h5 className="font-medium mb-3">Order Members</h5>
-                  {groupOrderDetails?.items && groupOrderDetails.items.length > 0 ? (
+                  <h5 className="font-medium mb-3">Order Members ({selectedGroupOrder.currentQuantity || 0})</h5>
+                  {groupOrderDetails && groupOrderDetails.items && groupOrderDetails.items.length > 0 ? (
                     <div className="space-y-3">
                       {groupOrderDetails.items.map((item) => (
                         <div key={item.id} className="flex items-center justify-between p-3 border rounded-lg">
@@ -493,20 +493,11 @@ export default function GroupOrders() {
                             <p className="font-medium">{item.participantName}</p>
                             <p className="text-sm text-gray-600">{item.participantEmail}</p>
                             <p className="text-sm text-gray-500">
-                              Qty: {item.quantity} • Size: {item.size} • Color: {item.color}
-                              {item.nickname && ` • ${item.nickname}`}
+                              Qty: {item.quantity} • Size: {item.size || 'Not specified'} • Color: {item.color || 'Not specified'}
+                              {item.nickname && ` • Nickname: ${item.nickname}`}
                             </p>
                           </div>
                           <div className="flex gap-2">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => {
-                                // TODO: Edit individual order
-                              }}
-                            >
-                              <Edit className="h-4 w-4" />
-                            </Button>
                             <Button
                               variant="ghost"
                               size="sm"
@@ -515,6 +506,7 @@ export default function GroupOrders() {
                                   removeGroupOrderItemMutation.mutate(item.id);
                                 }
                               }}
+                              title="Remove member"
                             >
                               <Trash2 className="h-4 w-4" />
                             </Button>
@@ -523,7 +515,10 @@ export default function GroupOrders() {
                       ))}
                     </div>
                   ) : (
-                    <p className="text-gray-500 text-center py-4">No members have joined yet</p>
+                    <div className="text-center py-8">
+                      <p className="text-gray-500 mb-2">No members have joined yet</p>
+                      <p className="text-sm text-gray-400">Share the group order link to invite members</p>
+                    </div>
                   )}
                 </div>
 
