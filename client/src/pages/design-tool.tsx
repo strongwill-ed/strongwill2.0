@@ -47,7 +47,7 @@ export default function DesignTool() {
   } : null;
   
   const [selectedProduct, setSelectedProduct] = useState<number | null>(
-    productId ? parseInt(productId) : (groupOrderData ? parseInt(groupOrderData.productId) : null)
+    productId ? parseInt(productId) : null
   );
   const [designElements, setDesignElements] = useState<DesignElement[]>([]);
   const [selectedElement, setSelectedElement] = useState<string | null>(null);
@@ -92,7 +92,7 @@ export default function DesignTool() {
         // Create group order with the saved design
         const groupOrderPayload = {
           ...groupOrderData,
-          productId: parseInt(groupOrderData.productId),
+          productId: selectedProduct,
           deadline: new Date(groupOrderData.deadline),
           designId: savedDesign.id,
           orderType: "custom",
