@@ -29,6 +29,8 @@ function Router() {
       <Route path="/design-tool" component={DesignTool} />
       <Route path="/group-orders" component={GroupOrders} />
       <Route path="/sponsorship" component={Sponsorship} />
+      <Route path="/create-seeker-profile" component={CreateSeekerProfile} />
+      <Route path="/create-sponsor-profile" component={CreateSponsorProfile} />
       <Route path="/admin" component={Admin} />
       <Route path="/about" component={About} />
       <Route path="/contact" component={Contact} />

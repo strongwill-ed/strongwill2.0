@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { useCart } from "@/hooks/use-cart";
 import DesignCanvas from "@/components/design/design-canvas";
+import { getApparelTemplate } from "@/components/design/apparel-templates";
 import type { Product, Design, InsertDesign } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
 import { Save, ShoppingCart, Download, Undo, Redo, Type, Image, Palette } from "lucide-react";

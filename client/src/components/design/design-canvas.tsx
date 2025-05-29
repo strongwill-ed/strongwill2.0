@@ -1,4 +1,5 @@
 import { useEffect, useRef, forwardRef, useImperativeHandle, useState, useCallback } from "react";
+import { getApparelTemplate } from "./apparel-templates";
 import type { Product } from "@shared/schema";
 
 interface DesignElement {
@@ -114,40 +115,49 @@ const DesignCanvas = forwardRef<CanvasRef, DesignCanvasProps>(({
     ctx.fillStyle = '#f8f9fa';
     ctx.fillRect(0, 0, width, height);
 
-    // Draw product outline (singlet shape)
-    ctx.strokeStyle = '#dee2e6';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
+    // Get appropriate template for the product
+    const template = product ? getApparelTemplate(product.name) : getApparelTemplate('t-shirt');
     
+    // Calculate dimensions
     const centerX = width / 2;
     const centerY = height / 2;
-    const singletWidth = width * 0.6;
-    const singletHeight = height * 0.8;
+    const maxSize = Math.min(width * 0.6, height * 0.75);
+    const templateWidth = maxSize * 0.8;
+    const templateHeight = maxSize;
     
-    // Draw rounded rectangle for singlet
-    const x = centerX - singletWidth / 2;
-    const y = centerY - singletHeight / 2;
-    const radius = 20;
-    
-    ctx.moveTo(x + radius, y);
-    ctx.lineTo(x + singletWidth - radius, y);
-    ctx.quadraticCurveTo(x + singletWidth, y, x + singletWidth, y + radius);
-    ctx.lineTo(x + singletWidth, y + singletHeight - radius);
-    ctx.quadraticCurveTo(x + singletWidth, y + singletHeight, x + singletWidth - radius, y + singletHeight);
-    ctx.lineTo(x + radius, y + singletHeight);
-    ctx.quadraticCurveTo(x, y + singletHeight, x, y + singletHeight - radius);
-    ctx.lineTo(x, y + radius);
-    ctx.quadraticCurveTo(x, y, x + radius, y);
-    ctx.closePath();
-    
-    ctx.stroke();
+    const x = centerX - templateWidth / 2;
+    const y = centerY - templateHeight / 2;
 
-    // Add color zones
-    ctx.fillStyle = 'rgba(0, 123, 255, 0.1)';
-    ctx.fillRect(x + 20, y + 50, singletWidth - 40, 80); // Chest area
+    // Draw garment shape based on template type
+    ctx.fillStyle = '#ffffff';
+    ctx.strokeStyle = '#dee2e6';
+    ctx.lineWidth = 2;
+
+    if (template.name.includes('Singlet')) {
+      drawSingletShape(ctx, x, y, templateWidth, templateHeight);
+    } else if (template.name.includes('T-Shirt')) {
+      drawTShirtShape(ctx, x, y, templateWidth, templateHeight);
+    } else if (template.name.includes('Hoodie')) {
+      drawHoodieShape(ctx, x, y, templateWidth, templateHeight);
+    } else if (template.name.includes('Tank')) {
+      drawTankTopShape(ctx, x, y, templateWidth, templateHeight);
+    } else if (template.name.includes('Jersey')) {
+      drawJerseyShape(ctx, x, y, templateWidth, templateHeight);
+    } else if (template.name.includes('Shorts')) {
+      drawShortsShape(ctx, x, y, templateWidth, templateHeight);
+    } else if (template.name.includes('Polo')) {
+      drawPoloShape(ctx, x, y, templateWidth, templateHeight);
+    } else {
+      // Default to t-shirt
+      drawTShirtShape(ctx, x, y, templateWidth, templateHeight);
+    }
+
+    // Add subtle design zones for reference
+    ctx.fillStyle = 'rgba(0, 123, 255, 0.05)';
+    ctx.fillRect(x + templateWidth * 0.15, y + templateHeight * 0.25, templateWidth * 0.7, templateHeight * 0.2); // Chest area
     
-    ctx.fillStyle = 'rgba(40, 167, 69, 0.1)';
-    ctx.fillRect(x + 20, y + 150, singletWidth - 40, 80); // Waist area
+    ctx.fillStyle = 'rgba(40, 167, 69, 0.05)';
+    ctx.fillRect(x + templateWidth * 0.15, y + templateHeight * 0.55, templateWidth * 0.7, templateHeight * 0.2); // Lower area
 
     // Add product info
     if (product) {
@@ -382,6 +392,207 @@ const DesignCanvas = forwardRef<CanvasRef, DesignCanvasProps>(({
     </div>
   );
 });
+
+// Drawing functions for different garment shapes
+const drawSingletShape = (ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number) => {
+  ctx.beginPath();
+  // Main body
+  ctx.moveTo(x + width * 0.2, y + height * 0.15);
+  ctx.lineTo(x + width * 0.8, y + height * 0.15);
+  ctx.lineTo(x + width * 0.9, y + height * 0.25);
+  ctx.lineTo(x + width * 0.9, y + height * 0.8);
+  ctx.lineTo(x + width * 0.7, y + height * 0.95);
+  ctx.lineTo(x + width * 0.3, y + height * 0.95);
+  ctx.lineTo(x + width * 0.1, y + height * 0.8);
+  ctx.lineTo(x + width * 0.1, y + height * 0.25);
+  ctx.closePath();
+  ctx.fill();
+  ctx.stroke();
+  
+  // Leg openings
+  ctx.beginPath();
+  ctx.ellipse(x + width * 0.35, y + height * 0.85, width * 0.08, height * 0.08, 0, 0, 2 * Math.PI);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.ellipse(x + width * 0.65, y + height * 0.85, width * 0.08, height * 0.08, 0, 0, 2 * Math.PI);
+  ctx.stroke();
+};
+
+const drawTShirtShape = (ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number) => {
+  ctx.beginPath();
+  // Main body
+  ctx.moveTo(x + width * 0.25, y + height * 0.2);
+  ctx.lineTo(x + width * 0.75, y + height * 0.2);
+  ctx.lineTo(x + width * 0.75, y + height * 0.9);
+  ctx.lineTo(x + width * 0.25, y + height * 0.9);
+  ctx.closePath();
+  ctx.fill();
+  ctx.stroke();
+  
+  // Sleeves
+  ctx.beginPath();
+  ctx.moveTo(x + width * 0.25, y + height * 0.2);
+  ctx.lineTo(x + width * 0.1, y + height * 0.25);
+  ctx.lineTo(x + width * 0.05, y + height * 0.4);
+  ctx.lineTo(x + width * 0.2, y + height * 0.45);
+  ctx.lineTo(x + width * 0.25, y + height * 0.35);
+  ctx.fill();
+  ctx.stroke();
+  
+  ctx.beginPath();
+  ctx.moveTo(x + width * 0.75, y + height * 0.2);
+  ctx.lineTo(x + width * 0.9, y + height * 0.25);
+  ctx.lineTo(x + width * 0.95, y + height * 0.4);
+  ctx.lineTo(x + width * 0.8, y + height * 0.45);
+  ctx.lineTo(x + width * 0.75, y + height * 0.35);
+  ctx.fill();
+  ctx.stroke();
+  
+  // Neck
+  ctx.beginPath();
+  ctx.arc(x + width * 0.5, y + height * 0.15, width * 0.08, 0, 2 * Math.PI);
+  ctx.stroke();
+};
+
+const drawHoodieShape = (ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number) => {
+  // Main body (same as t-shirt but longer)
+  ctx.beginPath();
+  ctx.moveTo(x + width * 0.25, y + height * 0.25);
+  ctx.lineTo(x + width * 0.75, y + height * 0.25);
+  ctx.lineTo(x + width * 0.75, y + height * 0.95);
+  ctx.lineTo(x + width * 0.25, y + height * 0.95);
+  ctx.closePath();
+  ctx.fill();
+  ctx.stroke();
+  
+  // Hood
+  ctx.beginPath();
+  ctx.arc(x + width * 0.5, y + height * 0.15, width * 0.15, 0, Math.PI);
+  ctx.fill();
+  ctx.stroke();
+  
+  // Sleeves
+  drawTShirtShape(ctx, x, y, width, height);
+  
+  // Kangaroo pocket
+  ctx.beginPath();
+  ctx.roundRect(x + width * 0.35, y + height * 0.55, width * 0.3, height * 0.15, 5);
+  ctx.stroke();
+};
+
+const drawTankTopShape = (ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number) => {
+  ctx.beginPath();
+  // Main body
+  ctx.moveTo(x + width * 0.3, y + height * 0.2);
+  ctx.lineTo(x + width * 0.7, y + height * 0.2);
+  ctx.lineTo(x + width * 0.7, y + height * 0.9);
+  ctx.lineTo(x + width * 0.3, y + height * 0.9);
+  ctx.closePath();
+  ctx.fill();
+  ctx.stroke();
+  
+  // Shoulder straps
+  ctx.beginPath();
+  ctx.moveTo(x + width * 0.3, y + height * 0.2);
+  ctx.lineTo(x + width * 0.35, y + height * 0.1);
+  ctx.lineTo(x + width * 0.4, y + height * 0.2);
+  ctx.stroke();
+  
+  ctx.beginPath();
+  ctx.moveTo(x + width * 0.7, y + height * 0.2);
+  ctx.lineTo(x + width * 0.65, y + height * 0.1);
+  ctx.lineTo(x + width * 0.6, y + height * 0.2);
+  ctx.stroke();
+  
+  // Neckline
+  ctx.beginPath();
+  ctx.arc(x + width * 0.5, y + height * 0.15, width * 0.06, 0, 2 * Math.PI);
+  ctx.stroke();
+};
+
+const drawJerseyShape = (ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number) => {
+  // Similar to tank top but with larger armholes
+  ctx.beginPath();
+  ctx.moveTo(x + width * 0.25, y + height * 0.2);
+  ctx.lineTo(x + width * 0.75, y + height * 0.2);
+  ctx.lineTo(x + width * 0.75, y + height * 0.9);
+  ctx.lineTo(x + width * 0.25, y + height * 0.9);
+  ctx.closePath();
+  ctx.fill();
+  ctx.stroke();
+  
+  // Large armholes
+  ctx.beginPath();
+  ctx.arc(x + width * 0.2, y + height * 0.35, width * 0.08, 0, 2 * Math.PI);
+  ctx.stroke();
+  
+  ctx.beginPath();
+  ctx.arc(x + width * 0.8, y + height * 0.35, width * 0.08, 0, 2 * Math.PI);
+  ctx.stroke();
+  
+  // V-neck
+  ctx.beginPath();
+  ctx.moveTo(x + width * 0.45, y + height * 0.15);
+  ctx.lineTo(x + width * 0.5, y + height * 0.25);
+  ctx.lineTo(x + width * 0.55, y + height * 0.15);
+  ctx.stroke();
+};
+
+const drawShortsShape = (ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number) => {
+  // Waistband
+  ctx.fillRect(x + width * 0.1, y + height * 0.1, width * 0.8, height * 0.08);
+  ctx.strokeRect(x + width * 0.1, y + height * 0.1, width * 0.8, height * 0.08);
+  
+  // Left leg
+  ctx.beginPath();
+  ctx.moveTo(x + width * 0.1, y + height * 0.18);
+  ctx.lineTo(x + width * 0.5, y + height * 0.18);
+  ctx.lineTo(x + width * 0.55, y + height * 0.8);
+  ctx.lineTo(x + width * 0.25, y + height * 0.8);
+  ctx.closePath();
+  ctx.fill();
+  ctx.stroke();
+  
+  // Right leg
+  ctx.beginPath();
+  ctx.moveTo(x + width * 0.5, y + height * 0.18);
+  ctx.lineTo(x + width * 0.9, y + height * 0.18);
+  ctx.lineTo(x + width * 0.75, y + height * 0.8);
+  ctx.lineTo(x + width * 0.45, y + height * 0.8);
+  ctx.closePath();
+  ctx.fill();
+  ctx.stroke();
+};
+
+const drawPoloShape = (ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number) => {
+  // Same as t-shirt but with collar and buttons
+  drawTShirtShape(ctx, x, y, width, height);
+  
+  // Collar
+  ctx.beginPath();
+  ctx.moveTo(x + width * 0.4, y + height * 0.12);
+  ctx.lineTo(x + width * 0.45, y + height * 0.08);
+  ctx.lineTo(x + width * 0.55, y + height * 0.08);
+  ctx.lineTo(x + width * 0.6, y + height * 0.12);
+  ctx.stroke();
+  
+  // Button placket
+  ctx.beginPath();
+  ctx.moveTo(x + width * 0.5, y + height * 0.15);
+  ctx.lineTo(x + width * 0.5, y + height * 0.3);
+  ctx.stroke();
+  
+  // Buttons
+  ctx.beginPath();
+  ctx.arc(x + width * 0.5, y + height * 0.18, 2, 0, 2 * Math.PI);
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(x + width * 0.5, y + height * 0.22, 2, 0, 2 * Math.PI);
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(x + width * 0.5, y + height * 0.26, 2, 0, 2 * Math.PI);
+  ctx.fill();
+};
 
 DesignCanvas.displayName = 'DesignCanvas';
 
