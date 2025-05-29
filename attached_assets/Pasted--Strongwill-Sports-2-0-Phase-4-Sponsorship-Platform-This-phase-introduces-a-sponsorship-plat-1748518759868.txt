@@ -1,0 +1,161 @@
+# 🤝 Strongwill Sports 2.0 — Phase 4: Sponsorship Platform
+
+This phase introduces a sponsorship platform to connect teams (Seekers) with businesses (Sponsors). It includes profile creation, agreement workflows, credit disbursement, and sponsor logo integration.
+
+---
+
+## ✅ Objectives
+
+- Enable schools/teams to create Seeker profiles
+- Allow companies to register as Sponsors
+- Facilitate discovery, messaging, and agreement creation
+- Handle Stripe-based sponsor payments
+- Apply sponsorship credits during checkout
+- Integrate sponsor logos into custom designs
+
+---
+
+## 🏗 Project Structure Updates
+
+/frontend
+/components
+/sponsorship
+/pages
+/sponsorship
+/sponsorship/seeker-profile
+/sponsorship/sponsor-profile
+/sponsorship/discover
+/sponsorship/agreement
+
+/backend
+/models
+SeekerProfile.js
+SponsorProfile.js
+SponsorshipAgreement.js
+SponsorshipCredit.js
+/routes
+sponsorshipRoutes.js
+/controllers
+sponsorshipController.js
+
+yaml
+Copy
+Edit
+
+---
+
+## ⚙️ Updated Environment Variables (`.env`)
+
+```env
+STRIPE_SECRET_KEY=your_stripe_secret
+EMAIL_SERVICE_API_KEY=your_email_service_key (stub)
+🎯 Key Features
+🧍 Seeker & Sponsor Profiles
+Seeker: organization name, contact info, sport/team type, funding goals
+
+Sponsor: company name, industry, sponsorship budget, target audience
+
+Extend existing User model with roles (seeker, sponsor)
+
+CRUD API for both profile types
+
+🔍 Discovery Interface
+Seeker View: browse potential Sponsors by category/budget
+
+Sponsor View: browse Seekers by sport/location/goal
+
+Filtering and basic keyword search
+
+Display mini profile cards
+
+💬 Messaging System (Stub MVP)
+Basic inbox model with timestamped messages
+
+Stored in MongoDB
+
+UI for sending and reading messages
+
+Future scope: notifications, unread indicators, attachments
+
+📝 Sponsorship Agreement Workflow
+Either party can initiate an Agreement proposal:
+
+Sponsorship amount
+
+Logo usage rights
+
+Duration
+
+Two-step process: propose → review → accept/reject
+
+Agreement stored in DB with status (pending, accepted, rejected)
+
+💳 Sponsor Payment & Credit Disbursement
+On agreement acceptance, Sponsor is prompted to pay via Stripe
+
+Credit issued to Seeker account (stored in SponsorshipCredit)
+
+Credits automatically apply during checkout phase (if available)
+
+View available balance on Seeker dashboard
+
+🖼 Logo Integration
+Sponsors upload logo (SVG/PNG)
+
+Once a sponsorship agreement is active:
+
+Sponsor logo becomes available in Design Tool for Seeker
+
+Usage is limited to pre-agreed zones (e.g., chest, sleeve)
+
+🔐 Security & Best Practices
+Profile and agreement access limited by user role & ID
+
+File uploads validated for size/type (logos only)
+
+Sensitive agreement terms encrypted at rest (optional future step)
+
+Sponsor payments secured via Stripe API
+
+🧪 Manual Testing Plan
+✅ Create Seeker and Sponsor profiles
+
+✅ Browse and discover sponsorship matches
+
+✅ Exchange messages via built-in system
+
+✅ Initiate and approve a Sponsorship Agreement
+
+✅ Sponsor completes payment via Stripe test card
+
+✅ Seeker sees credit applied at checkout
+
+✅ Sponsor logo shows in Design Tool for linked user
+
+📁 Notable Files
+/backend/models/SponsorshipAgreement.js
+Stores agreement terms, seeker/sponsor IDs, status, and timestamps
+
+/frontend/pages/sponsorship/discover.js
+UI to browse potential sponsors or seekers
+
+/frontend/pages/sponsorship/agreement.js
+View and manage active/pending agreements
+
+📌 Notes
+This MVP version stubs out notifications and moderation tools
+
+Admin tooling and reporting will be introduced in Phase 5
+
+Email features are stubbed with console logs or basic service
+
+⏭ Coming Next: Phase 5
+CMS + Admin Panel:
+
+Manage users, orders, content, agreements
+
+Edit static pages and blog posts
+
+Oversee all sponsorship activity
+
+Brought to life to help great teams meet great supporters. ⚽🏅🏀

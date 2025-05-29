@@ -1,0 +1,162 @@
+# 🛠️ Strongwill Sports 2.0 — Phase 5: CMS & Admin Panel
+
+This phase introduces a Content Management System and a secure Admin Panel to manage users, products, orders, sponsorships, and site content.
+
+---
+
+## ✅ Objectives
+
+- Build a basic CMS for static pages and blog posts
+- Create a secure Admin Panel with role-based access
+- Enable admin-level control over users, products, orders, pricing, and more
+- Implement foundational SEO and content tools
+
+---
+
+## 🏗 Project Structure Updates
+
+/frontend
+/pages
+/admin
+/dashboard
+/users
+/orders
+/products
+/cms
+/seo
+/sponsorships
+/quotes
+
+/backend
+/models
+Page.js
+BlogPost.js
+/routes
+adminRoutes.js
+cmsRoutes.js
+/controllers
+adminController.js
+cmsController.js
+
+yaml
+Copy
+Edit
+
+---
+
+## ⚙️ Required Environment Variables
+
+```env
+ADMIN_EMAILS=admin1@example.com,admin2@example.com
+🎯 Key Features
+🔐 Secure Admin Panel
+Admin-only route protection (middleware validation)
+
+Extend User model with role: 'admin' | 'user'
+
+Login with elevated privileges for designated emails
+
+📊 Dashboard Overview
+Simple metrics: total users, orders, revenue, active sponsorships
+
+Use dummy values or Mongo aggregations
+
+👥 User Management
+View list of all users
+
+Filter by role or registration date
+
+Edit or delete users
+
+Promote/demote users to/from admin
+
+📦 Product & Price Management
+CRUD interface for ProductBase (e.g., singlets, hoodies)
+
+Manage base colors, mockup images, material info
+
+Configure region-based pricing (AUD, EUR) & quantity discounts
+
+📝 Content Management (CMS)
+Create and edit static pages (About Us, FAQ, etc.)
+
+Write blog posts with title, body, thumbnail, and tags
+
+Use a simple rich-text editor (e.g., react-quill)
+
+Save to Pages and BlogPosts collections
+
+Dynamically render content on frontend
+
+💼 Order Management
+Search and filter orders by status or date
+
+View design snapshot, customer info, payment status
+
+Update order status (e.g., Processing → Shipped)
+
+🧾 Quote Management
+View submitted quote requests
+
+Admin follow-up via internal notes (MVP, no messaging)
+
+Mark as resolved or rejected
+
+🤝 Sponsorship Oversight
+Browse Seeker and Sponsor profiles
+
+View all agreements and payments
+
+Manually flag or resolve disputes (stub interface)
+
+🔍 SEO & Meta Tools
+Edit page-level meta titles and descriptions
+
+Stub tools:
+
+XML sitemap toggle
+
+301 redirect list
+
+Plan for Schema.org tags in Phase 6
+
+🧪 Manual Testing Plan
+✅ Log in as admin and access secure routes
+
+✅ Create/edit products and pricing
+
+✅ Create/edit CMS content and preview on frontend
+
+✅ View and manage orders and quote submissions
+
+✅ Update SEO metadata and view in frontend source
+
+📁 Notable Files
+/frontend/pages/admin/dashboard.js
+Admin overview panel with key metrics
+
+/backend/models/Page.js
+Page schema with slug, title, body, seoMeta, etc.
+
+/backend/routes/adminRoutes.js
+Contains user, product, and order admin API routes
+
+🧠 Tips
+Use getServerSideProps() to protect admin pages
+
+Apply Tailwind + Ant Design for clean, professional admin UI
+
+Break form logic into reusable hooks or components
+
+⏭ Coming Next: Phase 6
+🌍 Internationalization (i18n), SEO Enhancements, Core Web Vitals
+
+♿ Accessibility & Performance Polish
+
+🔁 Final Integration & Testing
+
+Power tools for the Strongwill team to run like champions. 🏁💼
+
+yaml
+Copy
+Edit

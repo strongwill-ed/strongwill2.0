@@ -9,6 +9,8 @@ import Products from "@/pages/products";
 import DesignTool from "@/pages/design-tool";
 import GroupOrders from "@/pages/group-orders";
 import Sponsorship from "@/pages/sponsorship";
+import CreateSeekerProfile from "@/pages/create-seeker-profile";
+import CreateSponsorProfile from "@/pages/create-sponsor-profile";
 import Admin from "@/pages/admin";
 import About from "@/pages/about";
 import Contact from "@/pages/contact";
