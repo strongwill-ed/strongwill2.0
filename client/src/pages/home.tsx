@@ -79,63 +79,68 @@ export default function Home() {
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Year 12 Leavers */}
-            <Card 
-              className="card-hover cursor-pointer overflow-hidden"
-              onClick={() => setLocation("/products?category=year12")}
-            >
-              <div className="aspect-square overflow-hidden">
-                <img 
-                  src={year12LeaversImage}
-                  alt="Year 12 Leavers" 
-                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                />
-              </div>
-              <CardContent className="p-6">
-                <h3 className="text-xl font-semibold text-black mb-2">Year 12 Leavers</h3>
-                <p className="text-gray-600 mb-4">Celebrate your graduation with custom Year 12 leavers apparel. Hoodies, jackets, and more to commemorate your achievement.</p>
-                <span className="text-sm font-medium text-black">View Collection</span>
-              </CardContent>
-            </Card>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Left Column - Sports Uniforms and Gym & Training */}
+            <div className="lg:col-span-2 space-y-8">
+              {/* Sports Uniforms */}
+              <Card 
+                className="card-hover cursor-pointer overflow-hidden"
+                onClick={() => setLocation("/products?category=sports")}
+              >
+                <div className="aspect-[2/1] overflow-hidden">
+                  <img 
+                    src={sportsUniformsImage}
+                    alt="Sports Uniforms" 
+                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                  />
+                </div>
+                <CardContent className="p-6">
+                  <h3 className="text-xl font-semibold text-black mb-2">Sports Uniforms</h3>
+                  <p className="text-gray-600 mb-4">Professional sports uniforms for teams and clubs. Custom designs for rugby, netball, AFL, and all sporting codes.</p>
+                  <span className="text-sm font-medium text-black">View Collection</span>
+                </CardContent>
+              </Card>
 
-            {/* Sports Uniforms */}
-            <Card 
-              className="card-hover cursor-pointer overflow-hidden"
-              onClick={() => setLocation("/products?category=sports")}
-            >
-              <div className="aspect-square overflow-hidden">
-                <img 
-                  src={sportsUniformsImage}
-                  alt="Sports Uniforms" 
-                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                />
-              </div>
-              <CardContent className="p-6">
-                <h3 className="text-xl font-semibold text-black mb-2">Sports Uniforms</h3>
-                <p className="text-gray-600 mb-4">Professional sports uniforms for teams and clubs. Custom designs for rugby, netball, AFL, and all sporting codes.</p>
-                <span className="text-sm font-medium text-black">View Collection</span>
-              </CardContent>
-            </Card>
+              {/* Gym & Training */}
+              <Card 
+                className="card-hover cursor-pointer overflow-hidden"
+                onClick={() => setLocation("/products?category=gym")}
+              >
+                <div className="aspect-[2/1] overflow-hidden">
+                  <img 
+                    src={gymTrainingImage}
+                    alt="Gym & Training" 
+                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                  />
+                </div>
+                <CardContent className="p-6">
+                  <h3 className="text-xl font-semibold text-black mb-2">Gym & Training</h3>
+                  <p className="text-gray-600 mb-4">High-performance training apparel for fitness enthusiasts. Breathable fabrics and ergonomic designs for optimal performance.</p>
+                  <span className="text-sm font-medium text-black">View Collection</span>
+                </CardContent>
+              </Card>
+            </div>
 
-            {/* Gym & Training */}
-            <Card 
-              className="card-hover cursor-pointer overflow-hidden"
-              onClick={() => setLocation("/products?category=gym")}
-            >
-              <div className="aspect-square overflow-hidden">
-                <img 
-                  src={gymTrainingImage}
-                  alt="Gym & Training" 
-                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                />
-              </div>
-              <CardContent className="p-6">
-                <h3 className="text-xl font-semibold text-black mb-2">Gym & Training</h3>
-                <p className="text-gray-600 mb-4">High-performance training apparel for fitness enthusiasts. Breathable fabrics and ergonomic designs for optimal performance.</p>
-                <span className="text-sm font-medium text-black">View Collection</span>
-              </CardContent>
-            </Card>
+            {/* Right Column - Year 12 Leavers */}
+            <div className="lg:col-span-1">
+              <Card 
+                className="card-hover cursor-pointer overflow-hidden h-full"
+                onClick={() => setLocation("/products?category=year12")}
+              >
+                <div className="aspect-[1/1.2] overflow-hidden">
+                  <img 
+                    src={year12LeaversImage}
+                    alt="Year 12 Leavers" 
+                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                  />
+                </div>
+                <CardContent className="p-6">
+                  <h3 className="text-xl font-semibold text-black mb-2">Year 12 Leavers</h3>
+                  <p className="text-gray-600 mb-4">Celebrate your graduation with custom Year 12 leavers apparel. Hoodies, jackets, and more to commemorate your achievement.</p>
+                  <span className="text-sm font-medium text-black">View Collection</span>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </div>
       </section>
