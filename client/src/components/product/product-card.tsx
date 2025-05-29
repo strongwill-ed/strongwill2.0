@@ -4,12 +4,29 @@ import { Badge } from "@/components/ui/badge";
 import type { Product } from "@shared/schema";
 import { Palette, ShoppingCart } from "lucide-react";
 
+/**
+ * Props interface for the ProductCard component
+ * Handles product display and user interactions
+ */
 interface ProductCardProps {
   product: Product;
   onDesignClick?: () => void;
   onAddToCart?: () => void;
 }
 
+/**
+ * ProductCard Component
+ * 
+ * Displays product information in a card format with:
+ * - Product image with hover effects
+ * - Name, description, and pricing
+ * - Available sizes and colors
+ * - Action buttons for design and cart functionality
+ * 
+ * @param product - Product data from the database
+ * @param onDesignClick - Callback for design tool navigation
+ * @param onAddToCart - Callback for adding item to cart
+ */
 export default function ProductCard({ product, onDesignClick, onAddToCart }: ProductCardProps) {
   return (
     <Card className="group card-hover overflow-hidden">

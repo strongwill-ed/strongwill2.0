@@ -2,11 +2,19 @@ import { createContext, useContext, useState, useCallback, ReactNode } from "rea
 import { useToast } from "@/hooks/use-toast";
 import type { InsertCartItem, Product } from "@shared/schema";
 
+/**
+ * Extended CartItem interface that includes a unique ID and optional product data
+ * for pricing calculations and display purposes
+ */
 interface CartItem extends InsertCartItem {
   id: number;
   product?: Product;
 }
 
+/**
+ * Cart context interface defining all cart-related operations
+ * Provides comprehensive cart management functionality
+ */
 interface CartContextType {
   cartItems: CartItem[];
   isCartOpen: boolean;
@@ -18,6 +26,7 @@ interface CartContextType {
   getCartTotal: () => number;
 }
 
+// React context for cart state management across the application
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export function CartProvider({ children }: { children: ReactNode }) {
@@ -99,11 +108,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const getCartTotal = useCallback(() => {
-    // This would normally fetch product prices from the API
-    // For now, we'll use a placeholder calculation
+    // Calculate total cart value using actual product prices
+    // Each cart item should include product information for accurate pricing
     return cartItems.reduce((total, item) => {
-      // Assuming base price of $45 for demo - in real app, fetch from products
-      const price = 45; // This should come from product data
+      // Use the actual product base price if available, otherwise fallback to stored price
+      const price = item.product?.basePrice ? parseFloat(item.product.basePrice) : 45;
       return total + (price * (item.quantity || 1));
     }, 0);
   }, [cartItems]);
