@@ -587,6 +587,180 @@ export class DatabaseStorage implements IStorage {
       .returning();
     return newItem;
   }
+
+  // Sponsorship Platform Implementation
+  // Seeker Profiles
+  async getSeekerProfiles(): Promise<SeekerProfile[]> {
+    await this.ensureInitialized();
+    return await db.select().from(seekerProfiles).where(eq(seekerProfiles.isActive, true));
+  }
+
+  async getSeekerProfile(id: number): Promise<SeekerProfile | undefined> {
+    await this.ensureInitialized();
+    const [profile] = await db.select().from(seekerProfiles).where(eq(seekerProfiles.id, id));
+    return profile || undefined;
+  }
+
+  async getSeekerProfileByUserId(userId: number): Promise<SeekerProfile | undefined> {
+    await this.ensureInitialized();
+    const [profile] = await db.select().from(seekerProfiles).where(eq(seekerProfiles.userId, userId));
+    return profile || undefined;
+  }
+
+  async createSeekerProfile(profile: InsertSeekerProfile): Promise<SeekerProfile> {
+    await this.ensureInitialized();
+    const [newProfile] = await db
+      .insert(seekerProfiles)
+      .values(profile)
+      .returning();
+    return newProfile;
+  }
+
+  async updateSeekerProfile(id: number, updates: Partial<InsertSeekerProfile>): Promise<SeekerProfile | undefined> {
+    await this.ensureInitialized();
+    const [updatedProfile] = await db
+      .update(seekerProfiles)
+      .set(updates)
+      .where(eq(seekerProfiles.id, id))
+      .returning();
+    return updatedProfile || undefined;
+  }
+
+  // Sponsor Profiles
+  async getSponsorProfiles(): Promise<SponsorProfile[]> {
+    await this.ensureInitialized();
+    return await db.select().from(sponsorProfiles).where(eq(sponsorProfiles.isActive, true));
+  }
+
+  async getSponsorProfile(id: number): Promise<SponsorProfile | undefined> {
+    await this.ensureInitialized();
+    const [profile] = await db.select().from(sponsorProfiles).where(eq(sponsorProfiles.id, id));
+    return profile || undefined;
+  }
+
+  async getSponsorProfileByUserId(userId: number): Promise<SponsorProfile | undefined> {
+    await this.ensureInitialized();
+    const [profile] = await db.select().from(sponsorProfiles).where(eq(sponsorProfiles.userId, userId));
+    return profile || undefined;
+  }
+
+  async createSponsorProfile(profile: InsertSponsorProfile): Promise<SponsorProfile> {
+    await this.ensureInitialized();
+    const [newProfile] = await db
+      .insert(sponsorProfiles)
+      .values(profile)
+      .returning();
+    return newProfile;
+  }
+
+  async updateSponsorProfile(id: number, updates: Partial<InsertSponsorProfile>): Promise<SponsorProfile | undefined> {
+    await this.ensureInitialized();
+    const [updatedProfile] = await db
+      .update(sponsorProfiles)
+      .set(updates)
+      .where(eq(sponsorProfiles.id, id))
+      .returning();
+    return updatedProfile || undefined;
+  }
+
+  // Sponsorship Agreements
+  async getSponsorshipAgreements(): Promise<SponsorshipAgreement[]> {
+    await this.ensureInitialized();
+    return await db.select().from(sponsorshipAgreements);
+  }
+
+  async getSponsorshipAgreement(id: number): Promise<SponsorshipAgreement | undefined> {
+    await this.ensureInitialized();
+    const [agreement] = await db.select().from(sponsorshipAgreements).where(eq(sponsorshipAgreements.id, id));
+    return agreement || undefined;
+  }
+
+  async getAgreementsBySeeker(seekerId: number): Promise<SponsorshipAgreement[]> {
+    await this.ensureInitialized();
+    return await db.select().from(sponsorshipAgreements).where(eq(sponsorshipAgreements.seekerId, seekerId));
+  }
+
+  async getAgreementsBySponsor(sponsorId: number): Promise<SponsorshipAgreement[]> {
+    await this.ensureInitialized();
+    return await db.select().from(sponsorshipAgreements).where(eq(sponsorshipAgreements.sponsorId, sponsorId));
+  }
+
+  async createSponsorshipAgreement(agreement: InsertSponsorshipAgreement): Promise<SponsorshipAgreement> {
+    await this.ensureInitialized();
+    const [newAgreement] = await db
+      .insert(sponsorshipAgreements)
+      .values(agreement)
+      .returning();
+    return newAgreement;
+  }
+
+  async updateSponsorshipAgreement(id: number, updates: Partial<InsertSponsorshipAgreement>): Promise<SponsorshipAgreement | undefined> {
+    await this.ensureInitialized();
+    const [updatedAgreement] = await db
+      .update(sponsorshipAgreements)
+      .set(updates)
+      .where(eq(sponsorshipAgreements.id, id))
+      .returning();
+    return updatedAgreement || undefined;
+  }
+
+  // Sponsorship Credits
+  async getSponsorshipCredits(seekerId: number): Promise<SponsorshipCredit[]> {
+    await this.ensureInitialized();
+    return await db.select().from(sponsorshipCredits).where(eq(sponsorshipCredits.seekerId, seekerId));
+  }
+
+  async createSponsorshipCredit(credit: InsertSponsorshipCredit): Promise<SponsorshipCredit> {
+    await this.ensureInitialized();
+    const [newCredit] = await db
+      .insert(sponsorshipCredits)
+      .values(credit)
+      .returning();
+    return newCredit;
+  }
+
+  async updateCreditBalance(id: number, remainingAmount: string): Promise<SponsorshipCredit | undefined> {
+    await this.ensureInitialized();
+    const [updatedCredit] = await db
+      .update(sponsorshipCredits)
+      .set({ remainingAmount })
+      .where(eq(sponsorshipCredits.id, id))
+      .returning();
+    return updatedCredit || undefined;
+  }
+
+  // Sponsorship Messages
+  async getMessages(userId: number): Promise<SponsorshipMessage[]> {
+    await this.ensureInitialized();
+    return await db.select().from(sponsorshipMessages)
+      .where(eq(sponsorshipMessages.receiverId, userId));
+  }
+
+  async getConversation(userId1: number, userId2: number): Promise<SponsorshipMessage[]> {
+    await this.ensureInitialized();
+    return await db.select().from(sponsorshipMessages)
+      .where(
+        eq(sponsorshipMessages.senderId, userId1) && eq(sponsorshipMessages.receiverId, userId2) ||
+        eq(sponsorshipMessages.senderId, userId2) && eq(sponsorshipMessages.receiverId, userId1)
+      );
+  }
+
+  async sendMessage(message: InsertSponsorshipMessage): Promise<SponsorshipMessage> {
+    await this.ensureInitialized();
+    const [newMessage] = await db
+      .insert(sponsorshipMessages)
+      .values(message)
+      .returning();
+    return newMessage;
+  }
+
+  async markMessageAsRead(messageId: number): Promise<void> {
+    await this.ensureInitialized();
+    await db
+      .update(sponsorshipMessages)
+      .set({ isRead: true })
+      .where(eq(sponsorshipMessages.id, messageId));
+  }
 }
 
 export const storage = new DatabaseStorage();
