@@ -1099,6 +1099,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.put("/api/sponsorship-agreements/:id", async (req, res) => {
+    try {
+      const updates = insertSponsorshipAgreementSchema.partial().parse(req.body);
+      const agreement = await storage.updateSponsorshipAgreement(parseInt(req.params.id), updates);
+      if (!agreement) {
+        return res.status(404).json({ message: "Sponsorship agreement not found" });
+      }
+      res.json(agreement);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid agreement data", errors: error.errors });
+      }
+      res.status(500).json({ message: "Failed to update sponsorship agreement" });
+    }
+  });
+
   app.patch("/api/sponsorship-agreements/:id", async (req, res) => {
     try {
       const updates = insertSponsorshipAgreementSchema.partial().parse(req.body);

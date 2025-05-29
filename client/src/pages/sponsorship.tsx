@@ -481,16 +481,25 @@ export default function SponsorshipPage() {
                           ${parseFloat(agreement.amount).toLocaleString()}
                         </div>
                         <p className="text-xs text-gray-500">Available for team apparel orders</p>
-                        {agreement.status === 'pending' && (
-                          <div className="mt-3 flex gap-2">
-                            <Button size="sm" variant="default">
-                              Accept Partnership
-                            </Button>
-                            <Button size="sm" variant="outline">
-                              Negotiate Terms
-                            </Button>
-                          </div>
-                        )}
+                        <div className="mt-3 flex gap-2">
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            onClick={() => setLocation(`/sponsorship-agreement/${agreement.id}`)}
+                          >
+                            View Details
+                          </Button>
+                          {agreement.status === 'pending' && (
+                            <>
+                              <Button size="sm" variant="default">
+                                Accept Partnership
+                              </Button>
+                              <Button size="sm" variant="outline">
+                                Negotiate Terms
+                              </Button>
+                            </>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </CardContent>

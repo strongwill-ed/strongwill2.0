@@ -154,7 +154,8 @@ export default function SponsorshipAgreementPage() {
     });
   };
 
-  const getStatusColor = (status: string) => {
+  const getStatusColor = (status: string | null) => {
+    if (!status) return "bg-gray-100 text-gray-800";
     switch (status) {
       case "active": return "bg-green-100 text-green-800";
       case "pending": return "bg-yellow-100 text-yellow-800";
@@ -163,7 +164,8 @@ export default function SponsorshipAgreementPage() {
     }
   };
 
-  const getPaymentStatusColor = (status: string) => {
+  const getPaymentStatusColor = (status: string | null) => {
+    if (!status) return "bg-gray-100 text-gray-800";
     switch (status) {
       case "completed": return "bg-green-100 text-green-800";
       case "pending": return "bg-yellow-100 text-yellow-800";
@@ -193,7 +195,7 @@ export default function SponsorshipAgreementPage() {
                 <CardTitle className="text-2xl mb-2">Sponsorship Agreement</CardTitle>
                 <div className="flex gap-2 mb-4">
                   <Badge className={getStatusColor(agreement.status)}>
-                    {agreement.status.charAt(0).toUpperCase() + agreement.status.slice(1)}
+                    {agreement.status ? agreement.status.charAt(0).toUpperCase() + agreement.status.slice(1) : "Unknown"}
                   </Badge>
                   <Badge className={getPaymentStatusColor(agreement.paymentStatus || "pending")}>
                     Payment: {(agreement.paymentStatus || "pending").charAt(0).toUpperCase() + (agreement.paymentStatus || "pending").slice(1)}
@@ -215,7 +217,7 @@ export default function SponsorshipAgreementPage() {
                 <h3 className="font-semibold mb-2">Team</h3>
                 <div className="p-4 bg-gray-50 rounded-lg">
                   <div className="font-medium">{agreement.seekerProfile?.organizationName}</div>
-                  <div className="text-sm text-gray-600">{agreement.seekerProfile?.sport}</div>
+                  <div className="text-sm text-gray-600">{agreement.seekerProfile?.sportType}</div>
                   <div className="text-sm text-gray-600">{agreement.seekerProfile?.location}</div>
                 </div>
               </div>
