@@ -66,8 +66,46 @@ export default function Products() {
 
   const isLoading = categoriesLoading || productsLoading;
 
+  const categoryName = selectedCategory === "all" 
+    ? "All Products" 
+    : categories?.find(cat => cat.id.toString() === selectedCategory)?.name || "Products";
+
+  const seoTitle = `${categoryName} - Custom Athletic Apparel | Strongwill Sports`;
+  const seoDescription = `Shop premium ${categoryName.toLowerCase()} at Strongwill Sports. Custom athletic apparel with advanced design tools, team uniforms, and wrestling singlets.`;
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <>
+      <SEOHead
+        title={seoTitle}
+        description={seoDescription}
+        keywords="custom athletic apparel, wrestling singlets, team uniforms, sports clothing, custom design"
+        type="website"
+        structuredData={{
+          "@context": "https://schema.org",
+          "@type": "CollectionPage",
+          "name": categoryName,
+          "description": seoDescription,
+          "url": `${window.location.origin}/products`,
+          "mainEntity": {
+            "@type": "ItemList",
+            "numberOfItems": filteredProducts.length,
+            "itemListElement": filteredProducts.slice(0, 10).map((product, index) => ({
+              "@type": "Product",
+              "position": index + 1,
+              "name": product.name,
+              "description": product.description,
+              "image": product.imageUrl,
+              "offers": {
+                "@type": "Offer",
+                "price": product.basePrice,
+                "priceCurrency": "USD",
+                "availability": "https://schema.org/InStock"
+              }
+            }))
+          }
+        }}
+      />
+      <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -218,5 +256,6 @@ export default function Products() {
         }}
       />
     </div>
+    </>
   );
 }
