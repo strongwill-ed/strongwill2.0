@@ -41,11 +41,14 @@ export default function DesignTool() {
   const [selectedProduct, setSelectedProduct] = useState<number | null>(
     productId ? parseInt(productId) : null
   );
-  const [selectedSize, setSelectedSize] = useState<string>("");
-  const [selectedColor, setSelectedColor] = useState<string>("");
   const [designElements, setDesignElements] = useState<DesignElement[]>([]);
   const [selectedElement, setSelectedElement] = useState<string | null>(null);
   const [designName, setDesignName] = useState("");
+  
+  // Cart configuration state
+  const [orderItems, setOrderItems] = useState<{[key: string]: number}>({});
+  const [addToGroupOrder, setAddToGroupOrder] = useState(false);
+  const [selectedGroupOrder, setSelectedGroupOrder] = useState<number | null>(null);
   
   // Text tool state
   const [textContent, setTextContent] = useState("");
@@ -63,6 +66,10 @@ export default function DesignTool() {
   const { data: product } = useQuery<Product>({
     queryKey: ["/api/products", selectedProduct],
     enabled: !!selectedProduct,
+  });
+
+  const { data: groupOrders = [] } = useQuery({
+    queryKey: ["/api/group-orders"],
   });
 
   const saveDesignMutation = useMutation({
@@ -153,8 +160,6 @@ export default function DesignTool() {
       designData: JSON.stringify({
         elements: designElements,
         productId: selectedProduct,
-        size: selectedSize,
-        color: selectedColor,
       }),
       productId: selectedProduct,
       userId: 1, // TODO: Get from auth context
@@ -164,33 +169,115 @@ export default function DesignTool() {
     saveDesignMutation.mutate(designData);
   };
 
+  const updateOrderQuantity = (size: string, color: string, quantity: number) => {
+    const key = `${size}-${color}`;
+    setOrderItems(prev => ({
+      ...prev,
+      [key]: quantity
+    }));
+  };
+
+  const getTotalItems = () => {
+    return Object.values(orderItems).reduce((sum, qty) => sum + qty, 0);
+  };
+
   const addToCartHandler = () => {
-    if (!selectedProduct || !selectedSize || !selectedColor) {
+    if (!selectedProduct) {
       toast({
         title: "Error",
-        description: "Please select product, size, and color",
+        description: "Please select a product",
         variant: "destructive",
       });
       return;
     }
 
-    const cartItem = {
-      userId: 1, // TODO: Get from auth context
-      productId: selectedProduct,
-      quantity: 1,
-      size: selectedSize,
-      color: selectedColor,
-      customizations: JSON.stringify({
-        elements: designElements,
-        designName,
-      }),
-    };
+    const totalItems = getTotalItems();
+    if (totalItems === 0) {
+      toast({
+        title: "Error",
+        description: "Please select at least one item",
+        variant: "destructive",
+      });
+      return;
+    }
 
-    addToCart(cartItem);
+    // Add each size/color combination to cart
+    Object.entries(orderItems).forEach(([key, quantity]) => {
+      if (quantity > 0) {
+        const [size, color] = key.split('-');
+        const cartItem = {
+          userId: 1, // TODO: Get from auth context
+          productId: selectedProduct,
+          quantity,
+          size,
+          color,
+          customizations: JSON.stringify({
+            elements: designElements,
+            designName,
+          }),
+        };
+        addToCart(cartItem);
+      }
+    });
+
     toast({
       title: "Success",
-      description: "Design added to cart!",
+      description: `${totalItems} item(s) added to cart!`,
     });
+  };
+
+  const addToGroupOrderHandler = async () => {
+    if (!selectedProduct || !selectedGroupOrder) {
+      toast({
+        title: "Error",
+        description: "Please select a product and group order",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const totalItems = getTotalItems();
+    if (totalItems === 0) {
+      toast({
+        title: "Error",
+        description: "Please select at least one item",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      // Add each size/color combination to group order
+      for (const [key, quantity] of Object.entries(orderItems)) {
+        if (quantity > 0) {
+          const [size, color] = key.split('-');
+          await apiRequest("POST", "/api/group-order-items", {
+            groupOrderId: selectedGroupOrder,
+            userId: 1, // TODO: Get from auth context
+            quantity,
+            size,
+            color,
+            participantName: "Current User", // TODO: Get from auth context
+            participantEmail: "user@example.com", // TODO: Get from auth context
+            customizations: JSON.stringify({
+              elements: designElements,
+              designName,
+            }),
+          });
+        }
+      }
+
+      toast({
+        title: "Success",
+        description: `${totalItems} item(s) added to group order!`,
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to add items to group order",
+        variant: "destructive",
+      });
+    }
   };
 
   const exportDesign = () => {
@@ -244,10 +331,17 @@ export default function DesignTool() {
                 <Save className="mr-2 h-4 w-4" />
                 {saveDesignMutation.isPending ? "Saving..." : "Save"}
               </Button>
-              <Button onClick={addToCartHandler} className="btn-primary">
-                <ShoppingCart className="mr-2 h-4 w-4" />
-                Add to Cart
-              </Button>
+              {addToGroupOrder ? (
+                <Button onClick={addToGroupOrderHandler} className="btn-primary">
+                  <ShoppingCart className="mr-2 h-4 w-4" />
+                  Add to Group Order ({getTotalItems()})
+                </Button>
+              ) : (
+                <Button onClick={addToCartHandler} className="btn-primary">
+                  <ShoppingCart className="mr-2 h-4 w-4" />
+                  Add to Cart ({getTotalItems()})
+                </Button>
+              )}
             </div>
           </div>
         </div>
@@ -307,39 +401,71 @@ export default function DesignTool() {
                     </div>
 
                     {product && (
-                      <>
-                        <div>
-                          <Label htmlFor="size-select">Size</Label>
-                          <Select value={selectedSize} onValueChange={setSelectedSize}>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select size" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {product.sizes?.map((size) => (
-                                <SelectItem key={size} value={size}>
-                                  {size}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
+                      <div className="space-y-4">
+                        <Label>Order Configuration</Label>
+                        <div className="space-y-3 max-h-60 overflow-y-auto">
+                          {product.sizes?.map((size) => (
+                            <div key={size} className="space-y-2">
+                              <Label className="text-sm font-medium">{size}</Label>
+                              <div className="grid grid-cols-2 gap-2">
+                                {product.colors?.map((color) => (
+                                  <div key={`${size}-${color}`} className="flex items-center space-x-2">
+                                    <Label className="text-xs min-w-0 flex-1 truncate">{color}</Label>
+                                    <Input
+                                      type="number"
+                                      min="0"
+                                      max="50"
+                                      value={orderItems[`${size}-${color}`] || 0}
+                                      onChange={(e) => updateOrderQuantity(size, color, parseInt(e.target.value) || 0)}
+                                      className="w-16 h-8 text-xs"
+                                    />
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          ))}
                         </div>
-
-                        <div>
-                          <Label htmlFor="color-select">Color</Label>
-                          <Select value={selectedColor} onValueChange={setSelectedColor}>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select color" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {product.colors?.map((color) => (
-                                <SelectItem key={color} value={color}>
-                                  {color}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
+                        <div className="text-sm text-gray-600">
+                          Total items: {getTotalItems()}
                         </div>
-                      </>
+                        
+                        <div className="space-y-3 pt-4 border-t">
+                          <Label>Order Type</Label>
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id="group-order-toggle"
+                              checked={addToGroupOrder}
+                              onChange={(e) => setAddToGroupOrder(e.target.checked)}
+                              className="rounded border-gray-300"
+                            />
+                            <Label htmlFor="group-order-toggle" className="text-sm">
+                              Add to existing group order
+                            </Label>
+                          </div>
+                          
+                          {addToGroupOrder && (
+                            <div>
+                              <Label htmlFor="group-order-select">Select Group Order</Label>
+                              <Select 
+                                value={selectedGroupOrder?.toString() || ""} 
+                                onValueChange={(value) => setSelectedGroupOrder(parseInt(value))}
+                              >
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Choose a group order" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {groupOrders.filter((order: any) => order.status === 'active').map((order: any) => (
+                                    <SelectItem key={order.id} value={order.id.toString()}>
+                                      {order.name} (Due: {new Date(order.deadline).toLocaleDateString()})
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          )}
+                        </div>
+                      </div>
                     )}
                   </TabsContent>
 

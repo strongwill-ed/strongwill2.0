@@ -108,6 +108,7 @@ export const groupOrderItems = pgTable("group_order_items", {
   color: text("color"),
   participantName: text("participant_name").notNull(),
   participantEmail: text("participant_email").notNull(),
+  nickname: text("nickname"), // Optional nickname for team member identification
 });
 
 export const refunds = pgTable("refunds", {
