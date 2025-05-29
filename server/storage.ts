@@ -1,4 +1,4 @@
-import { users, productCategories, products, designs, cartItems, orders, orderItems, groupOrders, groupOrderItems, refunds, seekerProfiles, sponsorProfiles, sponsorshipAgreements, sponsorshipCredits, sponsorshipMessages, pages, blogPosts, quoteRequests, adminSettings, type User, type ProductCategory, type Product, type Design, type CartItem, type Order, type OrderItem, type GroupOrder, type GroupOrderItem, type Refund, type SeekerProfile, type SponsorProfile, type SponsorshipAgreement, type SponsorshipCredit, type SponsorshipMessage, type InsertUser, type InsertProductCategory, type InsertProduct, type InsertDesign, type InsertCartItem, type InsertOrder, type InsertOrderItem, type InsertGroupOrder, type InsertGroupOrderItem, type InsertRefund, type InsertSeekerProfile, type InsertSponsorProfile, type InsertSponsorshipAgreement, type InsertSponsorshipCredit, type InsertSponsorshipMessage, type Page, type InsertPage, type BlogPost, type InsertBlogPost, type QuoteRequest, type InsertQuoteRequest, type AdminSetting, type InsertAdminSetting } from "@shared/schema";
+import { users, productCategories, products, designs, cartItems, orders, orderItems, groupOrders, groupOrderItems, refunds, seekerProfiles, sponsorProfiles, sponsorshipAgreements, sponsorshipCredits, sponsorshipMessages, pages, blogPosts, quoteRequests, adminSettings, productRecommendations, type User, type ProductCategory, type Product, type Design, type CartItem, type Order, type OrderItem, type GroupOrder, type GroupOrderItem, type Refund, type SeekerProfile, type SponsorProfile, type SponsorshipAgreement, type SponsorshipCredit, type SponsorshipMessage, type Page, type InsertPage, type BlogPost, type InsertBlogPost, type QuoteRequest, type InsertQuoteRequest, type AdminSetting, type InsertAdminSetting, type ProductRecommendation, type InsertProductRecommendation, type InsertUser, type InsertProductCategory, type InsertProduct, type InsertDesign, type InsertCartItem, type InsertOrder, type InsertOrderItem, type InsertGroupOrder, type InsertGroupOrderItem, type InsertRefund, type InsertSeekerProfile, type InsertSponsorProfile, type InsertSponsorshipAgreement, type InsertSponsorshipCredit, type InsertSponsorshipMessage } from "@shared/schema";
 import { db } from "./db";
 import { eq, count, sum, and } from "drizzle-orm";
 
@@ -143,6 +143,13 @@ export interface IStorage {
   // User Management
   getAllUsers(): Promise<User[]>;
   updateUserRole(userId: number, role: string): Promise<User | undefined>;
+
+  // Product Recommendations
+  getProductRecommendations(productId: number): Promise<ProductRecommendation[]>;
+  createProductRecommendation(recommendation: InsertProductRecommendation): Promise<ProductRecommendation>;
+  updateProductRecommendation(id: number, updates: Partial<InsertProductRecommendation>): Promise<ProductRecommendation | undefined>;
+  deleteProductRecommendation(id: number): Promise<boolean>;
+  getRecommendationsForCartItems(cartItemIds: number[]): Promise<Product[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -1073,6 +1080,73 @@ export class DatabaseStorage implements IStorage {
       .where(eq(users.id, userId))
       .returning();
     return updatedUser || undefined;
+  }
+
+  // Product Recommendations
+  async getProductRecommendations(productId: number): Promise<ProductRecommendation[]> {
+    await this.ensureInitialized();
+    return await db
+      .select()
+      .from(productRecommendations)
+      .where(and(
+        eq(productRecommendations.productId, productId),
+        eq(productRecommendations.isActive, true)
+      ));
+  }
+
+  async createProductRecommendation(recommendation: InsertProductRecommendation): Promise<ProductRecommendation> {
+    await this.ensureInitialized();
+    const [newRecommendation] = await db
+      .insert(productRecommendations)
+      .values(recommendation)
+      .returning();
+    return newRecommendation;
+  }
+
+  async updateProductRecommendation(id: number, updates: Partial<InsertProductRecommendation>): Promise<ProductRecommendation | undefined> {
+    await this.ensureInitialized();
+    const [updatedRecommendation] = await db
+      .update(productRecommendations)
+      .set(updates)
+      .where(eq(productRecommendations.id, id))
+      .returning();
+    return updatedRecommendation || undefined;
+  }
+
+  async deleteProductRecommendation(id: number): Promise<boolean> {
+    await this.ensureInitialized();
+    const result = await db.delete(productRecommendations).where(eq(productRecommendations.id, id));
+    return (result.rowCount || 0) > 0;
+  }
+
+  async getRecommendationsForCartItems(cartItemIds: number[]): Promise<Product[]> {
+    await this.ensureInitialized();
+    if (cartItemIds.length === 0) return [];
+    
+    // Get cart items to find their product IDs
+    const cartItems = await db
+      .select()
+      .from(cartItems)
+      .where(eq(cartItems.id, cartItemIds[0])); // Use first cart item for now
+    
+    if (cartItems.length === 0) return [];
+    
+    const productId = cartItems[0].productId;
+    
+    // Get recommended products for this product
+    const recommendations = await db
+      .select({
+        product: products
+      })
+      .from(productRecommendations)
+      .innerJoin(products, eq(productRecommendations.recommendedProductId, products.id))
+      .where(and(
+        eq(productRecommendations.productId, productId),
+        eq(productRecommendations.isActive, true)
+      ))
+      .orderBy(productRecommendations.priority);
+    
+    return recommendations.map(r => r.product);
   }
 }
 

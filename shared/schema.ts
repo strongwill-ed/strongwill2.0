@@ -209,6 +209,16 @@ export const sponsorshipMessages = pgTable("sponsorship_messages", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+export const productRecommendations = pgTable("product_recommendations", {
+  id: serial("id").primaryKey(),
+  productId: integer("product_id").references(() => products.id).notNull(),
+  recommendedProductId: integer("recommended_product_id").references(() => products.id).notNull(),
+  priority: integer("priority").default(1), // Higher number = higher priority
+  reason: text("reason"), // "frequently_bought_together", "color_matching", "size_variant", etc.
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).omit({ id: true, createdAt: true });
 export const insertProductCategorySchema = createInsertSchema(productCategories).omit({ id: true });
@@ -225,6 +235,7 @@ export const insertSponsorProfileSchema = createInsertSchema(sponsorProfiles).om
 export const insertSponsorshipAgreementSchema = createInsertSchema(sponsorshipAgreements).omit({ id: true, createdAt: true, updatedAt: true });
 export const insertSponsorshipCreditSchema = createInsertSchema(sponsorshipCredits).omit({ id: true, createdAt: true });
 export const insertSponsorshipMessageSchema = createInsertSchema(sponsorshipMessages).omit({ id: true, createdAt: true });
+export const insertProductRecommendationSchema = createInsertSchema(productRecommendations).omit({ id: true, createdAt: true });
 
 // Types
 export type User = typeof users.$inferSelect;
@@ -257,6 +268,8 @@ export type SponsorshipCredit = typeof sponsorshipCredits.$inferSelect;
 export type InsertSponsorshipCredit = z.infer<typeof insertSponsorshipCreditSchema>;
 export type SponsorshipMessage = typeof sponsorshipMessages.$inferSelect;
 export type InsertSponsorshipMessage = z.infer<typeof insertSponsorshipMessageSchema>;
+export type ProductRecommendation = typeof productRecommendations.$inferSelect;
+export type InsertProductRecommendation = z.infer<typeof insertProductRecommendationSchema>;
 
 // CMS & Admin Tables
 export const pages = pgTable("pages", {
