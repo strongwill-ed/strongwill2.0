@@ -1618,7 +1618,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const results = await Promise.all(
         products.map(async (productData: any) => {
           try {
-            const validatedProduct = insertProductSchema.parse(productData);
+            // Create a copy to avoid modifying original data
+            const processedData = { ...productData };
+            
+            // Convert numeric prices to strings for validation
+            if (typeof processedData.basePrice === 'number') {
+              processedData.basePrice = processedData.basePrice.toString();
+            }
+            if (processedData.salePrice !== null && processedData.salePrice !== undefined && typeof processedData.salePrice === 'number') {
+              processedData.salePrice = processedData.salePrice.toString();
+            }
+            
+            const validatedProduct = insertProductSchema.parse(processedData);
             return await storage.createProduct(validatedProduct);
           } catch (error) {
             console.error('Failed to import product:', error);

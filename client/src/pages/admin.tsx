@@ -285,6 +285,17 @@ function BulkProductManager() {
         <p className="text-gray-600">Manage multiple products at once</p>
       </div>
 
+      <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
+        <h3 className="font-semibold text-blue-900 dark:text-blue-100 mb-2">Bulk Upload Instructions</h3>
+        <ul className="text-sm text-blue-800 dark:text-blue-200 space-y-1">
+          <li>• Upload CSV files with product data to add new products to the catalog</li>
+          <li>• Existing products will remain unchanged - new products are added alongside them</li>
+          <li>• Required fields: name, basePrice, categoryId, sizes, colors</li>
+          <li>• Use semicolon (;) to separate multiple sizes or colors in CSV</li>
+          <li>• Download the current catalog first to see the expected format</li>
+        </ul>
+      </div>
+
       {/* Controls */}
       <div className="flex flex-wrap gap-4 items-center">
         <Input
