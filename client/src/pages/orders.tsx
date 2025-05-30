@@ -141,9 +141,13 @@ export default function Orders() {
                             <div key={index} className="flex justify-between items-center py-2 border-b last:border-b-0">
                               <div>
                                 <p className="font-medium">{item.productName || `Item ${index + 1}`}</p>
-                                <p className="text-sm text-gray-600">Quantity: {item.quantity}</p>
+                                <p className="text-sm text-gray-600">
+                                  Quantity: {item.quantity}
+                                  {item.size && ` • Size: ${item.size}`}
+                                  {item.color && ` • Color: ${item.color}`}
+                                </p>
                               </div>
-                              <span className="font-medium">${item.price || '0.00'}</span>
+                              <span className="font-medium">${item.unitPrice || item.productPrice || '0.00'}</span>
                             </div>
                           ))}
                         </div>

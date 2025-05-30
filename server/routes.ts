@@ -996,11 +996,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const orders = await storage.getOrders();
       
-      // Get order items for each order
+      // Get order items for each order with product details
       const ordersWithItems = await Promise.all(
         orders.map(async (order) => {
           const items = await storage.getOrderItems(order.id);
-          return { ...order, items };
+          const itemsWithDetails = await Promise.all(
+            items.map(async (item) => {
+              const product = await storage.getProduct(item.productId || 0);
+              return {
+                ...item,
+                productName: product?.name || 'Unknown Product',
+                productPrice: product?.basePrice || '0.00'
+              };
+            })
+          );
+          return { ...order, items: itemsWithDetails };
         })
       );
       
