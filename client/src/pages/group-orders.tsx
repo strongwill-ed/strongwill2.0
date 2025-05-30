@@ -860,6 +860,33 @@ export default function GroupOrders() {
                 <p className="text-sm text-gray-600">
                   {products.find(p => p.id === selectedGroupOrder.productId)?.name}
                 </p>
+                {/* Design Preview */}
+                {selectedGroupOrder.productId && (
+                  <div className="mt-3">
+                    <p className="text-sm font-medium text-gray-700 mb-2">Design Preview:</p>
+                    <div className="relative bg-white border rounded-lg p-4 flex items-center justify-center h-32">
+                      <div className="relative w-20 h-24 bg-gray-100 rounded-lg flex items-center justify-center">
+                        {/* Apparel silhouette */}
+                        <div className="w-16 h-20 bg-gray-300 rounded-t-lg rounded-b-sm relative">
+                          {/* Design overlay if available */}
+                          {selectedGroupOrder.designId && (
+                            <div className="absolute inset-2 bg-black/10 rounded flex items-center justify-center">
+                              <span className="text-xs text-gray-600">Custom Design</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      <div className="ml-4 text-sm text-gray-600">
+                        <p className="font-medium">
+                          {products.find(p => p.id === selectedGroupOrder.productId)?.name}
+                        </p>
+                        <p className="text-xs">
+                          {selectedGroupOrder.designId ? 'With Custom Design' : 'Base Product'}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
             <Form {...joinGroupOrderForm}>
