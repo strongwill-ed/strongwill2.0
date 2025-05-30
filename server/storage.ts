@@ -593,6 +593,12 @@ export class DatabaseStorage implements IStorage {
     return updatedDesign || undefined;
   }
 
+  async deleteDesign(id: number): Promise<boolean> {
+    await this.ensureInitialized();
+    const result = await db.delete(designs).where(eq(designs.id, id));
+    return result.rowCount !== null && result.rowCount > 0;
+  }
+
   async getCartItems(userId: number): Promise<CartItem[]> {
     await this.ensureInitialized();
     return await db.select().from(cartItems).where(eq(cartItems.userId, userId));

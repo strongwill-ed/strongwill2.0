@@ -340,6 +340,46 @@ export class EmailService {
       text
     });
   }
+
+  async sendDesignShare(data: {
+    to: string;
+    designId: string;
+    designLink: string;
+  }): Promise<boolean> {
+    const template = await this.getEmailTemplate('design_share') || {
+      subject: 'Custom Design Shared With You',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h1 style="color: #000;">Custom Design Shared</h1>
+          <p>Hello!</p>
+          <p>Someone has shared a custom apparel design with you from Strongwill Sports.</p>
+          <div style="background: #f5f5f5; padding: 15px; margin: 10px 0;">
+            <p><strong>Design ID:</strong> {{designId}}</p>
+            <p><strong>View Design:</strong> <a href="{{designLink}}" style="color: #000; text-decoration: underline;">Click here to view the design</a></p>
+          </div>
+          <p>You can view, modify, and order this custom design using the link above.</p>
+          <p>Best regards,<br>Strongwill Sports Team</p>
+        </div>
+      `,
+      text: `Custom Design Shared - Hello! Someone has shared a custom apparel design with you from Strongwill Sports. Design ID: {{designId}}. View Design: {{designLink}}. You can view, modify, and order this custom design using the link above. Best regards, Strongwill Sports Team`
+    };
+
+    const html = template.html
+      .replace(/{{designId}}/g, data.designId)
+      .replace(/{{designLink}}/g, data.designLink);
+
+    const text = template.text
+      .replace(/{{designId}}/g, data.designId)
+      .replace(/{{designLink}}/g, data.designLink);
+
+    return this.sendEmail({
+      to: data.to,
+      from: this.fromEmail,
+      subject: template.subject,
+      html,
+      text
+    });
+  }
 }
 
 export const emailService = new EmailService();

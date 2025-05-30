@@ -288,6 +288,50 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Delete design
+  app.delete("/api/designs/:id", async (req, res) => {
+    try {
+      const designId = parseInt(req.params.id);
+      const success = await storage.deleteDesign(designId);
+      
+      if (!success) {
+        return res.status(404).json({ message: "Design not found" });
+      }
+      
+      res.json({ success: true });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to delete design" });
+    }
+  });
+
+  // Share design via email
+  app.post("/api/designs/share", async (req, res) => {
+    try {
+      const { designId, email } = req.body;
+      
+      if (!designId || !email) {
+        return res.status(400).json({ message: "Design ID and email are required" });
+      }
+      
+      const designLink = `${req.headers.origin || 'http://localhost:5000'}/design-tool?loadDesign=${designId}`;
+      
+      // Send email with design link
+      const emailSent = await emailService.sendDesignShare({
+        to: email,
+        designId,
+        designLink
+      });
+      
+      if (emailSent) {
+        res.json({ success: true });
+      } else {
+        res.status(500).json({ message: "Failed to send email" });
+      }
+    } catch (error) {
+      res.status(500).json({ message: "Failed to share design" });
+    }
+  });
+
   // Cart
   app.get("/api/cart/:userId", async (req, res) => {
     try {
