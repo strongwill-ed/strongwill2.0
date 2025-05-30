@@ -46,7 +46,7 @@ import DesignCanvas from "@/components/design/design-canvas";
 import { getApparelTemplate } from "@/components/design/apparel-templates";
 import type { Product, Design, InsertDesign, GroupOrder } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
-import { Save, ShoppingCart, Download, Undo, Redo, Type, Image, Palette } from "lucide-react";
+import { Save, ShoppingCart, Download, Undo, Redo, Type, Image, Palette, Eye } from "lucide-react";
 
 interface DesignElement {
   id: string;
@@ -201,6 +201,33 @@ export default function DesignTool() {
                   className="px-3 py-1 bg-gray-600 text-white text-sm rounded hover:bg-gray-700"
                 >
                   Copy Link
+                </button>
+                <button 
+                  onClick={() => {
+                    const email = prompt("Enter email address to share this design:");
+                    if (email && email.includes('@')) {
+                      // Send email with design link
+                      apiRequest("POST", "/api/designs/share", {
+                        designId: savedDesign.id,
+                        email: email,
+                        designLink: designLink
+                      }).then(() => {
+                        toast({
+                          title: "Email Sent!",
+                          description: `Design link sent to ${email}`
+                        });
+                      }).catch(() => {
+                        toast({
+                          title: "Failed to send email",
+                          description: "Please try again later",
+                          variant: "destructive"
+                        });
+                      });
+                    }
+                  }}
+                  className="px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700"
+                >
+                  Email Link
                 </button>
               </div>
             </div>
@@ -487,6 +514,10 @@ export default function DesignTool() {
                   {loadDesignMutation.isPending ? "Loading..." : "Load Design"}
                 </Button>
               </div>
+              <Button variant="outline" onClick={() => window.location.href = '/my-designs'}>
+                <Eye className="mr-2 h-4 w-4" />
+                My Designs
+              </Button>
               <Button variant="outline" onClick={exportDesign}>
                 <Download className="mr-2 h-4 w-4" />
                 Export

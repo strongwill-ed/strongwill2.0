@@ -477,7 +477,7 @@ function EmailTemplateManager() {
           <h1 style="color: #000;">Order Confirmation</h1>
           <p>Dear {{customerName}},</p>
           <p>Thank you for your order! Your order #{{orderId}} has been confirmed.</p>
-          <p><strong>Total: $\{\{totalAmount\}\}</strong></p>
+          <p><strong>Total: ${{totalAmount}}</strong></p>
           <p>Best regards,<br>Strongwill Sports Team</p>
         </div>`,
         text: 'Order Confirmation - Dear {{customerName}}, Thank you for your order #{{orderId}}. Total: ${{totalAmount}}. Best regards, Strongwill Sports Team'
