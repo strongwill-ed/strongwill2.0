@@ -473,24 +473,23 @@ function EmailTemplateManager() {
     const defaults: Record<string, any> = {
       order_confirmation: {
         subject: 'Order Confirmation - Strongwill Sports',
-        html: `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h1 style="color: #000;">Order Confirmation</h1>
-          <p>Dear {{customerName}},</p>
-          <p>Thank you for your order! Your order #{{orderId}} has been confirmed.</p>
-          <p><strong>Total: ${{totalAmount}}</strong></p>
-          <p>Best regards,<br>Strongwill Sports Team</p>
-        </div>`,
+        html: '<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;"><h1 style="color: #000;">Order Confirmation</h1><p>Dear {{customerName}},</p><p>Thank you for your order! Your order #{{orderId}} has been confirmed.</p><p><strong>Total: ${{totalAmount}}</strong></p><p>Best regards,<br>Strongwill Sports Team</p></div>',
         text: 'Order Confirmation - Dear {{customerName}}, Thank you for your order #{{orderId}}. Total: ${{totalAmount}}. Best regards, Strongwill Sports Team'
       },
       newsletter_confirmation: {
-        subject: 'Welcome to Strongwill Sports Newsletter! ⚡',
-        html: `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h1 style="color: #000;">Welcome to Strongwill Sports! ⚡</h1>
-          <p>Thank you for subscribing to our newsletter!</p>
-          <p><strong>🚀 Free shipping on your first order!</strong></p>
-          <p>Best regards,<br>Strongwill Sports Team</p>
-        </div>`,
+        subject: 'Welcome to Strongwill Sports Newsletter!',
+        html: '<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;"><h1 style="color: #000;">Welcome to Strongwill Sports!</h1><p>Thank you for subscribing to our newsletter!</p><p><strong>Free shipping on your first order!</strong></p><p>Best regards,<br>Strongwill Sports Team</p></div>',
         text: 'Welcome to Strongwill Sports! Thank you for subscribing to our newsletter! Free shipping on your first order!'
+      },
+      group_order_invitation: {
+        subject: 'Join Our Group Order - Strongwill Sports',
+        html: '<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;"><h1 style="color: #000;">Join Our Group Order</h1><p>You have been invited to join group order: {{groupOrderName}}</p><p>Minimum quantity: {{minQuantity}}</p><p><a href="{{joinLink}}" style="background: #000; color: #fff; padding: 10px 20px; text-decoration: none;">Join Now</a></p></div>',
+        text: 'Join Our Group Order: {{groupOrderName}}. Minimum quantity: {{minQuantity}}. Join at: {{joinLink}}'
+      },
+      design_share: {
+        subject: 'Check out this design - Strongwill Sports',
+        html: '<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;"><h1 style="color: #000;">Design Shared</h1><p>Someone has shared a design with you!</p><p><a href="{{designLink}}" style="background: #000; color: #fff; padding: 10px 20px; text-decoration: none;">View Design</a></p></div>',
+        text: 'Someone has shared a design with you! View it at: {{designLink}}'
       }
     };
     
@@ -589,7 +588,7 @@ function EmailTemplateManager() {
                       className="font-mono text-sm"
                     />
                     <p className="text-xs text-gray-500 mt-1">
-                      Use variables like: {{customerName}}, {{orderId}}, {{totalAmount}}
+                      Use variables like: customerName, orderId, totalAmount
                     </p>
                   </div>
 
