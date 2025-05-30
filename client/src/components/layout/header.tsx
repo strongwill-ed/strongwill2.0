@@ -108,6 +108,12 @@ export default function Header() {
                         View Profile
                       </DropdownMenuItem>
                     </Link>
+                    <Link href="/my-designs">
+                      <DropdownMenuItem>
+                        <Settings className="h-4 w-4 mr-2" />
+                        My Designs
+                      </DropdownMenuItem>
+                    </Link>
                     <Link href="/orders">
                       <DropdownMenuItem>
                         <Settings className="h-4 w-4 mr-2" />

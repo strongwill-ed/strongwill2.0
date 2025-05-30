@@ -175,9 +175,36 @@ export default function DesignTool() {
           });
         }
       } else {
+        // Show enhanced success message with action options
+        const designLink = `${window.location.origin}/design-tool?loadDesign=${savedDesign.uniqueId}`;
+        
         toast({
           title: "Design Saved Successfully!",
-          description: `Your design ID is: ${savedDesign.uniqueId}. Save this ID to access your design later!`,
+          description: (
+            <div className="space-y-3">
+              <p>Your design ID is: <strong>{savedDesign.uniqueId}</strong></p>
+              <div className="flex space-x-2">
+                <button 
+                  onClick={() => window.location.href = '/my-designs'}
+                  className="px-3 py-1 bg-black text-white text-sm rounded hover:bg-gray-800"
+                >
+                  View All Designs
+                </button>
+                <button 
+                  onClick={() => {
+                    navigator.clipboard.writeText(designLink);
+                    toast({
+                      title: "Link Copied!",
+                      description: "Design link copied to clipboard"
+                    });
+                  }}
+                  className="px-3 py-1 bg-gray-600 text-white text-sm rounded hover:bg-gray-700"
+                >
+                  Copy Link
+                </button>
+              </div>
+            </div>
+          ),
         });
       }
       
