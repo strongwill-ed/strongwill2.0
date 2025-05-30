@@ -126,9 +126,21 @@ export default function Orders() {
                         </div>
                         <div>
                           <span className="text-gray-600">Shipping Address:</span>
-                          <span className="ml-2 font-medium">
-                            {order.shippingAddress || 'Not provided'}
-                          </span>
+                          <div className="ml-2 font-medium mt-1">
+                            {order.shippingAddress ? (
+                              typeof order.shippingAddress === 'string' ? 
+                                order.shippingAddress.split(',').map((line, i) => (
+                                  <div key={i}>{line.trim()}</div>
+                                )) :
+                                <div>
+                                  {order.shippingAddress.street && <div>{order.shippingAddress.street}</div>}
+                                  {order.shippingAddress.city && <div>{order.shippingAddress.city}, {order.shippingAddress.state} {order.shippingAddress.zip}</div>}
+                                  {order.shippingAddress.country && <div>{order.shippingAddress.country}</div>}
+                                </div>
+                            ) : (
+                              <div className="text-gray-500">Not provided</div>
+                            )}
+                          </div>
                         </div>
                       </div>
                     </div>
