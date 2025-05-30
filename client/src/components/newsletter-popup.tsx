@@ -13,12 +13,18 @@ export function NewsletterPopup() {
   const { toast } = useToast();
 
   useEffect(() => {
-    // For demo purposes, show popup after 1 second
-    const timer = setTimeout(() => {
-      setIsOpen(true);
-    }, 1000);
+    // Check if user has already seen the popup or signed up
+    const hasSeenPopup = localStorage.getItem("newsletter-popup-seen");
+    const hasSignedUp = localStorage.getItem("newsletter-signed-up");
     
-    return () => clearTimeout(timer);
+    if (!hasSeenPopup && !hasSignedUp) {
+      const timer = setTimeout(() => {
+        setIsOpen(true);
+        localStorage.setItem("newsletter-popup-seen", "true");
+      }, 3000); // Show after 3 seconds for first-time visitors
+      
+      return () => clearTimeout(timer);
+    }
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -52,12 +58,7 @@ export function NewsletterPopup() {
 
   const handleClose = () => {
     setIsOpen(false);
-    // Set a reminder to show again after 24 hours if they haven't signed up
-    if (!localStorage.getItem("newsletter-signed-up")) {
-      setTimeout(() => {
-        localStorage.removeItem("newsletter-popup-seen");
-      }, 24 * 60 * 60 * 1000); // 24 hours
-    }
+    localStorage.setItem("newsletter-popup-seen", "true");
   };
 
   return (
