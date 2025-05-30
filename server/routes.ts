@@ -251,6 +251,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get design by unique ID (for guest access)
+  app.get("/api/designs/unique/:uniqueId", async (req, res) => {
+    try {
+      const uniqueId = req.params.uniqueId;
+      const design = await storage.getDesignByUniqueId(uniqueId);
+      
+      if (!design) {
+        return res.status(404).json({ message: "Design not found" });
+      }
+      
+      res.json(design);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch design" });
+    }
+  });
+
+  // Update design by unique ID (for guest access)
+  app.put("/api/designs/unique/:uniqueId", async (req, res) => {
+    try {
+      const uniqueId = req.params.uniqueId;
+      const updates = insertDesignSchema.partial().parse(req.body);
+      const design = await storage.updateDesignByUniqueId(uniqueId, updates);
+      
+      if (!design) {
+        return res.status(404).json({ message: "Design not found" });
+      }
+      
+      res.json(design);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ message: "Invalid design data", errors: error.errors });
+      } else {
+        res.status(500).json({ message: "Failed to update design" });
+      }
+    }
+  });
+
   // Cart
   app.get("/api/cart/:userId", async (req, res) => {
     try {

@@ -25,8 +25,10 @@ export interface IStorage {
   getDesigns(): Promise<Design[]>;
   getDesignsByUser(userId: number): Promise<Design[]>;
   getDesign(id: number): Promise<Design | undefined>;
+  getDesignByUniqueId(uniqueId: string): Promise<Design | undefined>;
   createDesign(design: InsertDesign): Promise<Design>;
   updateDesign(id: number, updates: Partial<InsertDesign>): Promise<Design | undefined>;
+  updateDesignByUniqueId(uniqueId: string, updates: Partial<InsertDesign>): Promise<Design | undefined>;
 
   // Cart
   getCartItems(userId: number): Promise<CartItem[]>;
@@ -571,6 +573,22 @@ export class DatabaseStorage implements IStorage {
       .update(designs)
       .set(updates)
       .where(eq(designs.id, id))
+      .returning();
+    return updatedDesign || undefined;
+  }
+
+  async getDesignByUniqueId(uniqueId: string): Promise<Design | undefined> {
+    await this.ensureInitialized();
+    const [design] = await db.select().from(designs).where(eq(designs.uniqueId, uniqueId));
+    return design || undefined;
+  }
+
+  async updateDesignByUniqueId(uniqueId: string, updates: Partial<InsertDesign>): Promise<Design | undefined> {
+    await this.ensureInitialized();
+    const [updatedDesign] = await db
+      .update(designs)
+      .set(updates)
+      .where(eq(designs.uniqueId, uniqueId))
       .returning();
     return updatedDesign || undefined;
   }

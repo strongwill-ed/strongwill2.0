@@ -228,7 +228,11 @@ export default function DesignTool() {
       return;
     }
 
+    // Generate unique ID for the design
+    const uniqueId = `design_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    
     const designData = {
+      uniqueId,
       name: designName,
       designData: JSON.stringify({
         elements: designElements,
