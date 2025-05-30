@@ -7,8 +7,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/components/auth/auth-provider";
 import { apiRequest } from "@/lib/queryClient";
-import type { SeekerProfile, SponsorProfile } from "@shared/schema";
-import { ArrowLeft, Users, Globe, Phone, Mail, DollarSign, Trash2, Share2, Copy } from "lucide-react";
+import type { SeekerProfile, SponsorProfile, SponsorshipCredit } from "@shared/schema";
+import { ArrowLeft, Users, Globe, Phone, Mail, DollarSign, Trash2, Share2, Copy, CreditCard } from "lucide-react";
 import { useState } from "react";
 
 export default function TeamProfile() {

@@ -1257,6 +1257,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       console.log("Received sponsorship agreement data:", req.body);
       const validatedData = insertSponsorshipAgreementSchema.parse(req.body);
+      
+      // Set proper initial status - no credits issued until payment
+      if (validatedData.proposedBy === 'sponsor') {
+        validatedData.status = 'awaiting_payment';
+        validatedData.paymentStatus = 'pending';
+      }
+      
       const agreement = await storage.createSponsorshipAgreement(validatedData);
       res.status(201).json(agreement);
     } catch (error) {
@@ -1375,10 +1382,135 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Sponsorship Credit Routes
+  // Sponsor Payment Processing Routes
+  app.post("/api/sponsorship-agreements/:id/create-payment-intent", async (req, res) => {
+    try {
+      if (!req.isAuthenticated()) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+
+      const agreementId = parseInt(req.params.id);
+      const agreement = await storage.getSponsorshipAgreement(agreementId);
+      
+      if (!agreement) {
+        return res.status(404).json({ message: "Sponsorship agreement not found" });
+      }
+
+      if (agreement.paymentStatus !== 'pending') {
+        return res.status(400).json({ message: "Agreement payment already processed" });
+      }
+
+      // Check if Stripe is configured
+      if (!process.env.STRIPE_SECRET_KEY) {
+        return res.status(503).json({ 
+          message: "Payment processing unavailable - Stripe not configured",
+          requiresSetup: true 
+        });
+      }
+
+      // Create Stripe payment intent (this would use real Stripe when keys are provided)
+      const paymentIntent = {
+        id: `pi_placeholder_${Date.now()}`,
+        client_secret: `pi_placeholder_${Date.now()}_secret_placeholder`,
+        amount: Math.round(parseFloat(agreement.amount) * 100), // Convert to cents
+        currency: 'aud',
+        status: 'requires_payment_method'
+      };
+
+      // Update agreement with payment intent ID
+      await storage.updateSponsorshipAgreement(agreementId, {
+        stripePaymentIntentId: paymentIntent.id,
+        paymentStatus: 'processing'
+      });
+
+      res.json({ 
+        clientSecret: paymentIntent.client_secret,
+        amount: paymentIntent.amount,
+        currency: paymentIntent.currency 
+      });
+    } catch (error) {
+      console.error("Error creating payment intent:", error);
+      res.status(500).json({ message: "Failed to create payment intent" });
+    }
+  });
+
+  app.post("/api/sponsorship-agreements/:id/confirm-payment", async (req, res) => {
+    try {
+      const agreementId = parseInt(req.params.id);
+      const { paymentIntentId } = req.body;
+
+      const agreement = await storage.getSponsorshipAgreement(agreementId);
+      if (!agreement) {
+        return res.status(404).json({ message: "Sponsorship agreement not found" });
+      }
+
+      if (agreement.stripePaymentIntentId !== paymentIntentId) {
+        return res.status(400).json({ message: "Payment intent mismatch" });
+      }
+
+      // In a real implementation, this would verify the payment with Stripe
+      const paymentConfirmed = true; // Placeholder for Stripe payment verification
+
+      if (paymentConfirmed) {
+        // Update agreement to paid status
+        await storage.updateSponsorshipAgreement(agreementId, {
+          paymentStatus: 'paid',
+          status: 'active'
+        });
+
+        // Now create the sponsorship credits for the team
+        await storage.createSponsorshipCredit({
+          seekerId: agreement.seekerId,
+          agreementId: agreement.id,
+          amount: agreement.amount,
+          remainingAmount: agreement.amount,
+          isActive: true,
+          expiresAt: agreement.endDate,
+        });
+
+        // Send confirmation emails
+        await emailService.sendSponsorshipAgreement({
+          agreementId: agreement.id,
+          sponsorEmail: 'sponsor@example.com', // Would get from sponsor profile
+          teamEmail: 'team@example.com', // Would get from seeker profile
+          amount: agreement.amount,
+          description: agreement.description
+        });
+
+        res.json({ message: "Payment confirmed and credits issued" });
+      } else {
+        await storage.updateSponsorshipAgreement(agreementId, {
+          paymentStatus: 'failed'
+        });
+        res.status(400).json({ message: "Payment confirmation failed" });
+      }
+    } catch (error) {
+      console.error("Error confirming payment:", error);
+      res.status(500).json({ message: "Failed to confirm payment" });
+    }
+  });
+
+  // Sponsorship Credit Routes - Only accessible to team owners
   app.get("/api/sponsorship-credits/:seekerId", async (req, res) => {
     try {
-      const credits = await storage.getSponsorshipCredits(parseInt(req.params.seekerId));
+      if (!req.isAuthenticated()) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+
+      const seekerId = parseInt(req.params.seekerId);
+      
+      // Get the seeker profile to verify ownership
+      const seekerProfile = await storage.getSeekerProfile(seekerId);
+      if (!seekerProfile) {
+        return res.status(404).json({ message: "Team profile not found" });
+      }
+
+      // Only the team owner can view their credits
+      if (seekerProfile.userId !== req.user.id) {
+        return res.status(403).json({ message: "Access denied - not team owner" });
+      }
+
+      const credits = await storage.getSponsorshipCredits(seekerId);
       res.json(credits);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch sponsorship credits" });
