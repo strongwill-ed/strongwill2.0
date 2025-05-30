@@ -40,6 +40,7 @@ function BulkProductManager() {
   const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [isImporting, setIsImporting] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -139,14 +140,134 @@ function BulkProductManager() {
   };
 
   const exportProducts = () => {
-    const dataStr = JSON.stringify(filteredProducts, null, 2);
-    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-    const exportFileDefaultName = 'strongwill-products.json';
+    // Create CSV format for easier editing
+    const csvHeaders = ['name', 'description', 'categoryId', 'basePrice', 'imageUrl', 'sizes', 'colors', 'isActive', 'isOnSale', 'salePrice'];
+    const csvRows = filteredProducts.map(product => [
+      product.name,
+      product.description || '',
+      product.categoryId,
+      product.basePrice,
+      product.imageUrl || '',
+      (product.sizes || []).join(';'),
+      (product.colors || []).join(';'),
+      product.isActive,
+      product.isOnSale || false,
+      product.salePrice || ''
+    ]);
+    
+    const csvContent = [csvHeaders, ...csvRows]
+      .map(row => row.map(field => `"${String(field).replace(/"/g, '""')}"`).join(','))
+      .join('\n');
+    
+    const dataUri = 'data:text/csv;charset=utf-8,\ufeff' + encodeURIComponent(csvContent);
+    const exportFileDefaultName = 'strongwill-products.csv';
     
     const linkElement = document.createElement('a');
     linkElement.setAttribute('href', dataUri);
     linkElement.setAttribute('download', exportFileDefaultName);
     linkElement.click();
+  };
+
+  const handleImportProducts = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (!file.name.endsWith('.csv')) {
+      toast({
+        title: "Invalid file type",
+        description: "Please select a CSV file",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsImporting(true);
+    const reader = new FileReader();
+    
+    reader.onload = async (e) => {
+      try {
+        const csvContent = e.target?.result as string;
+        const lines = csvContent.split('\n').filter(line => line.trim());
+        
+        if (lines.length < 2) {
+          throw new Error('CSV file must have at least a header and one data row');
+        }
+
+        const headers = lines[0].split(',').map(h => h.replace(/"/g, '').trim());
+        const expectedHeaders = ['name', 'description', 'categoryId', 'basePrice', 'imageUrl', 'sizes', 'colors', 'isActive', 'isOnSale', 'salePrice'];
+        
+        // Validate headers
+        const missingHeaders = expectedHeaders.filter(h => !headers.includes(h));
+        if (missingHeaders.length > 0) {
+          throw new Error(`Missing required columns: ${missingHeaders.join(', ')}`);
+        }
+
+        const productsToImport = [];
+        
+        for (let i = 1; i < lines.length; i++) {
+          const values = lines[i].split(',').map(v => v.replace(/"/g, '').trim());
+          const productData: any = {};
+          
+          headers.forEach((header, index) => {
+            const value = values[index] || '';
+            
+            switch (header) {
+              case 'categoryId':
+                productData[header] = value ? parseInt(value) : null;
+                break;
+              case 'basePrice':
+              case 'salePrice':
+                productData[header] = value ? parseFloat(value) : (header === 'basePrice' ? 0 : null);
+                break;
+              case 'sizes':
+              case 'colors':
+                productData[header] = value ? value.split(';').filter(Boolean) : [];
+                break;
+              case 'isActive':
+              case 'isOnSale':
+                productData[header] = value.toLowerCase() === 'true';
+                break;
+              default:
+                productData[header] = value;
+            }
+          });
+          
+          // Validate required fields
+          if (!productData.name || !productData.basePrice) {
+            throw new Error(`Row ${i + 1}: Missing required fields (name, basePrice)`);
+          }
+          
+          productsToImport.push(productData);
+        }
+
+        // Send to backend
+        const response = await apiRequest("POST", "/api/admin/products/bulk-import", {
+          products: productsToImport
+        });
+        
+        const result = await response.json();
+        
+        toast({
+          title: "Import successful",
+          description: `Successfully imported ${result.imported} products`,
+        });
+        
+        loadBulkData();
+        
+      } catch (error: any) {
+        toast({
+          title: "Import failed",
+          description: error.message || "Failed to import products",
+          variant: "destructive",
+        });
+      } finally {
+        setIsImporting(false);
+        // Reset file input
+        event.target.value = '';
+      }
+    };
+    
+    reader.readAsText(file);
   };
 
   if (isLoading) {
@@ -205,10 +326,37 @@ function BulkProductManager() {
             Deactivate Selected ({selectedProducts.size})
           </Button>
           
-          <Button variant="outline" onClick={exportProducts}>
-            <Download className="h-4 w-4 mr-2" />
-            Export ({filteredProducts.length})
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={exportProducts}>
+              <Download className="h-4 w-4 mr-2" />
+              Export CSV ({filteredProducts.length})
+            </Button>
+            
+            <label className="cursor-pointer">
+              <Button variant="outline" disabled={isImporting} asChild>
+                <span>
+                  {isImporting ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Importing...
+                    </>
+                  ) : (
+                    <>
+                      <Upload className="h-4 w-4 mr-2" />
+                      Import CSV
+                    </>
+                  )}
+                </span>
+              </Button>
+              <input
+                type="file"
+                accept=".csv"
+                onChange={handleImportProducts}
+                className="hidden"
+                disabled={isImporting}
+              />
+            </label>
+          </div>
         </div>
       </div>
 
