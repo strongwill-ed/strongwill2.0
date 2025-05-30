@@ -656,6 +656,13 @@ export default function Admin() {
   // Order Notification Email States
   const [adminEmail, setAdminEmail] = useState('admin@strongwillsports.com');
   const [isTestingEmail, setIsTestingEmail] = useState(false);
+  const [adminEmails, setAdminEmails] = useState([
+    { type: 'orders', email: 'orders@strongwillsports.com', enabled: true },
+    { type: 'refunds', email: 'support@strongwillsports.com', enabled: true },
+    { type: 'general', email: 'admin@strongwillsports.com', enabled: true }
+  ]);
+  const [newEmailType, setNewEmailType] = useState('');
+  const [newEmailAddress, setNewEmailAddress] = useState('');
 
 
 
@@ -722,6 +729,36 @@ export default function Admin() {
     } finally {
       setIsTestingEmail(false);
     }
+  };
+
+  const addEmailNotification = () => {
+    if (newEmailType && newEmailAddress) {
+      setAdminEmails((prev: any) => [...prev, {
+        type: newEmailType,
+        email: newEmailAddress,
+        enabled: true
+      }]);
+      setNewEmailType('');
+      setNewEmailAddress('');
+      toast({
+        title: "Email Added",
+        description: "New notification email has been configured.",
+      });
+    }
+  };
+
+  const removeEmailNotification = (index: number) => {
+    setAdminEmails((prev: any) => prev.filter((_: any, i: number) => i !== index));
+    toast({
+      title: "Email Removed",
+      description: "Notification email has been removed.",
+    });
+  };
+
+  const toggleEmailNotification = (index: number) => {
+    setAdminEmails((prev: any) => prev.map((email: any, i: number) => 
+      i === index ? { ...email, enabled: !email.enabled } : email
+    ));
   };
 
   // Always call all hooks before any conditional returns
@@ -1034,6 +1071,7 @@ export default function Admin() {
             <TabsTrigger value="refunds">Refunds</TabsTrigger>
             <TabsTrigger value="group-orders">Group Orders</TabsTrigger>
             <TabsTrigger value="emails">Email Templates</TabsTrigger>
+            <TabsTrigger value="settings">Settings</TabsTrigger>
             <TabsTrigger value="pages">Pages</TabsTrigger>
             <TabsTrigger value="blog">Blog</TabsTrigger>
             <TabsTrigger value="quotes">Quotes</TabsTrigger>
@@ -1978,6 +2016,185 @@ export default function Admin() {
           {/* Email Template Management Tab */}
           <TabsContent value="emails" className="space-y-6">
             <EmailTemplateManager />
+          </TabsContent>
+
+          {/* Settings Tab */}
+          <TabsContent value="settings" className="space-y-6">
+            <div className="flex justify-between items-center">
+              <h2 className="text-2xl font-bold text-black">Admin Settings</h2>
+            </div>
+            
+            {/* Email Notification Settings */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Settings className="h-5 w-5" />
+                  Email Notification Settings
+                </CardTitle>
+                <CardDescription>
+                  Configure email addresses to receive notifications for different types of events
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {/* Current Email Notifications */}
+                <div>
+                  <h4 className="font-medium mb-3">Current Notification Emails</h4>
+                  <div className="space-y-3">
+                    {adminEmails.map((emailConfig, index) => (
+                      <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+                        <div className="flex items-center gap-3">
+                          <div className="flex items-center gap-2">
+                            <Mail className="h-4 w-4 text-gray-500" />
+                            <span className="font-medium text-sm">{emailConfig.email}</span>
+                          </div>
+                          <Badge variant="outline" className="text-xs">
+                            {emailConfig.type}
+                          </Badge>
+                          {emailConfig.enabled ? (
+                            <Badge variant="default" className="text-xs bg-green-100 text-green-800">
+                              Active
+                            </Badge>
+                          ) : (
+                            <Badge variant="secondary" className="text-xs">
+                              Disabled
+                            </Badge>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => toggleEmailNotification(index)}
+                          >
+                            {emailConfig.enabled ? (
+                              <EyeOff className="h-4 w-4" />
+                            ) : (
+                              <Eye className="h-4 w-4" />
+                            )}
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => removeEmailNotification(index)}
+                            className="text-red-600 hover:text-red-700"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Add New Email Notification */}
+                <div className="border-t pt-4">
+                  <h4 className="font-medium mb-3">Add New Notification Email</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <div>
+                      <Label htmlFor="emailType">Notification Type</Label>
+                      <Select value={newEmailType} onValueChange={setNewEmailType}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="orders">New Orders</SelectItem>
+                          <SelectItem value="refunds">Refunds</SelectItem>
+                          <SelectItem value="group-orders">Group Orders</SelectItem>
+                          <SelectItem value="sponsorships">Sponsorships</SelectItem>
+                          <SelectItem value="general">General Admin</SelectItem>
+                          <SelectItem value="urgent">Urgent Issues</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label htmlFor="emailAddress">Email Address</Label>
+                      <Input
+                        id="emailAddress"
+                        type="email"
+                        placeholder="admin@strongwillsports.com"
+                        value={newEmailAddress}
+                        onChange={(e) => setNewEmailAddress(e.target.value)}
+                      />
+                    </div>
+                    <div className="flex items-end">
+                      <Button onClick={addEmailNotification} className="w-full">
+                        <Plus className="h-4 w-4 mr-2" />
+                        Add Email
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Test Email Section */}
+                <div className="border-t pt-4">
+                  <h4 className="font-medium mb-3">Test Email Notifications</h4>
+                  <div className="flex items-center gap-3">
+                    <Input
+                      type="email"
+                      placeholder="test@example.com"
+                      value={adminEmail}
+                      onChange={(e) => setAdminEmail(e.target.value)}
+                      className="flex-1"
+                    />
+                    <Button 
+                      variant="outline" 
+                      onClick={testEmailNotification}
+                      disabled={isTestingEmail}
+                    >
+                      {isTestingEmail ? (
+                        <>
+                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          Sending...
+                        </>
+                      ) : (
+                        <>
+                          <Mail className="h-4 w-4 mr-2" />
+                          Send Test
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                  <p className="text-sm text-gray-600 mt-2">
+                    Send a test email to verify your notification system is working properly.
+                  </p>
+                </div>
+
+                {/* Notification Types Info */}
+                <div className="border-t pt-4">
+                  <h4 className="font-medium mb-3">Notification Types</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                        <span>New Order Notifications</span>
+                        <Badge variant="secondary">Real-time</Badge>
+                      </div>
+                      <div className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                        <span>Refund Confirmations</span>
+                        <Badge variant="secondary">Immediate</Badge>
+                      </div>
+                      <div className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                        <span>Group Order Completions</span>
+                        <Badge variant="secondary">Daily digest</Badge>
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                        <span>Sponsorship Inquiries</span>
+                        <Badge variant="secondary">Real-time</Badge>
+                      </div>
+                      <div className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                        <span>System Alerts</span>
+                        <Badge variant="outline">Coming Soon</Badge>
+                      </div>
+                      <div className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                        <span>Low Stock Warnings</span>
+                        <Badge variant="outline">Coming Soon</Badge>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </TabsContent>
 
           {/* Pages Management Tab */}
