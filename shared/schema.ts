@@ -51,10 +51,12 @@ export const products = pgTable("products", {
 
 export const designs = pgTable("designs", {
   id: serial("id").primaryKey(),
+  uniqueId: text("unique_id").notNull().unique(), // For guest access
   name: text("name").notNull(),
   designData: text("design_data").notNull(), // JSON string of design elements
   productId: integer("product_id").references(() => products.id),
-  userId: integer("user_id").references(() => users.id),
+  userId: integer("user_id").references(() => users.id), // null for guest designs
+  guestEmail: text("guest_email"), // For guest designs
   isPublic: boolean("is_public").default(false),
   createdAt: timestamp("created_at").defaultNow(),
 });
