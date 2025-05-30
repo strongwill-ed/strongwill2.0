@@ -155,9 +155,14 @@ export function Footer() {
 
         <div className="border-t border-gray-800 mt-12 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-            <p className="text-sm text-gray-400">
-              © 2025 Strongwill Sports. All rights reserved.
-            </p>
+            <div className="flex flex-col items-center md:items-start space-y-2">
+              <p className="text-sm text-gray-400">
+                © 2025 Strongwill Sports. All rights reserved.
+              </p>
+              <p className="text-xs text-gray-500 flex items-center gap-1">
+                🇦🇺 Proudly Australian, serving athletes worldwide 🌍
+              </p>
+            </div>
             <div className="flex space-x-6 text-sm">
               <a href="#" className="text-gray-400 hover:text-white transition-colors">
                 Privacy Policy

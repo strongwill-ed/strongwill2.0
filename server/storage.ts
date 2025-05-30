@@ -1,4 +1,4 @@
-import { users, productCategories, products, designs, cartItems, orders, orderItems, groupOrders, groupOrderItems, refunds, seekerProfiles, sponsorProfiles, sponsorshipAgreements, sponsorshipCredits, sponsorshipMessages, pages, blogPosts, quoteRequests, adminSettings, productRecommendations, newsletterSubscriptions, abTests, abTestParticipants, abTestEvents, type User, type ProductCategory, type Product, type Design, type CartItem, type Order, type OrderItem, type GroupOrder, type GroupOrderItem, type Refund, type SeekerProfile, type SponsorProfile, type SponsorshipAgreement, type SponsorshipCredit, type SponsorshipMessage, type Page, type InsertPage, type BlogPost, type InsertBlogPost, type QuoteRequest, type InsertQuoteRequest, type AdminSetting, type InsertAdminSetting, type ProductRecommendation, type InsertProductRecommendation, type NewsletterSubscription, type InsertNewsletterSubscription, type AbTest, type InsertAbTest, type AbTestParticipant, type InsertAbTestParticipant, type AbTestEvent, type InsertAbTestEvent, type InsertUser, type InsertProductCategory, type InsertProduct, type InsertDesign, type InsertCartItem, type InsertOrder, type InsertOrderItem, type InsertGroupOrder, type InsertGroupOrderItem, type InsertRefund, type InsertSeekerProfile, type InsertSponsorProfile, type InsertSponsorshipAgreement, type InsertSponsorshipCredit, type InsertSponsorshipMessage } from "@shared/schema";
+import { users, productCategories, products, designs, cartItems, orders, orderItems, groupOrders, groupOrderItems, refunds, seekerProfiles, sponsorProfiles, sponsorshipAgreements, sponsorshipCredits, sponsorshipMessages, pages, blogPosts, quoteRequests, adminSettings, siteVisitors, productRecommendations, newsletterSubscriptions, abTests, abTestParticipants, abTestEvents, type User, type ProductCategory, type Product, type Design, type CartItem, type Order, type OrderItem, type GroupOrder, type GroupOrderItem, type Refund, type SeekerProfile, type SponsorProfile, type SponsorshipAgreement, type SponsorshipCredit, type SponsorshipMessage, type Page, type InsertPage, type BlogPost, type InsertBlogPost, type QuoteRequest, type InsertQuoteRequest, type AdminSetting, type InsertAdminSetting, type SiteVisitor, type InsertSiteVisitor, type ProductRecommendation, type InsertProductRecommendation, type NewsletterSubscription, type InsertNewsletterSubscription, type AbTest, type InsertAbTest, type AbTestParticipant, type InsertAbTestParticipant, type AbTestEvent, type InsertAbTestEvent, type InsertUser, type InsertProductCategory, type InsertProduct, type InsertDesign, type InsertCartItem, type InsertOrder, type InsertOrderItem, type InsertGroupOrder, type InsertGroupOrderItem, type InsertRefund, type InsertSeekerProfile, type InsertSponsorProfile, type InsertSponsorshipAgreement, type InsertSponsorshipCredit, type InsertSponsorshipMessage } from "@shared/schema";
 import { db } from "./db";
 import { eq, count, sum, and } from "drizzle-orm";
 
@@ -153,6 +153,19 @@ export interface IStorage {
   updateProductRecommendation(id: number, updates: Partial<InsertProductRecommendation>): Promise<ProductRecommendation | undefined>;
   deleteProductRecommendation(id: number): Promise<boolean>;
   getRecommendationsForCartItems(cartItemIds: number[]): Promise<Product[]>;
+
+  // Site Visitor Analytics
+  trackVisitor(sessionId: string, visitorData: Partial<InsertSiteVisitor>): Promise<SiteVisitor>;
+  updateVisitorActivity(sessionId: string, pageViews?: number): Promise<void>;
+  getVisitorAnalytics(): Promise<{
+    totalVisitors: number;
+    uniqueVisitors: number;
+    returningVisitors: number;
+    topSources: Array<{ source: string; count: number }>;
+    topCountries: Array<{ country: string; count: number }>;
+    deviceBreakdown: Array<{ deviceType: string; count: number }>;
+    recentVisitors: SiteVisitor[];
+  }>;
 
   // A/B Testing
   getAllAbTests(): Promise<AbTest[]>;
@@ -583,9 +596,28 @@ export class DatabaseStorage implements IStorage {
 
   async createDesign(design: InsertDesign): Promise<Design> {
     await this.ensureInitialized();
+    
+    // Generate unique string of numbers for design ID instead of chronological
+    const generateUniqueId = () => {
+      const timestamp = Date.now().toString();
+      const random = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+      return timestamp + random;
+    };
+    
+    let uniqueId = generateUniqueId();
+    
+    // Ensure uniqueness
+    let attempts = 0;
+    while (attempts < 10) {
+      const existing = await this.getDesignByUniqueId(uniqueId);
+      if (!existing) break;
+      uniqueId = generateUniqueId();
+      attempts++;
+    }
+    
     const [newDesign] = await db
       .insert(designs)
-      .values(design)
+      .values({ ...design, uniqueId })
       .returning();
     return newDesign;
   }
@@ -675,9 +707,15 @@ export class DatabaseStorage implements IStorage {
 
   async createOrder(order: InsertOrder): Promise<Order> {
     await this.ensureInitialized();
+    
+    // Generate order ID starting from 5000 to create appearance of many previous orders
+    const orderCountResult = await db.select({ count: count() }).from(orders);
+    const orderCount = orderCountResult[0]?.count || 0;
+    const orderNumber = 5000 + orderCount + 1;
+    
     const [newOrder] = await db
       .insert(orders)
-      .values(order)
+      .values({ ...order, id: orderNumber })
       .returning();
     return newOrder;
   }
@@ -1406,6 +1444,85 @@ export class DatabaseStorage implements IStorage {
       .values(event)
       .returning();
     return result;
+  }
+
+  // Site Visitor Analytics Implementation
+  async trackVisitor(sessionId: string, visitorData: Partial<InsertSiteVisitor>): Promise<SiteVisitor> {
+    await this.ensureInitialized();
+    
+    // Check if visitor already exists
+    const [existingVisitor] = await db
+      .select()
+      .from(siteVisitors)
+      .where(eq(siteVisitors.sessionId, sessionId));
+
+    if (existingVisitor) {
+      // Update existing visitor
+      await this.updateVisitorActivity(sessionId, existingVisitor.pageViews + 1);
+      return existingVisitor;
+    }
+
+    // Create new visitor
+    const [newVisitor] = await db
+      .insert(siteVisitors)
+      .values({ sessionId, ...visitorData })
+      .returning();
+    return newVisitor;
+  }
+
+  async updateVisitorActivity(sessionId: string, pageViews?: number): Promise<void> {
+    await this.ensureInitialized();
+    await db
+      .update(siteVisitors)
+      .set({ 
+        lastActivity: new Date(),
+        ...(pageViews && { pageViews })
+      })
+      .where(eq(siteVisitors.sessionId, sessionId));
+  }
+
+  async getVisitorAnalytics(): Promise<{
+    totalVisitors: number;
+    uniqueVisitors: number;
+    returningVisitors: number;
+    topSources: Array<{ source: string; count: number }>;
+    topCountries: Array<{ country: string; count: number }>;
+    deviceBreakdown: Array<{ deviceType: string; count: number }>;
+    recentVisitors: SiteVisitor[];
+  }> {
+    await this.ensureInitialized();
+
+    const totalVisitorsResult = await db.select({ count: count() }).from(siteVisitors);
+    const totalVisitors = totalVisitorsResult[0]?.count || 0;
+
+    const uniqueVisitorsResult = await db
+      .select({ count: count() })
+      .from(siteVisitors)
+      .where(eq(siteVisitors.isReturning, false));
+    const uniqueVisitors = uniqueVisitorsResult[0]?.count || 0;
+
+    const returningVisitorsResult = await db
+      .select({ count: count() })
+      .from(siteVisitors)
+      .where(eq(siteVisitors.isReturning, true));
+    const returningVisitors = returningVisitorsResult[0]?.count || 0;
+
+    // Get recent visitors
+    const recentVisitors = await db
+      .select()
+      .from(siteVisitors)
+      .orderBy(siteVisitors.lastActivity)
+      .limit(10);
+
+    return {
+      totalVisitors,
+      uniqueVisitors,
+      returningVisitors,
+      topSources: [],
+      topCountries: [],
+      deviceBreakdown: [],
+      recentVisitors
+    };
   }
 }
 
