@@ -72,9 +72,11 @@ export default function DesignTool() {
   const productId = urlParams.get("product");
   const groupOrderId = urlParams.get("groupOrderId");
   const groupOrderName = urlParams.get("groupOrderName");
+  const editMemberId = urlParams.get("editMemberId");
   const returnTo = urlParams.get("returnTo");
   const addToGroupOrderParam = urlParams.get("addToGroupOrder") === "true";
   const isGroupOrderMode = !!groupOrderId;
+  const isEditingExistingDesign = !!editMemberId;
   
   const [selectedProduct, setSelectedProduct] = useState<number | null>(
     productId ? parseInt(productId) : null

@@ -772,6 +772,25 @@ export default function GroupOrders() {
                             </div>
                           </div>
                           <div className="flex gap-2">
+                            {item.customizations && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => {
+                                  const params = new URLSearchParams({
+                                    groupOrderId: selectedGroupOrder.id.toString(),
+                                    groupOrderName: selectedGroupOrder.name,
+                                    editMemberId: item.id.toString(),
+                                    returnTo: 'group-orders'
+                                  });
+                                  window.location.href = `/design-tool?${params.toString()}`;
+                                }}
+                                title="Edit design"
+                                className="text-green-600 hover:text-green-700 hover:bg-green-50"
+                              >
+                                <ExternalLink className="h-4 w-4" />
+                              </Button>
+                            )}
                             <Button
                               variant="ghost"
                               size="sm"
