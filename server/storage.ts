@@ -1,4 +1,4 @@
-import { users, productCategories, products, designs, cartItems, orders, orderItems, groupOrders, groupOrderItems, refunds, seekerProfiles, sponsorProfiles, sponsorshipAgreements, sponsorshipCredits, sponsorshipMessages, pages, blogPosts, quoteRequests, adminSettings, productRecommendations, abTests, abTestParticipants, abTestEvents, type User, type ProductCategory, type Product, type Design, type CartItem, type Order, type OrderItem, type GroupOrder, type GroupOrderItem, type Refund, type SeekerProfile, type SponsorProfile, type SponsorshipAgreement, type SponsorshipCredit, type SponsorshipMessage, type Page, type InsertPage, type BlogPost, type InsertBlogPost, type QuoteRequest, type InsertQuoteRequest, type AdminSetting, type InsertAdminSetting, type ProductRecommendation, type InsertProductRecommendation, type AbTest, type InsertAbTest, type AbTestParticipant, type InsertAbTestParticipant, type AbTestEvent, type InsertAbTestEvent, type InsertUser, type InsertProductCategory, type InsertProduct, type InsertDesign, type InsertCartItem, type InsertOrder, type InsertOrderItem, type InsertGroupOrder, type InsertGroupOrderItem, type InsertRefund, type InsertSeekerProfile, type InsertSponsorProfile, type InsertSponsorshipAgreement, type InsertSponsorshipCredit, type InsertSponsorshipMessage } from "@shared/schema";
+import { users, productCategories, products, designs, cartItems, orders, orderItems, groupOrders, groupOrderItems, refunds, seekerProfiles, sponsorProfiles, sponsorshipAgreements, sponsorshipCredits, sponsorshipMessages, pages, blogPosts, quoteRequests, adminSettings, productRecommendations, newsletterSubscriptions, abTests, abTestParticipants, abTestEvents, type User, type ProductCategory, type Product, type Design, type CartItem, type Order, type OrderItem, type GroupOrder, type GroupOrderItem, type Refund, type SeekerProfile, type SponsorProfile, type SponsorshipAgreement, type SponsorshipCredit, type SponsorshipMessage, type Page, type InsertPage, type BlogPost, type InsertBlogPost, type QuoteRequest, type InsertQuoteRequest, type AdminSetting, type InsertAdminSetting, type ProductRecommendation, type InsertProductRecommendation, type NewsletterSubscription, type InsertNewsletterSubscription, type AbTest, type InsertAbTest, type AbTestParticipant, type InsertAbTestParticipant, type AbTestEvent, type InsertAbTestEvent, type InsertUser, type InsertProductCategory, type InsertProduct, type InsertDesign, type InsertCartItem, type InsertOrder, type InsertOrderItem, type InsertGroupOrder, type InsertGroupOrderItem, type InsertRefund, type InsertSeekerProfile, type InsertSponsorProfile, type InsertSponsorshipAgreement, type InsertSponsorshipCredit, type InsertSponsorshipMessage } from "@shared/schema";
 import { db } from "./db";
 import { eq, count, sum, and } from "drizzle-orm";
 
@@ -1292,7 +1292,7 @@ export class DatabaseStorage implements IStorage {
 
   async createNewsletterSubscription(subscriptionData: InsertNewsletterSubscription): Promise<NewsletterSubscription> {
     await this.ensureInitialized();
-    const [subscription] = await this.db
+    const [subscription] = await db
       .insert(newsletterSubscriptions)
       .values(subscriptionData)
       .returning();
@@ -1302,18 +1302,18 @@ export class DatabaseStorage implements IStorage {
   // A/B Testing Methods
   async getAllAbTests(): Promise<AbTest[]> {
     await this.ensureInitialized();
-    return await this.db.select().from(abTests).orderBy(abTests.createdAt);
+    return await db.select().from(abTests).orderBy(abTests.createdAt);
   }
 
   async getAbTest(id: number): Promise<AbTest | undefined> {
     await this.ensureInitialized();
-    const [test] = await this.db.select().from(abTests).where(eq(abTests.id, id));
+    const [test] = await db.select().from(abTests).where(eq(abTests.id, id));
     return test || undefined;
   }
 
   async createAbTest(test: InsertAbTest): Promise<AbTest> {
     await this.ensureInitialized();
-    const [result] = await this.db
+    const [result] = await db
       .insert(abTests)
       .values(test)
       .returning();
@@ -1322,7 +1322,7 @@ export class DatabaseStorage implements IStorage {
 
   async updateAbTest(id: number, updates: Partial<InsertAbTest>): Promise<AbTest | undefined> {
     await this.ensureInitialized();
-    const [result] = await this.db
+    const [result] = await db
       .update(abTests)
       .set({ ...updates, updatedAt: new Date() })
       .where(eq(abTests.id, id))
@@ -1332,7 +1332,7 @@ export class DatabaseStorage implements IStorage {
 
   async deleteAbTest(id: number): Promise<boolean> {
     await this.ensureInitialized();
-    const result = await this.db
+    const result = await db
       .delete(abTests)
       .where(eq(abTests.id, id));
     return (result.rowCount || 0) > 0;
@@ -1341,28 +1341,28 @@ export class DatabaseStorage implements IStorage {
   async getAbTestResults(id: number): Promise<any> {
     await this.ensureInitialized();
     // Get participants and events for the test
-    const participants = await this.db
+    const participants = await db
       .select()
       .from(abTestParticipants)
       .where(eq(abTestParticipants.testId, id));
 
-    const events = await this.db
+    const events = await db
       .select()
       .from(abTestEvents)
       .where(eq(abTestEvents.testId, id));
 
     // Calculate basic metrics
-    const variantAParticipants = participants.filter(p => p.variant === 'A').length;
-    const variantBParticipants = participants.filter(p => p.variant === 'B').length;
+    const variantAParticipants = participants.filter((p: any) => p.variant === 'A').length;
+    const variantBParticipants = participants.filter((p: any) => p.variant === 'B').length;
     
-    const variantAConversions = events.filter(e => 
+    const variantAConversions = events.filter((e: any) => 
       e.eventType === 'conversion' && 
-      participants.find(p => p.id === e.participantId)?.variant === 'A'
+      participants.find((p: any) => p.id === e.participantId)?.variant === 'A'
     ).length;
     
-    const variantBConversions = events.filter(e => 
+    const variantBConversions = events.filter((e: any) => 
       e.eventType === 'conversion' && 
-      participants.find(p => p.id === e.participantId)?.variant === 'B'
+      participants.find((p: any) => p.id === e.participantId)?.variant === 'B'
     ).length;
 
     return {
@@ -1384,7 +1384,7 @@ export class DatabaseStorage implements IStorage {
 
   async getAbTestParticipants(testId: number): Promise<AbTestParticipant[]> {
     await this.ensureInitialized();
-    return await this.db
+    return await db
       .select()
       .from(abTestParticipants)
       .where(eq(abTestParticipants.testId, testId));
@@ -1392,7 +1392,7 @@ export class DatabaseStorage implements IStorage {
 
   async createAbTestParticipant(participant: InsertAbTestParticipant): Promise<AbTestParticipant> {
     await this.ensureInitialized();
-    const [result] = await this.db
+    const [result] = await db
       .insert(abTestParticipants)
       .values(participant)
       .returning();
@@ -1401,7 +1401,7 @@ export class DatabaseStorage implements IStorage {
 
   async createAbTestEvent(event: InsertAbTestEvent): Promise<AbTestEvent> {
     await this.ensureInitialized();
-    const [result] = await this.db
+    const [result] = await db
       .insert(abTestEvents)
       .values(event)
       .returning();

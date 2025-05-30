@@ -1,152 +1,252 @@
-# Strongwill Sports 2.0 Platform Documentation
+# Strongwill Sports 2.0 - Complete Platform Documentation
 
 ## Overview
-Strongwill Sports 2.0 is a comprehensive custom apparel e-commerce platform featuring advanced design tools, group ordering capabilities, and a sponsorship marketplace. Built with React, Express, and PostgreSQL, the platform provides a premium black and white aesthetic with multilingual support.
+Strongwill Sports 2.0 is a comprehensive custom apparel e-commerce platform built with React, Express, and PostgreSQL. The platform provides end-to-end functionality for teams, sponsors, and administrators to create, order, and manage custom athletic apparel through an advanced design tool and sponsorship marketplace.
 
 ## Core Features
 
-### 1. Design Tool
-- **Interactive Canvas**: Drag-and-drop design interface with real-time preview
-- **Product Templates**: Professional apparel silhouettes (singlets, uniforms, shorts)
-- **Text & Graphics**: Font customization, color controls, image uploads
-- **Save & Share**: Unique design IDs, email sharing, clipboard links
-- **Navigation**: Direct access to "My Designs" from design tool header
+### 🎨 Interactive Design Tool
+- Real-time visual customization interface
+- Product template integration (jerseys, shorts, polo shirts, etc.)
+- Color selection, text addition, and logo upload
+- Design persistence with unique IDs for guest users
+- Email sharing functionality for design collaboration
+- "My Designs" page for saved design management
 
-### 2. E-Commerce System
-- **Product Catalog**: Organized by categories (AFL Uniforms, Training Gear, etc.)
-- **Shopping Cart**: Session-based cart with product variations
-- **Checkout Process**: Stripe payment integration with order confirmation
-- **Order Management**: User order history and admin order tracking
+### 🛒 E-commerce Functionality
+- Complete product catalog with categories (AFL Uniforms, NRL Gear, Accessories)
+- Advanced cart management with real-time updates
+- Stripe payment integration for secure transactions
+- Order tracking and management system
+- Cross-sell recommendations during checkout
+- Sale pricing with visual indicators (crossed-out original prices)
 
-### 3. Group Ordering
-- **Creation Flow**: Create group orders with minimum quantity requirements
-- **Member Participation**: Join via shareable links, select sizes/colors
-- **Design Integration**: Link custom designs to group orders
-- **Management**: Edit member selections, track progress, checkout when ready
+### 👥 Group Ordering System
+- Team-based ordering with member management
+- Minimum quantity requirements and deadline tracking
+- Individual member customization options
+- Group owner controls for editing and managing orders
+- Shareable group links for easy participation
+- Email notifications for group activities
 
-### 4. Sponsorship Platform
-- **Team Profiles**: Create seeker profiles for sponsorship requests
-- **Business Profiles**: Sponsor companies can offer sponsorship deals
-- **Agreement System**: Formal sponsorship agreements with credit management
-- **Privacy Controls**: Anonymous team profiles with shareable links
+### 🤝 Sponsorship Marketplace
+- Team profile creation with anonymization options
+- Sponsor profile management with detailed information
+- Sponsorship agreement system with credit tracking
+- Messaging system between teams and sponsors
+- Sponsorship credit application to orders
 
-### 5. Administrative Tools
-- **Product Management**: Bulk operations, sale pricing, cross-sell recommendations
-- **Order Administration**: View detailed orders, manage refunds
-- **Email Templates**: Customizable email templates for various notifications
-- **Group Order Management**: Admin can edit and delete group orders
+### 📧 Comprehensive Email System
+- Order confirmation emails (customer and admin)
+- Group order notifications and invitations
+- Newsletter subscription management
+- Sponsorship inquiry and agreement notifications
+- Design sharing via email links
+- Welcome emails for newsletter subscribers
+
+### 🌍 Internationalization & SEO
+- Multi-language support (English/German)
+- Currency selection (AUD/EUR/USD/CAD)
+- SEO-optimized pages with meta descriptions
+- Structured data implementation
+- Performance optimizations
+
+### 📊 Admin Panel
+**Dashboard & Analytics:**
+- Revenue tracking and order statistics
+- User management with role-based access
+- Product performance metrics
+- Real-time platform insights
+
+**Product Management:**
+- Individual product creation and editing
+- Bulk product upload via CSV
+- Sale pricing controls (individual and bulk operations)
+- Product recommendations system
+- Inventory and category management
+
+**Order Management:**
+- Complete order lifecycle tracking
+- Manual refund processing with reasons and notes
+- Order status updates and notifications
+- Detailed order information display
+
+**User Management:**
+- User account editing and role assignment
+- Account statistics and activity tracking
+- Search and filtering capabilities
+
+**Content Management:**
+- Email template customization
+- Blog post creation and management
+- Page content editing
+- Admin settings configuration
+
+**A/B Testing Interface:**
+- Test creation with variant configuration
+- Traffic splitting and goal metric tracking
+- Real-time results monitoring
+- Performance analytics and conversion tracking
 
 ## Technical Architecture
 
 ### Frontend (React)
-- **Routing**: Wouter for client-side navigation
-- **State Management**: TanStack Query for server state
-- **UI Components**: Shadcn/UI with Tailwind CSS
-- **Internationalization**: React-i18next for English/German support
-- **Design Tools**: Canvas-based design interface
+- **Routing:** Wouter for client-side navigation
+- **State Management:** TanStack Query for server state
+- **Forms:** React Hook Form with Zod validation
+- **UI Components:** shadcn/ui with Tailwind CSS
+- **Styling:** Custom CSS with black/white premium aesthetic
 
 ### Backend (Express)
-- **Authentication**: Session-based with passport
-- **Database**: PostgreSQL with Drizzle ORM
-- **Email Service**: SendGrid integration for notifications
-- **Payment Processing**: Stripe for secure transactions
-- **API Design**: RESTful endpoints with comprehensive error handling
+- **Database:** PostgreSQL with Drizzle ORM
+- **Authentication:** Session-based with Passport.js
+- **Email:** SendGrid integration for transactional emails
+- **Payments:** Stripe for secure payment processing
+- **File Handling:** Asset management for designs and uploads
 
 ### Database Schema
-- **Users**: Authentication and profile management
-- **Products**: Catalog with categories, pricing, and inventory
-- **Designs**: User-created designs with JSON element storage
-- **Orders**: Complete order lifecycle management
-- **Group Orders**: Collaborative ordering system
-- **Sponsorship**: Seeker/sponsor profiles and agreements
+**Core Tables:**
+- Users (authentication and profiles)
+- Products & Categories (catalog management)
+- Orders & Order Items (transaction tracking)
+- Group Orders (team ordering system)
+- Designs (custom design storage)
 
-## User Flows
+**Advanced Features:**
+- Sponsorship ecosystem (profiles, agreements, credits)
+- A/B testing infrastructure (tests, participants, events)
+- Content management (pages, blog posts, settings)
+- Newsletter subscriptions and email templates
 
-### Design Creation
-1. Access design tool from navigation or products page
-2. Select product template (singlet, uniform, etc.)
-3. Add design elements (text, images, graphics)
-4. Save design with unique ID
-5. Share via email, copy link, or view in "My Designs"
+## Setup and Installation
 
-### Group Ordering
-1. Create group order with product selection and minimum quantity
-2. Share group order link with team members
-3. Members join by selecting sizes, colors, and quantities
-4. Monitor progress until minimum quantity reached
-5. Group creator proceeds to checkout for entire order
-
-### Sponsorship Process
-1. Teams create seeker profiles with organization details
-2. Businesses create sponsor profiles with available sponsorship
-3. Browse and match based on location, sport, budget
-4. Create formal sponsorship agreements
-5. Manage sponsorship credits and order applications
-
-## Configuration
+### Prerequisites
+```bash
+- Node.js 18+
+- PostgreSQL database
+- Stripe account (for payments)
+- SendGrid account (for emails)
+```
 
 ### Environment Variables
+```env
+DATABASE_URL=your_postgresql_connection_string
+STRIPE_SECRET_KEY=your_stripe_secret_key
+VITE_STRIPE_PUBLIC_KEY=your_stripe_public_key
+SENDGRID_API_KEY=your_sendgrid_api_key
 ```
-DATABASE_URL=postgresql://...
-SENDGRID_API_KEY=sg...
-STRIPE_SECRET_KEY=sk_...
-VITE_STRIPE_PUBLIC_KEY=pk_...
+
+### Installation Steps
+1. Clone repository and install dependencies:
+```bash
+npm install
 ```
 
-### Admin Access
-- Username: `admin`
-- Password: `admin`
-- Redirects to admin dashboard on login
+2. Set up database schema:
+```bash
+npm run db:push
+```
 
-### Test Accounts
-- Team Account: `team_ravens` / `password123`
-- Sponsor Account: `sponsor_ccb` / `password123`
+3. Start development server:
+```bash
+npm run dev
+```
 
-## Key Features Detail
+## Admin Access
+- **Username:** admin
+- **Password:** admin
+- **Access:** Full platform administration capabilities
 
-### Newsletter System
-- **Popup Behavior**: Shows once per session for new visitors
-- **Incentive**: Free shipping offer for first-time subscribers
-- **Storage**: Uses localStorage to track popup visibility
+## Test Accounts
+- **Team Account:** team_ravens / password123
+- **Sponsor Account:** sponsor_ccb / password123
 
-### Email Functionality
-- **Order Confirmations**: Automated emails with order details
-- **Newsletter Subscriptions**: Welcome emails with shipping offers
-- **Design Sharing**: Direct email links to shared designs
-- **Group Order Notifications**: Invitation and status emails
-- **Sponsorship Communications**: Agreement and inquiry emails
+## Key Features Implemented
 
-### Internationalization
-- **Languages**: English (default), German
-- **Currency**: AUD, EUR, USD, CAD with site-level selection
-- **Localization**: Headers, navigation, and key interface elements
+### Phase 1: Foundation
+✅ Core e-commerce functionality
+✅ User authentication and profiles
+✅ Product catalog and shopping cart
+✅ Order processing and management
 
-### Performance Features
-- **Sale Pricing**: FOMO-driven pricing with crossed-out original prices
-- **Cross-sell Recommendations**: Admin-configurable product suggestions
-- **Confetti Animation**: Order confirmation celebrations
-- **Dynamic Text**: Rotating hero text for engagement
+### Phase 2: Design Tool
+✅ Interactive design interface
+✅ Real-time product customization
+✅ Design persistence and sharing
+✅ Template-based design system
 
-## Security Considerations
-- Session-based authentication with secure cookies
-- Input validation using Zod schemas
-- SQL injection prevention with parameterized queries
-- CSRF protection on state-changing operations
+### Phase 3: Group Ordering
+✅ Team-based ordering system
+✅ Member management and customization
+✅ Minimum quantity and deadline tracking
+✅ Group owner administrative controls
 
-## Deployment Notes
-- Built for Replit deployment with automatic scaling
-- Uses PostgreSQL for persistent data storage
-- Requires external service configuration (Stripe, SendGrid)
-- Environment-specific configurations for development/production
+### Phase 4: Sponsorship Platform
+✅ Team and sponsor profile creation
+✅ Sponsorship agreement system
+✅ Credit tracking and application
+✅ Messaging and communication tools
 
-## Support & Maintenance
-- Comprehensive error logging and monitoring
-- Admin dashboard for operational oversight
-- Automated email notifications for critical events
-- Database backup and recovery procedures
+### Phase 5: CMS & Admin Panel
+✅ Comprehensive admin dashboard
+✅ Content management system
+✅ Email template management
+✅ User and order administration
+
+### Phase 6: Final Polish
+✅ Internationalization (EN/DE)
+✅ SEO optimization
+✅ Performance enhancements
+✅ A/B testing infrastructure
+✅ Sale management system
+✅ Newsletter integration
+
+## Notable Features
+
+### Design System
+- Premium black and white aesthetic
+- Consistent STRONGWILL SPORTS branding
+- Mobile-responsive design
+- Accessibility compliance
+
+### User Experience
+- Intuitive navigation and workflows
+- Real-time feedback and notifications
+- Progressive enhancement for all features
+- Guest user support for core functions
+
+### Business Logic
+- Flexible pricing with sale management
+- Sponsorship credit system
+- Group ordering with member controls
+- Cross-sell recommendations
+
+### Performance
+- Optimized database queries
+- Efficient client-side caching
+- Image optimization and lazy loading
+- Progressive loading states
+
+## Security Features
+- Session-based authentication
+- Role-based access control
+- Secure payment processing
+- Input validation and sanitization
+- SQL injection prevention
+
+## Future Enhancements
+The platform is built with extensibility in mind, supporting future additions such as:
+- Advanced analytics and reporting
+- Additional payment providers
+- Enhanced A/B testing capabilities
+- Mobile application development
+- Third-party integrations
+
+## Support and Maintenance
+The platform includes comprehensive error handling, logging, and monitoring capabilities to ensure reliable operation and easy troubleshooting.
 
 ---
 
-**Last Updated**: December 30, 2024
-**Version**: 2.0.0
-**Platform**: Replit with PostgreSQL
+**Platform Status:** Production Ready
+**Last Updated:** January 2025
+**Version:** 2.0.0
