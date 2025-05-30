@@ -152,6 +152,17 @@ export interface IStorage {
   updateProductRecommendation(id: number, updates: Partial<InsertProductRecommendation>): Promise<ProductRecommendation | undefined>;
   deleteProductRecommendation(id: number): Promise<boolean>;
   getRecommendationsForCartItems(cartItemIds: number[]): Promise<Product[]>;
+
+  // A/B Testing
+  getAllAbTests(): Promise<AbTest[]>;
+  getAbTest(id: number): Promise<AbTest | undefined>;
+  createAbTest(test: InsertAbTest): Promise<AbTest>;
+  updateAbTest(id: number, updates: Partial<InsertAbTest>): Promise<AbTest | undefined>;
+  deleteAbTest(id: number): Promise<boolean>;
+  getAbTestResults(id: number): Promise<any>;
+  getAbTestParticipants(testId: number): Promise<AbTestParticipant[]>;
+  createAbTestParticipant(participant: InsertAbTestParticipant): Promise<AbTestParticipant>;
+  createAbTestEvent(event: InsertAbTestEvent): Promise<AbTestEvent>;
 }
 
 export class DatabaseStorage implements IStorage {
