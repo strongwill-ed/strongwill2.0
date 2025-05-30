@@ -362,6 +362,47 @@ export const insertBlogPostSchema = createInsertSchema(blogPosts).omit({ id: tru
 export const insertAdminSettingSchema = createInsertSchema(adminSettings).omit({ id: true, updatedAt: true });
 export const insertQuoteRequestSchema = createInsertSchema(quoteRequests).omit({ id: true, createdAt: true, updatedAt: true });
 
+// A/B Testing Tables
+export const abTests = pgTable("ab_tests", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  description: text("description"),
+  testType: text("test_type").notNull(), // homepage_hero, product_page, checkout_flow, pricing
+  status: text("status").notNull().default("draft"), // draft, active, paused, completed
+  trafficSplit: integer("traffic_split").notNull().default(50), // percentage for variant A
+  startDate: timestamp("start_date"),
+  endDate: timestamp("end_date"),
+  goalMetric: text("goal_metric").notNull(), // conversion_rate, click_through_rate, revenue, signup_rate
+  variantA: json("variant_a").notNull(), // configuration for control
+  variantB: json("variant_b").notNull(), // configuration for test variant
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const abTestParticipants = pgTable("ab_test_participants", {
+  id: serial("id").primaryKey(),
+  testId: integer("test_id").references(() => abTests.id),
+  userId: integer("user_id").references(() => users.id),
+  sessionId: text("session_id"), // for anonymous users
+  variant: text("variant").notNull(), // A or B
+  assignedAt: timestamp("assigned_at").defaultNow(),
+});
+
+export const abTestEvents = pgTable("ab_test_events", {
+  id: serial("id").primaryKey(),
+  testId: integer("test_id").references(() => abTests.id),
+  participantId: integer("participant_id").references(() => abTestParticipants.id),
+  eventType: text("event_type").notNull(), // view, click, conversion, purchase, signup
+  eventValue: decimal("event_value", { precision: 10, scale: 2 }), // revenue or other numeric value
+  metadata: json("metadata"), // additional event data
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// A/B Testing Schemas
+export const insertAbTestSchema = createInsertSchema(abTests).omit({ id: true, createdAt: true, updatedAt: true });
+export const insertAbTestParticipantSchema = createInsertSchema(abTestParticipants).omit({ id: true, assignedAt: true });
+export const insertAbTestEventSchema = createInsertSchema(abTestEvents).omit({ id: true, createdAt: true });
+
 // CMS Types
 export type Page = typeof pages.$inferSelect;
 export type InsertPage = z.infer<typeof insertPageSchema>;
@@ -371,3 +412,11 @@ export type AdminSetting = typeof adminSettings.$inferSelect;
 export type InsertAdminSetting = z.infer<typeof insertAdminSettingSchema>;
 export type QuoteRequest = typeof quoteRequests.$inferSelect;
 export type InsertQuoteRequest = z.infer<typeof insertQuoteRequestSchema>;
+
+// A/B Testing Types
+export type AbTest = typeof abTests.$inferSelect;
+export type InsertAbTest = z.infer<typeof insertAbTestSchema>;
+export type AbTestParticipant = typeof abTestParticipants.$inferSelect;
+export type InsertAbTestParticipant = z.infer<typeof insertAbTestParticipantSchema>;
+export type AbTestEvent = typeof abTestEvents.$inferSelect;
+export type InsertAbTestEvent = z.infer<typeof insertAbTestEventSchema>;

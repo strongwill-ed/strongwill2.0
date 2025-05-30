@@ -16,10 +16,10 @@ import { useToast } from "@/hooks/use-toast";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { insertProductSchema, insertProductCategorySchema } from "@shared/schema";
-import type { Product, ProductCategory, Order, GroupOrder, Refund } from "@shared/schema";
+import type { Product, ProductCategory, Order, GroupOrder, Refund, AbTest } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
 import { z } from "zod";
-import { Plus, Package, ShoppingBag, Users, DollarSign, TrendingUp, Eye, EyeOff, Edit, Trash2, Settings, Mail, Save, Upload, Download, Loader2, X } from "lucide-react";
+import { Plus, Package, ShoppingBag, Users, DollarSign, TrendingUp, Eye, EyeOff, Edit, Trash2, Settings, Mail, Save, Upload, Download, Loader2, X, Play, Pause, BarChart3, Target, Calendar, Clock } from "lucide-react";
 import { format } from "date-fns";
 
 const createProductSchema = insertProductSchema.extend({
@@ -624,6 +624,670 @@ function EmailTemplateManager() {
   );
 }
 
+// A/B Testing Manager Component
+function ABTestingManager() {
+  const { toast } = useToast();
+  const [isCreateTestOpen, setIsCreateTestOpen] = useState(false);
+  const [selectedTest, setSelectedTest] = useState<AbTest | null>(null);
+  const [isViewResultsOpen, setIsViewResultsOpen] = useState(false);
+
+  const { data: abTests, isLoading, refetch } = useQuery({
+    queryKey: ['/api/admin/ab-tests'],
+  });
+
+  const createTestMutation = useMutation({
+    mutationFn: (testData: any) => apiRequest("POST", "/api/admin/ab-tests", testData),
+    onSuccess: () => {
+      refetch();
+      setIsCreateTestOpen(false);
+      toast({
+        title: "A/B Test Created",
+        description: "Your A/B test has been created successfully."
+      });
+    }
+  });
+
+  const updateTestMutation = useMutation({
+    mutationFn: ({ id, data }: { id: number; data: any }) => 
+      apiRequest("PATCH", `/api/admin/ab-tests/${id}`, data),
+    onSuccess: () => {
+      refetch();
+      toast({
+        title: "Test Updated",
+        description: "A/B test has been updated successfully."
+      });
+    }
+  });
+
+  const deleteTestMutation = useMutation({
+    mutationFn: (id: number) => apiRequest("DELETE", `/api/admin/ab-tests/${id}`),
+    onSuccess: () => {
+      refetch();
+      toast({
+        title: "Test Deleted",
+        description: "A/B test has been deleted successfully."
+      });
+    }
+  });
+
+  const testForm = useForm({
+    defaultValues: {
+      name: "",
+      description: "",
+      testType: "homepage_hero",
+      goalMetric: "conversion_rate",
+      trafficSplit: 50,
+      variantA: {
+        title: "",
+        description: "",
+        buttonText: "",
+        backgroundColor: "#ffffff",
+        textColor: "#000000"
+      },
+      variantB: {
+        title: "",
+        description: "",
+        buttonText: "",
+        backgroundColor: "#000000",
+        textColor: "#ffffff"
+      }
+    }
+  });
+
+  const onCreateTest = (data: any) => {
+    createTestMutation.mutate(data);
+  };
+
+  const startTest = (test: AbTest) => {
+    updateTestMutation.mutate({
+      id: test.id,
+      data: { status: "active", startDate: new Date() }
+    });
+  };
+
+  const pauseTest = (test: AbTest) => {
+    updateTestMutation.mutate({
+      id: test.id,
+      data: { status: "paused" }
+    });
+  };
+
+  const completeTest = (test: AbTest) => {
+    updateTestMutation.mutate({
+      id: test.id,
+      data: { status: "completed", endDate: new Date() }
+    });
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <div>
+          <h3 className="text-lg font-medium">A/B Testing</h3>
+          <p className="text-sm text-muted-foreground">
+            Create and manage A/B tests to optimize user experience
+          </p>
+        </div>
+        <Button onClick={() => setIsCreateTestOpen(true)}>
+          <Plus className="h-4 w-4 mr-2" />
+          Create Test
+        </Button>
+      </div>
+
+      {/* Test Statistics */}
+      <div className="grid gap-4 md:grid-cols-4">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Active Tests</CardTitle>
+            <Play className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {Array.isArray(abTests) ? abTests.filter((test: AbTest) => test.status === 'active').length : 0}
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Draft Tests</CardTitle>
+            <Clock className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {Array.isArray(abTests) ? abTests.filter((test: AbTest) => test.status === 'draft').length : 0}
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Completed Tests</CardTitle>
+            <Target className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {Array.isArray(abTests) ? abTests.filter((test: AbTest) => test.status === 'completed').length : 0}
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Tests</CardTitle>
+            <BarChart3 className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {Array.isArray(abTests) ? abTests.length : 0}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Tests Table */}
+      <Card>
+        <CardHeader>
+          <CardTitle>A/B Tests</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse">
+              <thead>
+                <tr className="border-b">
+                  <th className="text-left p-4 font-medium">Test Name</th>
+                  <th className="text-left p-4 font-medium">Type</th>
+                  <th className="text-left p-4 font-medium">Status</th>
+                  <th className="text-left p-4 font-medium">Goal</th>
+                  <th className="text-left p-4 font-medium">Traffic Split</th>
+                  <th className="text-left p-4 font-medium">Duration</th>
+                  <th className="text-left p-4 font-medium">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {Array.isArray(abTests) && abTests.map((test: AbTest) => (
+                  <tr key={test.id} className="border-b hover:bg-muted/50">
+                    <td className="p-4">
+                      <div>
+                        <div className="font-medium">{test.name}</div>
+                        <div className="text-sm text-muted-foreground">{test.description}</div>
+                      </div>
+                    </td>
+                    <td className="p-4">
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                        {test.testType.replace('_', ' ').toUpperCase()}
+                      </span>
+                    </td>
+                    <td className="p-4">
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                        test.status === 'active' ? 'bg-green-100 text-green-800' :
+                        test.status === 'draft' ? 'bg-gray-100 text-gray-800' :
+                        test.status === 'paused' ? 'bg-yellow-100 text-yellow-800' :
+                        'bg-blue-100 text-blue-800'
+                      }`}>
+                        {test.status.toUpperCase()}
+                      </span>
+                    </td>
+                    <td className="p-4">{test.goalMetric.replace('_', ' ')}</td>
+                    <td className="p-4">{test.trafficSplit}% / {100 - test.trafficSplit}%</td>
+                    <td className="p-4">
+                      {test.startDate && test.endDate ? 
+                        `${Math.ceil((new Date(test.endDate).getTime() - new Date(test.startDate).getTime()) / (1000 * 60 * 60 * 24))} days` :
+                        test.startDate ? 
+                        `${Math.ceil((new Date().getTime() - new Date(test.startDate).getTime()) / (1000 * 60 * 60 * 24))} days` :
+                        'Not started'
+                      }
+                    </td>
+                    <td className="p-4">
+                      <div className="flex items-center gap-2">
+                        {test.status === 'draft' && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => startTest(test)}
+                          >
+                            <Play className="h-4 w-4" />
+                          </Button>
+                        )}
+                        {test.status === 'active' && (
+                          <>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => pauseTest(test)}
+                            >
+                              <Pause className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => completeTest(test)}
+                            >
+                              Complete
+                            </Button>
+                          </>
+                        )}
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => {
+                            setSelectedTest(test);
+                            setIsViewResultsOpen(true);
+                          }}
+                        >
+                          <BarChart3 className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => deleteTestMutation.mutate(test.id)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Create Test Dialog */}
+      <Dialog open={isCreateTestOpen} onOpenChange={setIsCreateTestOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Create A/B Test</DialogTitle>
+            <DialogDescription>
+              Set up a new A/B test to optimize your user experience
+            </DialogDescription>
+          </DialogHeader>
+          
+          <Form {...testForm}>
+            <form onSubmit={testForm.handleSubmit(onCreateTest)} className="space-y-6">
+              <div className="grid gap-4 md:grid-cols-2">
+                <FormField
+                  control={testForm.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Test Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Hero Section Test" {...field} />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={testForm.control}
+                  name="testType"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Test Type</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select test type" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="homepage_hero">Homepage Hero</SelectItem>
+                          <SelectItem value="product_page">Product Page</SelectItem>
+                          <SelectItem value="checkout_flow">Checkout Flow</SelectItem>
+                          <SelectItem value="pricing">Pricing</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <FormField
+                control={testForm.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Description</FormLabel>
+                    <FormControl>
+                      <Textarea placeholder="Test different hero section layouts..." {...field} />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
+              <div className="grid gap-4 md:grid-cols-2">
+                <FormField
+                  control={testForm.control}
+                  name="goalMetric"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Goal Metric</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select goal metric" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="conversion_rate">Conversion Rate</SelectItem>
+                          <SelectItem value="click_through_rate">Click Through Rate</SelectItem>
+                          <SelectItem value="revenue">Revenue</SelectItem>
+                          <SelectItem value="signup_rate">Signup Rate</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={testForm.control}
+                  name="trafficSplit"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Traffic Split (% for Variant A)</FormLabel>
+                      <FormControl>
+                        <Input 
+                          type="number" 
+                          min="10" 
+                          max="90" 
+                          {...field} 
+                          onChange={(e) => field.onChange(parseInt(e.target.value))}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              {/* Variant Configuration */}
+              <div className="grid gap-6 md:grid-cols-2">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg">Variant A (Control)</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <FormField
+                      control={testForm.control}
+                      name="variantA.title"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Title</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Original title" {...field} />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={testForm.control}
+                      name="variantA.description"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Description</FormLabel>
+                          <FormControl>
+                            <Textarea placeholder="Original description" {...field} />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={testForm.control}
+                      name="variantA.buttonText"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Button Text</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Shop Now" {...field} />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                    <div className="grid gap-4 grid-cols-2">
+                      <FormField
+                        control={testForm.control}
+                        name="variantA.backgroundColor"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Background Color</FormLabel>
+                            <FormControl>
+                              <Input type="color" {...field} />
+                            </FormControl>
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={testForm.control}
+                        name="variantA.textColor"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Text Color</FormLabel>
+                            <FormControl>
+                              <Input type="color" {...field} />
+                            </FormControl>
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg">Variant B (Test)</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <FormField
+                      control={testForm.control}
+                      name="variantB.title"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Title</FormLabel>
+                          <FormControl>
+                            <Input placeholder="New title" {...field} />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={testForm.control}
+                      name="variantB.description"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Description</FormLabel>
+                          <FormControl>
+                            <Textarea placeholder="New description" {...field} />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={testForm.control}
+                      name="variantB.buttonText"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Button Text</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Get Started" {...field} />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                    <div className="grid gap-4 grid-cols-2">
+                      <FormField
+                        control={testForm.control}
+                        name="variantB.backgroundColor"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Background Color</FormLabel>
+                            <FormControl>
+                              <Input type="color" {...field} />
+                            </FormControl>
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={testForm.control}
+                        name="variantB.textColor"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Text Color</FormLabel>
+                            <FormControl>
+                              <Input type="color" {...field} />
+                            </FormControl>
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <div className="flex justify-end gap-2">
+                <Button variant="outline" onClick={() => setIsCreateTestOpen(false)}>
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={createTestMutation.isPending}>
+                  {createTestMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  Create Test
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Test Results Dialog */}
+      <Dialog open={isViewResultsOpen} onOpenChange={setIsViewResultsOpen}>
+        <DialogContent className="max-w-4xl">
+          <DialogHeader>
+            <DialogTitle>Test Results: {selectedTest?.name}</DialogTitle>
+            <DialogDescription>
+              A/B test performance metrics and analysis
+            </DialogDescription>
+          </DialogHeader>
+          
+          {selectedTest && (
+            <div className="space-y-6">
+              <div className="grid gap-4 md:grid-cols-3">
+                <Card>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-sm">Total Participants</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">1,234</div>
+                    <p className="text-xs text-muted-foreground">Last 7 days</p>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-sm">Conversion Rate</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">3.2%</div>
+                    <p className="text-xs text-green-600">+12% vs control</p>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-sm">Statistical Significance</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">94%</div>
+                    <p className="text-xs text-muted-foreground">95% needed</p>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <div className="grid gap-6 md:grid-cols-2">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Variant A (Control)</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="flex justify-between">
+                      <span>Participants:</span>
+                      <span className="font-medium">617</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Conversions:</span>
+                      <span className="font-medium">19</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Conversion Rate:</span>
+                      <span className="font-medium">3.08%</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div className="bg-blue-600 h-2 rounded-full" style={{ width: '50%' }}></div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Variant B (Test)</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="flex justify-between">
+                      <span>Participants:</span>
+                      <span className="font-medium">617</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Conversions:</span>
+                      <span className="font-medium">23</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Conversion Rate:</span>
+                      <span className="font-medium text-green-600">3.73%</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div className="bg-green-600 h-2 rounded-full" style={{ width: '50%' }}></div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Recommendations</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    <div className="flex items-start gap-3">
+                      <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
+                      <div>
+                        <p className="font-medium">Variant B shows promising results</p>
+                        <p className="text-sm text-muted-foreground">
+                          21% improvement in conversion rate with 94% confidence
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <div className="w-2 h-2 bg-yellow-500 rounded-full mt-2"></div>
+                      <div>
+                        <p className="font-medium">Continue test for statistical significance</p>
+                        <p className="text-sm text-muted-foreground">
+                          Need 1% more confidence to reach 95% threshold
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
+
 export default function Admin() {
   const { user } = useAuth();
   const { toast } = useToast();
@@ -1075,9 +1739,9 @@ export default function Admin() {
             <TabsList className="grid w-full grid-cols-6">
               <TabsTrigger value="emails">Email Templates</TabsTrigger>
               <TabsTrigger value="settings">Settings</TabsTrigger>
+              <TabsTrigger value="ab-testing">A/B Testing</TabsTrigger>
               <TabsTrigger value="pages">Pages</TabsTrigger>
               <TabsTrigger value="blog">Blog</TabsTrigger>
-              <TabsTrigger value="quotes">Quotes</TabsTrigger>
               <TabsTrigger value="users">Users</TabsTrigger>
             </TabsList>
           </div>
