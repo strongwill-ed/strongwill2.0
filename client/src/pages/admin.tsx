@@ -637,6 +637,98 @@ export default function Admin() {
   const [isEditProductOpen, setIsEditProductOpen] = useState(false);
   const [editingGroupOrder, setEditingGroupOrder] = useState<GroupOrder | null>(null);
   const [isEditGroupOrderOpen, setIsEditGroupOrderOpen] = useState(false);
+  
+  // User Management States
+  const [userSearchTerm, setUserSearchTerm] = useState("");
+  const [userRoleFilter, setUserRoleFilter] = useState("all");
+  const [editingUser, setEditingUser] = useState<any>(null);
+  const [isEditUserOpen, setIsEditUserOpen] = useState(false);
+  
+  // Refund System States
+  const [isRefundDialogOpen, setIsRefundDialogOpen] = useState(false);
+  const [refundFormData, setRefundFormData] = useState({
+    orderId: 0,
+    refundAmount: '',
+    reason: '',
+    adminNotes: ''
+  });
+  
+  // Order Notification Email States
+  const [adminEmail, setAdminEmail] = useState('admin@strongwillsports.com');
+  const [isTestingEmail, setIsTestingEmail] = useState(false);
+
+  // Computed values for user filtering
+  const filteredUsers = users.filter((user: any) => {
+    const matchesSearch = user.username?.toLowerCase().includes(userSearchTerm.toLowerCase()) ||
+                         user.email?.toLowerCase().includes(userSearchTerm.toLowerCase());
+    const matchesRole = userRoleFilter === "all" || user.role === userRoleFilter;
+    return matchesSearch && matchesRole;
+  });
+
+  // User management functions
+  const handleEditUser = (user: any) => {
+    setEditingUser(user);
+    setIsEditUserOpen(true);
+  };
+
+  const handleViewUserOrders = (userId: number) => {
+    // Navigate to orders filtered by user
+    setActiveTab("orders");
+  };
+
+  const handleCreateRefund = (orderId: number) => {
+    setRefundFormData({
+      orderId,
+      refundAmount: '',
+      reason: '',
+      adminNotes: ''
+    });
+    setIsRefundDialogOpen(true);
+  };
+
+  const processRefund = async () => {
+    try {
+      await apiRequest('POST', '/api/admin/refunds', refundFormData);
+      await queryClient.invalidateQueries({ queryKey: ['/api/admin/refunds'] });
+      await queryClient.invalidateQueries({ queryKey: ['/api/orders'] });
+      
+      toast({
+        title: "Refund Processed",
+        description: "The refund has been successfully processed."
+      });
+      
+      setIsRefundDialogOpen(false);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to process refund.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const testEmailNotification = async () => {
+    setIsTestingEmail(true);
+    try {
+      await apiRequest('POST', '/api/admin/test-email', {
+        adminEmail,
+        testType: 'order_notification'
+      });
+      
+      toast({
+        title: "Test Email Sent",
+        description: `Test notification sent to ${adminEmail}`
+      });
+    } catch (error) {
+      toast({
+        title: "Email Test Failed",
+        description: "Could not send test email. Check email configuration.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsTestingEmail(false);
+    }
+  };
 
   // Always call all hooks before any conditional returns
   const { data: stats } = useQuery<any>({
@@ -664,8 +756,13 @@ export default function Admin() {
     enabled: !!user && user.role === "admin",
   });
 
-  const { data: refunds = [] } = useQuery<Refund[]>({
-    queryKey: ["/api/refunds"],
+  const { data: users = [] } = useQuery<any[]>({
+    queryKey: ["/api/admin/users"],
+    enabled: !!user && user.role === "admin",
+  });
+
+  const { data: refunds = [] } = useQuery<any[]>({
+    queryKey: ["/api/admin/refunds"],
     enabled: !!user && user.role === "admin",
   });
 
@@ -1932,14 +2029,80 @@ export default function Admin() {
           <TabsContent value="users" className="space-y-6">
             <div className="flex justify-between items-center">
               <h2 className="text-2xl font-bold text-black">User Management</h2>
+              <div className="flex gap-2">
+                <Input
+                  placeholder="Search users..."
+                  value={userSearchTerm}
+                  onChange={(e) => setUserSearchTerm(e.target.value)}
+                  className="w-64"
+                />
+                <Select value={userRoleFilter} onValueChange={setUserRoleFilter}>
+                  <SelectTrigger className="w-40">
+                    <SelectValue placeholder="Filter by role" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Roles</SelectItem>
+                    <SelectItem value="admin">Admin</SelectItem>
+                    <SelectItem value="user">User</SelectItem>
+                    <SelectItem value="team">Team</SelectItem>
+                    <SelectItem value="sponsor">Sponsor</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
             
             <Card>
               <CardHeader>
-                <CardTitle>All Users</CardTitle>
+                <CardTitle>All Users ({filteredUsers.length})</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-gray-600">User management system will be implemented here.</p>
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>ID</TableHead>
+                        <TableHead>Username</TableHead>
+                        <TableHead>Email</TableHead>
+                        <TableHead>Role</TableHead>
+                        <TableHead>Created</TableHead>
+                        <TableHead>Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {filteredUsers.map((user) => (
+                        <TableRow key={user.id}>
+                          <TableCell>{user.id}</TableCell>
+                          <TableCell className="font-medium">{user.username}</TableCell>
+                          <TableCell>{user.email}</TableCell>
+                          <TableCell>
+                            <Badge variant={user.role === 'admin' ? 'default' : 'secondary'}>
+                              {user.role}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>{format(new Date(user.createdAt || Date.now()), "MMM dd, yyyy")}</TableCell>
+                          <TableCell>
+                            <div className="flex gap-2">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => handleEditUser(user)}
+                              >
+                                <Edit className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => handleViewUserOrders(user.id)}
+                              >
+                                <Eye className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
