@@ -484,7 +484,18 @@ function BulkProductManager() {
                     </div>
                   </TableCell>
                   <TableCell>{category?.name}</TableCell>
-                  <TableCell>${product.basePrice}</TableCell>
+                  <TableCell>
+                    <div className="flex flex-col">
+                      {product.isOnSale && product.salePrice ? (
+                        <>
+                          <span className="text-red-600 font-semibold">${product.salePrice}</span>
+                          <span className="text-gray-500 line-through text-sm">${product.basePrice}</span>
+                        </>
+                      ) : (
+                        <span>${product.basePrice}</span>
+                      )}
+                    </div>
+                  </TableCell>
                   <TableCell>
                     <Badge variant={product.isActive ? "default" : "secondary"}>
                       {product.isActive ? "Active" : "Inactive"}
