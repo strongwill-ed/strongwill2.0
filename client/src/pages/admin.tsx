@@ -1063,20 +1063,24 @@ export default function Admin() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-6 lg:grid-cols-11">
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="products">Products</TabsTrigger>
-            <TabsTrigger value="bulk-products">Bulk Products</TabsTrigger>
-            <TabsTrigger value="orders">Orders</TabsTrigger>
-            <TabsTrigger value="refunds">Refunds</TabsTrigger>
-            <TabsTrigger value="group-orders">Group Orders</TabsTrigger>
-            <TabsTrigger value="emails">Email Templates</TabsTrigger>
-            <TabsTrigger value="settings">Settings</TabsTrigger>
-            <TabsTrigger value="pages">Pages</TabsTrigger>
-            <TabsTrigger value="blog">Blog</TabsTrigger>
-            <TabsTrigger value="quotes">Quotes</TabsTrigger>
-            <TabsTrigger value="users">Users</TabsTrigger>
-          </TabsList>
+          <div className="space-y-2">
+            <TabsList className="grid w-full grid-cols-6">
+              <TabsTrigger value="overview">Overview</TabsTrigger>
+              <TabsTrigger value="products">Products</TabsTrigger>
+              <TabsTrigger value="bulk-products">Bulk Products</TabsTrigger>
+              <TabsTrigger value="orders">Orders</TabsTrigger>
+              <TabsTrigger value="refunds">Refunds</TabsTrigger>
+              <TabsTrigger value="group-orders">Group Orders</TabsTrigger>
+            </TabsList>
+            <TabsList className="grid w-full grid-cols-6">
+              <TabsTrigger value="emails">Email Templates</TabsTrigger>
+              <TabsTrigger value="settings">Settings</TabsTrigger>
+              <TabsTrigger value="pages">Pages</TabsTrigger>
+              <TabsTrigger value="blog">Blog</TabsTrigger>
+              <TabsTrigger value="quotes">Quotes</TabsTrigger>
+              <TabsTrigger value="users">Users</TabsTrigger>
+            </TabsList>
+          </div>
 
           {/* Overview Tab */}
           <TabsContent value="overview" className="space-y-6">
