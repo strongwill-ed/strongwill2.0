@@ -99,6 +99,10 @@ export default function DesignTool() {
   const [textColor, setTextColor] = useState("#000000");
   const [fontFamily, setFontFamily] = useState("Arial");
   
+  // Load design state
+  const [loadDesignId, setLoadDesignId] = useState("");
+  const [isLoadingDesign, setIsLoadingDesign] = useState(false);
+  
   // Canvas ref
   const canvasRef = useRef<any>(null);
 
@@ -113,6 +117,29 @@ export default function DesignTool() {
 
   const { data: groupOrders = [] } = useQuery<GroupOrder[]>({
     queryKey: ["/api/group-orders"],
+  });
+
+  const loadDesignMutation = useMutation({
+    mutationFn: async (uniqueId: string) => {
+      const response = await apiRequest("GET", `/api/designs/unique/${uniqueId}`, null);
+      return response.json();
+    },
+    onSuccess: (design) => {
+      setDesignName(design.name);
+      setSelectedProduct(design.productId);
+      setDesignElements(design.elements ? JSON.parse(design.elements) : []);
+      toast({
+        title: "Design Loaded Successfully!",
+        description: `Loaded design: ${design.name}`,
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Design not found or failed to load",
+        variant: "destructive",
+      });
+    },
   });
 
   const saveDesignMutation = useMutation({
@@ -149,8 +176,8 @@ export default function DesignTool() {
         }
       } else {
         toast({
-          title: "Success",
-          description: "Design saved successfully!",
+          title: "Design Saved Successfully!",
+          description: `Your design ID is: ${savedDesign.uniqueId}. Save this ID to access your design later!`,
         });
       }
       
@@ -199,6 +226,21 @@ export default function DesignTool() {
     };
     
     setDesignElements([...designElements, newElement]);
+  };
+
+  const handleLoadDesign = () => {
+    if (!loadDesignId.trim()) {
+      toast({
+        title: "Error",
+        description: "Please enter a design ID",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    setIsLoadingDesign(true);
+    loadDesignMutation.mutate(loadDesignId);
+    setIsLoadingDesign(false);
   };
 
   const updateElement = (id: string, updates: Partial<DesignElement>) => {
@@ -407,6 +449,17 @@ export default function DesignTool() {
               )}
             </div>
             <div className="flex space-x-3">
+              <div className="flex items-center space-x-2">
+                <Input
+                  placeholder="Enter Design ID"
+                  value={loadDesignId}
+                  onChange={(e) => setLoadDesignId(e.target.value)}
+                  className="w-48"
+                />
+                <Button variant="outline" onClick={handleLoadDesign} disabled={loadDesignMutation.isPending}>
+                  {loadDesignMutation.isPending ? "Loading..." : "Load Design"}
+                </Button>
+              </div>
               <Button variant="outline" onClick={exportDesign}>
                 <Download className="mr-2 h-4 w-4" />
                 Export
