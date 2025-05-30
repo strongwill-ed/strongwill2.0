@@ -20,6 +20,7 @@ export interface IStorage {
   getProduct(id: number): Promise<Product | undefined>;
   createProduct(product: InsertProduct): Promise<Product>;
   updateProduct(id: number, updates: Partial<InsertProduct>): Promise<Product | undefined>;
+  clearAllProducts(): Promise<void>;
 
   // Designs
   getDesigns(): Promise<Design[]>;
@@ -551,6 +552,17 @@ export class DatabaseStorage implements IStorage {
       .where(eq(products.id, id))
       .returning();
     return updatedProduct || undefined;
+  }
+
+  async clearAllProducts(): Promise<void> {
+    await this.ensureInitialized();
+    // Clear dependent records first to handle foreign key constraints
+    await db.delete(groupOrderItems);
+    await db.delete(orderItems);
+    await db.delete(cartItems);
+    await db.delete(productRecommendations);
+    // Finally clear products
+    await db.delete(products);
   }
 
   async getDesigns(): Promise<Design[]> {

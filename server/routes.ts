@@ -1615,6 +1615,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { products } = req.body; // Array of product data
       
+      // Clear all existing products first (replacement behavior)
+      await storage.clearAllProducts();
+      
       const results = await Promise.all(
         products.map(async (productData: any) => {
           try {
@@ -1630,11 +1633,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const successful = results.filter(result => result !== null).length;
       
       res.json({ 
-        message: `Successfully imported ${successful} out of ${products.length} products`,
-        successful,
+        message: `Successfully replaced all products with ${successful} new products`,
+        imported: successful,
         total: products.length
       });
     } catch (error) {
+      console.error('Bulk import error:', error);
       res.status(500).json({ message: "Failed to import products" });
     }
   });
