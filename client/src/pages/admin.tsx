@@ -139,6 +139,56 @@ function BulkProductManager() {
     }
   };
 
+  const bulkMarkOnSale = async () => {
+    if (selectedProducts.size === 0) return;
+    setIsUpdating(true);
+    try {
+      const response = await apiRequest("PATCH", "/api/admin/products/bulk-mark-sale", {
+        productIds: Array.from(selectedProducts)
+      });
+      const result = await response.json();
+      toast({
+        title: "Success",
+        description: result.message,
+      });
+      loadBulkData();
+      setSelectedProducts(new Set());
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to mark products on sale",
+        variant: "destructive",
+      });
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  const bulkRemoveSale = async () => {
+    if (selectedProducts.size === 0) return;
+    setIsUpdating(true);
+    try {
+      const response = await apiRequest("PATCH", "/api/admin/products/bulk-remove-sale", {
+        productIds: Array.from(selectedProducts)
+      });
+      const result = await response.json();
+      toast({
+        title: "Success",
+        description: result.message,
+      });
+      loadBulkData();
+      setSelectedProducts(new Set());
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to remove sale from products",
+        variant: "destructive",
+      });
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
   const exportProducts = () => {
     // Create CSV format for easier editing
     const csvHeaders = ['name', 'description', 'categoryId', 'basePrice', 'imageUrl', 'sizes', 'colors', 'isActive', 'isOnSale', 'salePrice'];
@@ -335,6 +385,24 @@ function BulkProductManager() {
           >
             {isUpdating ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
             Deactivate Selected ({selectedProducts.size})
+          </Button>
+
+          <Button 
+            onClick={bulkMarkOnSale} 
+            disabled={selectedProducts.size === 0 || isUpdating}
+            className="bg-orange-600 text-white hover:bg-orange-700"
+          >
+            {isUpdating ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+            Mark on Sale ({selectedProducts.size})
+          </Button>
+          
+          <Button 
+            onClick={bulkRemoveSale} 
+            disabled={selectedProducts.size === 0 || isUpdating}
+            variant="outline"
+          >
+            {isUpdating ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+            Remove Sale ({selectedProducts.size})
           </Button>
           
           <div className="flex gap-2">
@@ -1681,6 +1749,8 @@ export default function Admin() {
         sizes: editingProduct.sizes || [],
         colors: editingProduct.colors || [],
         isActive: editingProduct.isActive,
+        isOnSale: editingProduct.isOnSale || false,
+        salePrice: editingProduct.salePrice || "",
       });
     }
   }, [editingProduct, editProductForm]);
@@ -2213,24 +2283,75 @@ export default function Admin() {
                               </FormItem>
                             )}
                           />
+                          
                           <FormField
                             control={editProductForm.control}
-                            name="imageUrl"
+                            name="isOnSale"
+                            render={({ field }) => (
+                              <FormItem className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4">
+                                <FormControl>
+                                  <input
+                                    type="checkbox"
+                                    checked={field.value}
+                                    onChange={field.onChange}
+                                  />
+                                </FormControl>
+                                <div className="space-y-1 leading-none">
+                                  <FormLabel>On Sale</FormLabel>
+                                  <p className="text-sm text-muted-foreground">
+                                    Mark this product as on sale
+                                  </p>
+                                </div>
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                          <FormField
+                            control={editProductForm.control}
+                            name="salePrice"
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel>Image URL</FormLabel>
+                                <FormLabel>Sale Price (AUD)</FormLabel>
                                 <FormControl>
                                   <Input 
-                                    placeholder="https://example.com/image.jpg" 
+                                    placeholder="49.99" 
                                     {...field} 
-                                    value={field.value || ""}
+                                    disabled={!editProductForm.watch("isOnSale")}
                                   />
                                 </FormControl>
                                 <FormMessage />
                               </FormItem>
                             )}
                           />
+                          
+                          <div className="text-sm text-gray-600 flex items-end">
+                            {editProductForm.watch("isOnSale") && editProductForm.watch("salePrice") && editProductForm.watch("basePrice") && (
+                              <span className="text-green-600 font-medium">
+                                Save ${(parseFloat(editProductForm.watch("basePrice")) - parseFloat(editProductForm.watch("salePrice") || "0")).toFixed(2)}
+                              </span>
+                            )}
+                          </div>
                         </div>
+
+                        <FormField
+                          control={editProductForm.control}
+                          name="imageUrl"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Image URL</FormLabel>
+                              <FormControl>
+                                <Input 
+                                  placeholder="https://example.com/image.jpg" 
+                                  {...field} 
+                                  value={field.value || ""}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
                         <div className="grid grid-cols-2 gap-4">
                           <FormField
                             control={editProductForm.control}

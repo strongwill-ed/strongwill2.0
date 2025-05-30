@@ -1705,6 +1705,73 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.patch("/api/admin/products/bulk-mark-sale", async (req, res) => {
+    try {
+      const { productIds } = req.body; // Array of product IDs
+      
+      const results = await Promise.all(
+        productIds.map(async (id: number) => {
+          try {
+            // Get current product to calculate 20% off sale price
+            const product = await storage.getProduct(id);
+            if (!product) return null;
+            
+            const basePrice = parseFloat(product.basePrice);
+            const salePrice = (basePrice * 0.8).toFixed(2); // 20% off
+            
+            return await storage.updateProduct(id, { 
+              isOnSale: true, 
+              salePrice: salePrice 
+            });
+          } catch (error) {
+            console.error(`Failed to mark product ${id} on sale:`, error);
+            return null;
+          }
+        })
+      );
+      
+      const successful = results.filter(result => result !== null).length;
+      
+      res.json({ 
+        message: `Successfully marked ${successful} out of ${productIds.length} products on sale (20% off)`,
+        successful,
+        total: productIds.length
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to mark products on sale" });
+    }
+  });
+
+  app.patch("/api/admin/products/bulk-remove-sale", async (req, res) => {
+    try {
+      const { productIds } = req.body; // Array of product IDs
+      
+      const results = await Promise.all(
+        productIds.map(async (id: number) => {
+          try {
+            return await storage.updateProduct(id, { 
+              isOnSale: false, 
+              salePrice: null 
+            });
+          } catch (error) {
+            console.error(`Failed to remove sale from product ${id}:`, error);
+            return null;
+          }
+        })
+      );
+      
+      const successful = results.filter(result => result !== null).length;
+      
+      res.json({ 
+        message: `Successfully removed sale from ${successful} out of ${productIds.length} products`,
+        successful,
+        total: productIds.length
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to remove sale from products" });
+    }
+  });
+
   // CMS & Admin Panel Routes
 
   // Pages Management
