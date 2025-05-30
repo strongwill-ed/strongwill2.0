@@ -2146,6 +2146,82 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // A/B Testing Routes
+  app.get("/api/admin/ab-tests", async (req, res) => {
+    try {
+      const tests = await storage.getAllAbTests();
+      res.json(tests);
+    } catch (error) {
+      console.error("Error fetching A/B tests:", error);
+      res.status(500).json({ message: "Failed to fetch A/B tests" });
+    }
+  });
+
+  app.get("/api/admin/ab-tests/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const test = await storage.getAbTest(id);
+      if (!test) {
+        return res.status(404).json({ message: "A/B test not found" });
+      }
+      res.json(test);
+    } catch (error) {
+      console.error("Error fetching A/B test:", error);
+      res.status(500).json({ message: "Failed to fetch A/B test" });
+    }
+  });
+
+  app.post("/api/admin/ab-tests", async (req, res) => {
+    try {
+      const testData = req.body;
+      const test = await storage.createAbTest(testData);
+      res.json(test);
+    } catch (error) {
+      console.error("Error creating A/B test:", error);
+      res.status(500).json({ message: "Failed to create A/B test" });
+    }
+  });
+
+  app.patch("/api/admin/ab-tests/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const updates = req.body;
+      const test = await storage.updateAbTest(id, updates);
+      if (!test) {
+        return res.status(404).json({ message: "A/B test not found" });
+      }
+      res.json(test);
+    } catch (error) {
+      console.error("Error updating A/B test:", error);
+      res.status(500).json({ message: "Failed to update A/B test" });
+    }
+  });
+
+  app.delete("/api/admin/ab-tests/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const success = await storage.deleteAbTest(id);
+      if (!success) {
+        return res.status(404).json({ message: "A/B test not found" });
+      }
+      res.json({ message: "A/B test deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting A/B test:", error);
+      res.status(500).json({ message: "Failed to delete A/B test" });
+    }
+  });
+
+  app.get("/api/admin/ab-tests/:id/results", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const results = await storage.getAbTestResults(id);
+      res.json(results);
+    } catch (error) {
+      console.error("Error fetching A/B test results:", error);
+      res.status(500).json({ message: "Failed to fetch A/B test results" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
