@@ -1832,7 +1832,21 @@ export default function Admin() {
                       <div className="pl-4 text-gray-600">
                         {selectedOrder.shippingAddress ? (
                           <div>
-                            <p>{selectedOrder.shippingAddress}</p>
+                            {(() => {
+                              try {
+                                const address = JSON.parse(selectedOrder.shippingAddress);
+                                return (
+                                  <div>
+                                    <p>{address.name || 'N/A'}</p>
+                                    <p>{address.address || 'N/A'}</p>
+                                    <p>{address.city || 'N/A'}, {address.state || 'N/A'} {address.zipCode || 'N/A'}</p>
+                                    <p>{address.country || 'N/A'}</p>
+                                  </div>
+                                );
+                              } catch (e) {
+                                return <p>{selectedOrder.shippingAddress}</p>;
+                              }
+                            })()}
                           </div>
                         ) : (
                           <p>No shipping address provided</p>
@@ -1845,9 +1859,69 @@ export default function Admin() {
                 {/* Order Items */}
                 <div>
                   <h3 className="font-semibold mb-3">Order Items</h3>
-                  <p className="text-gray-600 p-4 border rounded-lg">
-                    Order items will be loaded from the database. Use the order ID #{selectedOrder.id} to view detailed item information in the database.
-                  </p>
+                  <div className="border rounded-lg">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Details</TableHead>
+                          <TableHead>Amount</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        <TableRow>
+                          <TableCell>
+                            <div>
+                              <p className="font-medium">Subtotal</p>
+                              <p className="text-sm text-gray-600">Base order amount</p>
+                            </div>
+                          </TableCell>
+                          <TableCell>${selectedOrder.subtotal}</TableCell>
+                        </TableRow>
+                        {selectedOrder.discount && parseFloat(selectedOrder.discount) > 0 && (
+                          <TableRow>
+                            <TableCell>
+                              <div>
+                                <p className="font-medium">Discount</p>
+                                <p className="text-sm text-gray-600">Applied discounts</p>
+                              </div>
+                            </TableCell>
+                            <TableCell>-${selectedOrder.discount}</TableCell>
+                          </TableRow>
+                        )}
+                        {selectedOrder.shipping && parseFloat(selectedOrder.shipping) > 0 && (
+                          <TableRow>
+                            <TableCell>
+                              <div>
+                                <p className="font-medium">Shipping</p>
+                                <p className="text-sm text-gray-600">Delivery charges</p>
+                              </div>
+                            </TableCell>
+                            <TableCell>${selectedOrder.shipping}</TableCell>
+                          </TableRow>
+                        )}
+                        {selectedOrder.tax && parseFloat(selectedOrder.tax) > 0 && (
+                          <TableRow>
+                            <TableCell>
+                              <div>
+                                <p className="font-medium">Tax</p>
+                                <p className="text-sm text-gray-600">Applied taxes</p>
+                              </div>
+                            </TableCell>
+                            <TableCell>${selectedOrder.tax}</TableCell>
+                          </TableRow>
+                        )}
+                        <TableRow className="border-t-2">
+                          <TableCell>
+                            <div>
+                              <p className="font-bold">Total Amount</p>
+                              <p className="text-sm text-gray-600">Final order total</p>
+                            </div>
+                          </TableCell>
+                          <TableCell className="font-bold">${selectedOrder.totalAmount}</TableCell>
+                        </TableRow>
+                      </TableBody>
+                    </Table>
+                  </div>
                 </div>
 
                 {/* Actions */}
