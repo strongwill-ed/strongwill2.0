@@ -392,9 +392,8 @@ export const abTestEvents = pgTable("ab_test_events", {
   id: serial("id").primaryKey(),
   testId: integer("test_id").references(() => abTests.id),
   participantId: integer("participant_id").references(() => abTestParticipants.id),
-  eventType: text("event_type").notNull(), // view, click, conversion, purchase, signup
-  eventValue: decimal("event_value", { precision: 10, scale: 2 }), // revenue or other numeric value
-  metadata: json("metadata"), // additional event data
+  eventType: text("event_type").notNull(), // view, click, conversion, signup
+  eventData: json("event_data"), // additional event metadata
   createdAt: timestamp("created_at").defaultNow(),
 });
 

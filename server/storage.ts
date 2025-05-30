@@ -1298,6 +1298,115 @@ export class DatabaseStorage implements IStorage {
       .returning();
     return subscription;
   }
+
+  // A/B Testing Methods
+  async getAllAbTests(): Promise<AbTest[]> {
+    await this.ensureInitialized();
+    return await this.db.select().from(abTests).orderBy(abTests.createdAt);
+  }
+
+  async getAbTest(id: number): Promise<AbTest | undefined> {
+    await this.ensureInitialized();
+    const [test] = await this.db.select().from(abTests).where(eq(abTests.id, id));
+    return test || undefined;
+  }
+
+  async createAbTest(test: InsertAbTest): Promise<AbTest> {
+    await this.ensureInitialized();
+    const [result] = await this.db
+      .insert(abTests)
+      .values(test)
+      .returning();
+    return result;
+  }
+
+  async updateAbTest(id: number, updates: Partial<InsertAbTest>): Promise<AbTest | undefined> {
+    await this.ensureInitialized();
+    const [result] = await this.db
+      .update(abTests)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(abTests.id, id))
+      .returning();
+    return result || undefined;
+  }
+
+  async deleteAbTest(id: number): Promise<boolean> {
+    await this.ensureInitialized();
+    const result = await this.db
+      .delete(abTests)
+      .where(eq(abTests.id, id));
+    return (result.rowCount || 0) > 0;
+  }
+
+  async getAbTestResults(id: number): Promise<any> {
+    await this.ensureInitialized();
+    // Get participants and events for the test
+    const participants = await this.db
+      .select()
+      .from(abTestParticipants)
+      .where(eq(abTestParticipants.testId, id));
+
+    const events = await this.db
+      .select()
+      .from(abTestEvents)
+      .where(eq(abTestEvents.testId, id));
+
+    // Calculate basic metrics
+    const variantAParticipants = participants.filter(p => p.variant === 'A').length;
+    const variantBParticipants = participants.filter(p => p.variant === 'B').length;
+    
+    const variantAConversions = events.filter(e => 
+      e.eventType === 'conversion' && 
+      participants.find(p => p.id === e.participantId)?.variant === 'A'
+    ).length;
+    
+    const variantBConversions = events.filter(e => 
+      e.eventType === 'conversion' && 
+      participants.find(p => p.id === e.participantId)?.variant === 'B'
+    ).length;
+
+    return {
+      participants: {
+        variantA: variantAParticipants,
+        variantB: variantBParticipants,
+        total: participants.length
+      },
+      conversions: {
+        variantA: variantAConversions,
+        variantB: variantBConversions
+      },
+      conversionRates: {
+        variantA: variantAParticipants > 0 ? (variantAConversions / variantAParticipants) * 100 : 0,
+        variantB: variantBParticipants > 0 ? (variantBConversions / variantBParticipants) * 100 : 0
+      }
+    };
+  }
+
+  async getAbTestParticipants(testId: number): Promise<AbTestParticipant[]> {
+    await this.ensureInitialized();
+    return await this.db
+      .select()
+      .from(abTestParticipants)
+      .where(eq(abTestParticipants.testId, testId));
+  }
+
+  async createAbTestParticipant(participant: InsertAbTestParticipant): Promise<AbTestParticipant> {
+    await this.ensureInitialized();
+    const [result] = await this.db
+      .insert(abTestParticipants)
+      .values(participant)
+      .returning();
+    return result;
+  }
+
+  async createAbTestEvent(event: InsertAbTestEvent): Promise<AbTestEvent> {
+    await this.ensureInitialized();
+    const [result] = await this.db
+      .insert(abTestEvents)
+      .values(event)
+      .returning();
+    return result;
+  }
 }
 
 export const storage = new DatabaseStorage();
