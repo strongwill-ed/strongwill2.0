@@ -491,51 +491,36 @@ export default function Admin() {
   const [editingGroupOrder, setEditingGroupOrder] = useState<GroupOrder | null>(null);
   const [isEditGroupOrderOpen, setIsEditGroupOrderOpen] = useState(false);
 
-  // Queries
+  // Always call all hooks before any conditional returns
   const { data: stats } = useQuery<any>({
     queryKey: ["/api/admin/stats"],
+    enabled: !!user && user.role === "admin", // Only fetch if admin
   });
 
   const { data: products = [] } = useQuery<Product[]>({
     queryKey: ["/api/products"],
+    enabled: !!user && user.role === "admin",
   });
 
   const { data: categories = [] } = useQuery<ProductCategory[]>({
     queryKey: ["/api/categories"],
+    enabled: !!user && user.role === "admin",
   });
 
   const { data: orders = [] } = useQuery<Order[]>({
     queryKey: ["/api/orders"],
+    enabled: !!user && user.role === "admin",
   });
 
   const { data: groupOrders = [] } = useQuery<GroupOrder[]>({
     queryKey: ["/api/group-orders"],
+    enabled: !!user && user.role === "admin",
   });
 
   const { data: refunds = [] } = useQuery<Refund[]>({
     queryKey: ["/api/refunds"],
+    enabled: !!user && user.role === "admin",
   });
-
-  // Check if user is admin after all hooks are defined
-  if (!user || user.role !== "admin") {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <Card className="w-96">
-          <CardHeader className="text-center">
-            <CardTitle className="text-2xl font-bold text-red-600">Access Denied</CardTitle>
-          </CardHeader>
-          <CardContent className="text-center">
-            <p className="text-gray-600 mb-4">
-              You need administrator privileges to access this page.
-            </p>
-            <p className="text-sm text-gray-500">
-              Please contact your administrator if you believe this is an error.
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
 
   // Forms
   const createProductForm = useForm<z.infer<typeof createProductSchema>>({
@@ -761,6 +746,27 @@ export default function Admin() {
 
   const availableSizes = ["XS", "S", "M", "L", "XL", "XXL"];
   const availableColors = ["Black", "White", "Red", "Blue", "Navy", "Gray", "Green", "Yellow"];
+
+  // Check if user is admin after all hooks are defined
+  if (!user || user.role !== "admin") {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <Card className="w-96">
+          <CardHeader className="text-center">
+            <CardTitle className="text-2xl font-bold text-red-600">Access Denied</CardTitle>
+          </CardHeader>
+          <CardContent className="text-center">
+            <p className="text-gray-600 mb-4">
+              You need administrator privileges to access this page.
+            </p>
+            <p className="text-sm text-gray-500">
+              Please contact your administrator if you believe this is an error.
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
