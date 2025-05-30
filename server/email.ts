@@ -380,6 +380,52 @@ export class EmailService {
       text
     });
   }
+
+  async sendAdminOrderNotification(data: {
+    orderId: number;
+    customerEmail: string;
+    totalAmount: string;
+    items: any[];
+  }): Promise<boolean> {
+    const template = await this.getEmailTemplate('admin_order_notification');
+    
+    const subject = template?.subject || `New Order Received - #SW-${data.orderId}`;
+    
+    const itemsList = data.items.map(item => 
+      `- ${item.quantity}x Item (${item.size || 'N/A'}, ${item.color || 'N/A'}) - $${item.unitPrice}`
+    ).join('\n');
+    
+    const html = template?.html
+      ?.replace(/{{orderId}}/g, data.orderId.toString())
+      ?.replace(/{{customerEmail}}/g, data.customerEmail)
+      ?.replace(/{{totalAmount}}/g, data.totalAmount)
+      ?.replace(/{{itemsList}}/g, itemsList.replace(/\n/g, '<br>')) ||
+      `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h1 style="color: #000;">New Order Received - #SW-${data.orderId}</h1>
+        <p><strong>Customer:</strong> ${data.customerEmail}</p>
+        <p><strong>Total Amount:</strong> $${data.totalAmount}</p>
+        <h3>Items:</h3>
+        <div style="background: #f5f5f5; padding: 15px; border-radius: 5px;">
+          ${itemsList.replace(/\n/g, '<br>')}
+        </div>
+        <p>Please log into the admin panel to process this order.</p>
+      </div>`;
+    
+    const text = template?.text
+      ?.replace(/{{orderId}}/g, data.orderId.toString())
+      ?.replace(/{{customerEmail}}/g, data.customerEmail)
+      ?.replace(/{{totalAmount}}/g, data.totalAmount)
+      ?.replace(/{{itemsList}}/g, itemsList) ||
+      `New Order Received - #SW-${data.orderId}\nCustomer: ${data.customerEmail}\nTotal: $${data.totalAmount}\nItems:\n${itemsList}`;
+
+    return this.sendEmail({
+      to: 'admin@strongwillsports.com',
+      from: this.fromEmail,
+      subject,
+      html,
+      text
+    });
+  }
 }
 
 export const emailService = new EmailService();

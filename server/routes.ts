@@ -443,9 +443,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const newOrder = await storage.createOrder(orderData);
       
       // Add order items
+      const orderItems = [];
       for (const item of items) {
         const orderItemData = insertOrderItemSchema.parse({ ...item, orderId: newOrder.id });
-        await storage.addOrderItem(orderItemData);
+        const newOrderItem = await storage.addOrderItem(orderItemData);
+        orderItems.push(newOrderItem);
+      }
+      
+      // Send admin notification email for new order
+      try {
+        await emailService.sendAdminOrderNotification({
+          orderId: newOrder.id,
+          customerEmail: newOrder.customerEmail || 'Guest',
+          totalAmount: newOrder.totalAmount,
+          items: orderItems
+        });
+      } catch (emailError) {
+        console.error('Failed to send admin notification email:', emailError);
+        // Don't fail the order creation if email fails
       }
       
       res.status(201).json(newOrder);
