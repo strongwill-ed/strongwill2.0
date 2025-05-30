@@ -1704,9 +1704,18 @@ export default function Admin() {
                           {order.createdAt ? format(new Date(order.createdAt), "MMM dd, yyyy") : "N/A"}
                         </TableCell>
                         <TableCell>
-                          <Button variant="ghost" size="sm" onClick={() => setSelectedOrder(order)}>
-                            <Eye className="h-4 w-4" />
-                          </Button>
+                          <div className="flex gap-2">
+                            <Button variant="ghost" size="sm" onClick={() => setSelectedOrder(order)}>
+                              <Eye className="h-4 w-4" />
+                            </Button>
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              onClick={() => handleCreateRefund(order.id)}
+                            >
+                              Refund
+                            </Button>
+                          </div>
                         </TableCell>
                       </TableRow>
                     ))}
