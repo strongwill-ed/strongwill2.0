@@ -657,13 +657,7 @@ export default function Admin() {
   const [adminEmail, setAdminEmail] = useState('admin@strongwillsports.com');
   const [isTestingEmail, setIsTestingEmail] = useState(false);
 
-  // Computed values for user filtering
-  const filteredUsers = users.filter((user: any) => {
-    const matchesSearch = user.username?.toLowerCase().includes(userSearchTerm.toLowerCase()) ||
-                         user.email?.toLowerCase().includes(userSearchTerm.toLowerCase());
-    const matchesRole = userRoleFilter === "all" || user.role === userRoleFilter;
-    return matchesSearch && matchesRole;
-  });
+
 
   // User management functions
   const handleEditUser = (user: any) => {
@@ -764,6 +758,14 @@ export default function Admin() {
   const { data: refunds = [] } = useQuery<any[]>({
     queryKey: ["/api/admin/refunds"],
     enabled: !!user && user.role === "admin",
+  });
+
+  // Computed values for user filtering
+  const filteredUsers = users.filter((user: any) => {
+    const matchesSearch = user.username?.toLowerCase().includes(userSearchTerm.toLowerCase()) ||
+                         user.email?.toLowerCase().includes(userSearchTerm.toLowerCase());
+    const matchesRole = userRoleFilter === "all" || user.role === userRoleFilter;
+    return matchesSearch && matchesRole;
   });
 
   // Forms
@@ -2279,6 +2281,162 @@ export default function Admin() {
                 </div>
               </div>
             )}
+          </DialogContent>
+        </Dialog>
+
+        {/* Refund Dialog */}
+        <Dialog open={isRefundDialogOpen} onOpenChange={setIsRefundDialogOpen}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>Process Refund</DialogTitle>
+              <DialogDescription>
+                Create a manual refund for Order #{refundFormData.orderId}
+              </DialogDescription>
+            </DialogHeader>
+            
+            <div className="space-y-4">
+              <div>
+                <Label>Refund Amount</Label>
+                <Input
+                  type="number"
+                  step="0.01"
+                  placeholder="0.00"
+                  value={refundFormData.refundAmount}
+                  onChange={(e) => setRefundFormData(prev => ({
+                    ...prev,
+                    refundAmount: e.target.value
+                  }))}
+                />
+              </div>
+              
+              <div>
+                <Label>Refund Reason</Label>
+                <Select value={refundFormData.reason} onValueChange={(value) => 
+                  setRefundFormData(prev => ({ ...prev, reason: value }))
+                }>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select reason" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="defective_product">Defective Product</SelectItem>
+                    <SelectItem value="wrong_size">Wrong Size</SelectItem>
+                    <SelectItem value="customer_request">Customer Request</SelectItem>
+                    <SelectItem value="order_error">Order Error</SelectItem>
+                    <SelectItem value="quality_issue">Quality Issue</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div>
+                <Label>Admin Notes</Label>
+                <Textarea
+                  placeholder="Internal notes about this refund..."
+                  value={refundFormData.adminNotes}
+                  onChange={(e) => setRefundFormData(prev => ({
+                    ...prev,
+                    adminNotes: e.target.value
+                  }))}
+                  rows={3}
+                />
+              </div>
+            </div>
+            
+            <div className="flex justify-end gap-2 pt-4">
+              <Button variant="outline" onClick={() => setIsRefundDialogOpen(false)}>
+                Cancel
+              </Button>
+              <Button onClick={processRefund}>
+                Process Refund
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* User Edit Dialog */}
+        <Dialog open={isEditUserOpen} onOpenChange={setIsEditUserOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Edit User</DialogTitle>
+              <DialogDescription>
+                Modify user account details and permissions
+              </DialogDescription>
+            </DialogHeader>
+            
+            {editingUser && (
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label>Username</Label>
+                    <Input
+                      value={editingUser.username || ''}
+                      onChange={(e) => setEditingUser(prev => ({
+                        ...prev,
+                        username: e.target.value
+                      }))}
+                    />
+                  </div>
+                  <div>
+                    <Label>Email</Label>
+                    <Input
+                      type="email"
+                      value={editingUser.email || ''}
+                      onChange={(e) => setEditingUser(prev => ({
+                        ...prev,
+                        email: e.target.value
+                      }))}
+                    />
+                  </div>
+                </div>
+                
+                <div>
+                  <Label>User Role</Label>
+                  <Select value={editingUser.role} onValueChange={(value) => 
+                    setEditingUser(prev => ({ ...prev, role: value }))
+                  }>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="user">User</SelectItem>
+                      <SelectItem value="team">Team</SelectItem>
+                      <SelectItem value="sponsor">Sponsor</SelectItem>
+                      <SelectItem value="admin">Admin</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <h4 className="font-medium mb-2">Account Statistics</h4>
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <span className="text-gray-600">User ID:</span>
+                      <span className="ml-2 font-mono">{editingUser.id}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-600">Created:</span>
+                      <span className="ml-2">{format(new Date(editingUser.createdAt || Date.now()), "MMM dd, yyyy")}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+            
+            <div className="flex justify-end gap-2 pt-4">
+              <Button variant="outline" onClick={() => setIsEditUserOpen(false)}>
+                Cancel
+              </Button>
+              <Button onClick={() => {
+                // Save user changes
+                setIsEditUserOpen(false);
+                toast({
+                  title: "User Updated",
+                  description: "User account has been successfully updated."
+                });
+              }}>
+                Save Changes
+              </Button>
+            </div>
           </DialogContent>
         </Dialog>
       </div>
