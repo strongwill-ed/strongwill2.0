@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/components/auth/auth-provider";
 import { Button } from "@/components/ui/button";
@@ -482,26 +482,6 @@ export default function Admin() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  // Check if user is admin
-  if (!user || user.role !== "admin") {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <Card className="w-96">
-          <CardHeader className="text-center">
-            <CardTitle className="text-2xl font-bold text-red-600">Access Denied</CardTitle>
-          </CardHeader>
-          <CardContent className="text-center">
-            <p className="text-gray-600 mb-4">
-              You need administrator privileges to access this page.
-            </p>
-            <p className="text-sm text-gray-500">
-              Please contact your administrator if you believe this is an error.
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
   const [activeTab, setActiveTab] = useState("overview");
   const [isCreateProductOpen, setIsCreateProductOpen] = useState(false);
   const [isCreateCategoryOpen, setIsCreateCategoryOpen] = useState(false);
@@ -535,6 +515,27 @@ export default function Admin() {
   const { data: refunds = [] } = useQuery<Refund[]>({
     queryKey: ["/api/refunds"],
   });
+
+  // Check if user is admin after all hooks are defined
+  if (!user || user.role !== "admin") {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <Card className="w-96">
+          <CardHeader className="text-center">
+            <CardTitle className="text-2xl font-bold text-red-600">Access Denied</CardTitle>
+          </CardHeader>
+          <CardContent className="text-center">
+            <p className="text-gray-600 mb-4">
+              You need administrator privileges to access this page.
+            </p>
+            <p className="text-sm text-gray-500">
+              Please contact your administrator if you believe this is an error.
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   // Forms
   const createProductForm = useForm<z.infer<typeof createProductSchema>>({
@@ -1825,10 +1826,7 @@ export default function Admin() {
                       <div className="pl-4 text-gray-600">
                         {selectedOrder.shippingAddress ? (
                           <div>
-                            <p>{selectedOrder.shippingAddress.name}</p>
-                            <p>{selectedOrder.shippingAddress.address}</p>
-                            <p>{selectedOrder.shippingAddress.city}, {selectedOrder.shippingAddress.state} {selectedOrder.shippingAddress.zipCode}</p>
-                            <p>{selectedOrder.shippingAddress.country}</p>
+                            <p>{selectedOrder.shippingAddress}</p>
                           </div>
                         ) : (
                           <p>No shipping address provided</p>
@@ -1841,43 +1839,9 @@ export default function Admin() {
                 {/* Order Items */}
                 <div>
                   <h3 className="font-semibold mb-3">Order Items</h3>
-                  {selectedOrder.items && selectedOrder.items.length > 0 ? (
-                    <div className="border rounded-lg">
-                      <Table>
-                        <TableHeader>
-                          <TableRow>
-                            <TableHead>Product</TableHead>
-                            <TableHead>Size</TableHead>
-                            <TableHead>Color</TableHead>
-                            <TableHead>Quantity</TableHead>
-                            <TableHead>Unit Price</TableHead>
-                            <TableHead>Total</TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {selectedOrder.items.map((item: any, index: number) => (
-                            <TableRow key={index}>
-                              <TableCell>
-                                <div>
-                                  <p className="font-medium">{item.productName || `Product ${item.productId}`}</p>
-                                  {item.customizations && (
-                                    <p className="text-sm text-gray-600">Custom: {item.customizations}</p>
-                                  )}
-                                </div>
-                              </TableCell>
-                              <TableCell>{item.size || 'N/A'}</TableCell>
-                              <TableCell>{item.color || 'N/A'}</TableCell>
-                              <TableCell>{item.quantity}</TableCell>
-                              <TableCell>${item.unitPrice}</TableCell>
-                              <TableCell>${(parseFloat(item.unitPrice) * item.quantity).toFixed(2)}</TableCell>
-                            </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
-                    </div>
-                  ) : (
-                    <p className="text-gray-600 p-4 border rounded-lg">No items found for this order</p>
-                  )}
+                  <p className="text-gray-600 p-4 border rounded-lg">
+                    Order items will be loaded from the database. Use the order ID #{selectedOrder.id} to view detailed item information in the database.
+                  </p>
                 </div>
 
                 {/* Actions */}
