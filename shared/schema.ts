@@ -340,6 +340,27 @@ export const adminSettings = pgTable("admin_settings", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+export const siteVisitors = pgTable("site_visitors", {
+  id: serial("id").primaryKey(),
+  sessionId: text("session_id").notNull().unique(),
+  ipAddress: text("ip_address"),
+  userAgent: text("user_agent"),
+  referrer: text("referrer"),
+  landingPage: text("landing_page"),
+  country: text("country"),
+  city: text("city"),
+  source: text("source"), // direct, google, facebook, etc.
+  medium: text("medium"), // organic, cpc, social, etc.
+  campaign: text("campaign"),
+  deviceType: text("device_type"), // desktop, mobile, tablet
+  browser: text("browser"),
+  os: text("os"),
+  firstVisit: timestamp("first_visit").defaultNow(),
+  lastActivity: timestamp("last_activity").defaultNow(),
+  pageViews: integer("page_views").default(1),
+  isReturning: boolean("is_returning").default(false),
+});
+
 export const quoteRequests = pgTable("quote_requests", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
@@ -360,6 +381,7 @@ export const quoteRequests = pgTable("quote_requests", {
 export const insertPageSchema = createInsertSchema(pages).omit({ id: true, createdAt: true, updatedAt: true });
 export const insertBlogPostSchema = createInsertSchema(blogPosts).omit({ id: true, createdAt: true, updatedAt: true });
 export const insertAdminSettingSchema = createInsertSchema(adminSettings).omit({ id: true, updatedAt: true });
+export const insertSiteVisitorSchema = createInsertSchema(siteVisitors).omit({ id: true, firstVisit: true, lastActivity: true });
 export const insertQuoteRequestSchema = createInsertSchema(quoteRequests).omit({ id: true, createdAt: true, updatedAt: true });
 
 // A/B Testing Tables
@@ -409,6 +431,8 @@ export type BlogPost = typeof blogPosts.$inferSelect;
 export type InsertBlogPost = z.infer<typeof insertBlogPostSchema>;
 export type AdminSetting = typeof adminSettings.$inferSelect;
 export type InsertAdminSetting = z.infer<typeof insertAdminSettingSchema>;
+export type SiteVisitor = typeof siteVisitors.$inferSelect;
+export type InsertSiteVisitor = z.infer<typeof insertSiteVisitorSchema>;
 export type QuoteRequest = typeof quoteRequests.$inferSelect;
 export type InsertQuoteRequest = z.infer<typeof insertQuoteRequestSchema>;
 
