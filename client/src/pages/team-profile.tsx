@@ -33,6 +33,18 @@ export default function TeamProfile() {
     enabled: !!user,
   });
 
+  // Fetch sponsorship credits if user is the team owner
+  const isTeamOwner = profile && user && profile.userId === user.id;
+  const { data: sponsorshipCredits } = useQuery<SponsorshipCredit[]>({
+    queryKey: ["/api/sponsorship-credits", profileId],
+    enabled: !!profileId && isTeamOwner,
+  });
+
+  // Calculate total available credits
+  const totalCredits = sponsorshipCredits?.reduce((sum, credit) => 
+    sum + (credit.isActive ? parseFloat(credit.remainingAmount) : 0), 0
+  ) || 0;
+
   const sponsorshipMutation = useMutation({
     mutationFn: (data: any) => apiRequest("POST", "/api/sponsorship-agreements", data),
     onSuccess: () => {
@@ -214,6 +226,38 @@ export default function TeamProfile() {
                   <p className="text-gray-600 mb-4">
                     {profile.description || "No description provided."}
                   </p>
+
+                  {/* Sponsorship Credits - Only visible to team owner */}
+                  {isTeamOwner && (
+                    <div className="mb-6 p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
+                      <div className="flex items-center gap-2 mb-2">
+                        <CreditCard className="h-5 w-5 text-green-600" />
+                        <h4 className="font-semibold text-green-800 dark:text-green-200">Sponsorship Credits</h4>
+                      </div>
+                      <p className="text-2xl font-bold text-green-600 mb-2">
+                        ${totalCredits.toFixed(2)} AUD
+                      </p>
+                      <p className="text-sm text-green-700 dark:text-green-300 mb-3">
+                        Available to use on orders
+                      </p>
+                      
+                      {sponsorshipCredits && sponsorshipCredits.length > 0 ? (
+                        <div className="space-y-2">
+                          {sponsorshipCredits.filter(credit => credit.isActive).map((credit) => (
+                            <div key={credit.id} className="flex justify-between items-center text-sm bg-white dark:bg-gray-800 p-2 rounded border">
+                              <span>Credit #{credit.id}</span>
+                              <span className="font-medium">${parseFloat(credit.remainingAmount).toFixed(2)}</span>
+                            </div>
+                          ))}
+                          {sponsorshipCredits.filter(credit => credit.isActive).length === 0 && (
+                            <p className="text-sm text-gray-500">No active credits available</p>
+                          )}
+                        </div>
+                      ) : (
+                        <p className="text-sm text-gray-500">No sponsorship credits yet</p>
+                      )}
+                    </div>
+                  )}
                   
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="flex items-center gap-2">

@@ -107,7 +107,7 @@ export default function SponsorshipAgreementPage() {
 
   const handleAccept = () => {
     updateAgreementMutation.mutate({
-      status: "active",
+      status: "awaiting_payment",
       paymentStatus: "pending",
     });
   };
@@ -241,6 +241,48 @@ export default function SponsorshipAgreementPage() {
                 <div className="text-sm text-gray-700 whitespace-pre-wrap">{agreement.description}</div>
               </div>
             </div>
+
+            {/* Sponsor Payment Information */}
+            {isSponsor && agreement.status === "pending" && (
+              <div className="border-t pt-6">
+                <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                  <div className="flex items-start gap-3">
+                    <CreditCard className="h-5 w-5 text-blue-600 mt-0.5" />
+                    <div>
+                      <h4 className="font-semibold text-blue-800 dark:text-blue-200 mb-2">How Sponsorship Credits Work</h4>
+                      <div className="text-sm text-blue-700 dark:text-blue-300 space-y-2">
+                        <p><strong>Step 1:</strong> Accept this sponsorship agreement</p>
+                        <p><strong>Step 2:</strong> Complete secure payment processing</p>
+                        <p><strong>Step 3:</strong> Credits are automatically issued to the team</p>
+                        <p><strong>Step 4:</strong> Team can use credits on any orders from Strongwill Sports</p>
+                      </div>
+                      <div className="mt-3 p-2 bg-blue-100 dark:bg-blue-800 rounded text-sm">
+                        <strong>Important:</strong> Credits are only issued after successful payment verification. The team will receive ${agreement.amount} AUD in sponsorship credits to use on their orders.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {agreement.status === "awaiting_payment" && agreement.paymentStatus === "pending" && isSponsor && (
+              <div className="border-t pt-6">
+                <div className="mb-6 p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
+                  <div className="flex items-start gap-3">
+                    <CreditCard className="h-5 w-5 text-green-600 mt-0.5" />
+                    <div>
+                      <h4 className="font-semibold text-green-800 dark:text-green-200 mb-2">Ready for Payment</h4>
+                      <p className="text-sm text-green-700 dark:text-green-300 mb-3">
+                        Agreement accepted! Complete your payment to issue ${agreement.amount} AUD in sponsorship credits to {agreement.seekerProfile.organizationName}.
+                      </p>
+                      <p className="text-xs text-green-600 dark:text-green-400">
+                        Once payment is processed, the team will be notified and can immediately use their credits for orders.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Actions */}
             {canManage && (
