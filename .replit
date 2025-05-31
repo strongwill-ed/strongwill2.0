@@ -32,5 +32,5 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "npm run dev"
+args = ["DATABASE_URL=postgresql://postgres:postgres@localhost:5432/postgres", "npm run dev"]
 waitForPort = 5000
